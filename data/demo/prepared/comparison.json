@@ -1,0 +1,34 @@
+{
+  "FCFS": {
+    "independently_validated": true,
+    "solver_status": "FCFS",
+    "unserved_kwh": 0,
+    "peak_power_kw": 22.0,
+    "cost_eur": 355.8666666666667,
+    "target_success_percent": 100.0
+  },
+  "EDF": {
+    "independently_validated": true,
+    "solver_status": "EDF",
+    "unserved_kwh": 0,
+    "peak_power_kw": 22.0,
+    "cost_eur": 355.8666666666667,
+    "target_success_percent": 100.0
+  },
+  "LLF": {
+    "independently_validated": true,
+    "solver_status": "LLF",
+    "unserved_kwh": 0,
+    "peak_power_kw": 22.0,
+    "cost_eur": 355.8666666666667,
+    "target_success_percent": 100.0
+  },
+  "optimized": {
+    "independently_validated": true,
+    "solver_status": "OPTIMAL",
+    "unserved_kwh": 1.0000002248489182e-07,
+    "peak_power_kw": 8.888888870370367,
+    "cost_eur": 159.19999968666662,
+    "target_success_percent": 100.0
+  }
+}

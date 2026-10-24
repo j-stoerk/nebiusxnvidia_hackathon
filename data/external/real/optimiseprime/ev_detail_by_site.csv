@@ -1,0 +1,23 @@
+depot_name,model,vehicles,charge_rate_kw
+Bexleyheath,Mercedes Benz E-Vito,6,4.6
+Bexleyheath,Peugeot Partner,12,3.6
+Camden,Peugeot Expert,6,3.6
+Camden,Peugeot Partner,6,3.6
+Dartford,Mercedes Benz E-Vito,11,4.6
+Dartford,Peugeot Expert,10,3.6
+Dartford,Peugeot Partner,14,3.6
+Islington,Mercedes Benz E-Vito,12,4.6
+Islington,Peugeot Partner,12,3.6
+Mount Pleasant,Mercedes Benz E-Vito,87,4.6
+Mount Pleasant,Peugeot Expert,38,3.6
+Orpington,Mercedes Benz E-Vito,6,4.6
+Orpington,Peugeot Expert,3,3.6
+Orpington,Peugeot Partner,9,3.6
+Premier Park,Mercedes Benz E-Vito,10,4.6
+Premier Park,Peugeot Expert,2,3.6
+Premier Park,Peugeot Partner,37,3.6
+Victoria,Mercedes Benz E-Vito,10,4.6
+Victoria,Peugeot Expert,9,3.6
+Victoria,Peugeot Partner,3,3.6
+Whitechapel,Mercedes Benz E-Vito,25,4.6
+Whitechapel,Peugeot Partner,12,3.6

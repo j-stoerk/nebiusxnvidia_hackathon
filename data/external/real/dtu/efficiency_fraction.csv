@@ -1,0 +1,316 @@
+source_excel_row,vehicle_model,charging_current_a,efficiency_fraction,quality_flag
+2,Hyundai Kona (2022),6.0,0.9059146591777272,recorded
+2,Hyundai Kona (2022),8.0,0.9175803334090227,recorded
+2,Hyundai Kona (2022),10.0,0.9210366270964976,recorded
+2,Hyundai Kona (2022),12.0,0.9237550956111208,recorded
+2,Hyundai Kona (2022),14.0,0.9308334329824091,recorded
+2,Hyundai Kona (2022),16.0,0.9235489027457274,recorded
+3,Nissan Arya (2022),6.0,0.8968863878000001,recorded
+3,Nissan Arya (2022),8.0,0.9105906897,recorded
+3,Nissan Arya (2022),10.0,0.9187111756999999,recorded
+3,Nissan Arya (2022),12.0,0.9192577516999999,recorded
+3,Nissan Arya (2022),14.0,0.9198259369,recorded
+3,Nissan Arya (2022),16.0,0.9220686008,recorded
+3,Nissan Arya (2022),18.0,0.9234327029,recorded
+3,Nissan Arya (2022),20.0,0.9232123365,recorded
+3,Nissan Arya (2022),22.0,0.9230389896,recorded
+3,Nissan Arya (2022),24.0,0.9222046288,recorded
+3,Nissan Arya (2022),26.0,0.9217646320999999,recorded
+3,Nissan Arya (2022),28.0,0.9227301388,recorded
+3,Nissan Arya (2022),30.0,0.9225433305,recorded
+3,Nissan Arya (2022),32.0,0.9237904319000001,recorded
+4,Renault Megan E-tech (2022),6.0,0.8957046415000001,recorded
+4,Renault Megan E-tech (2022),8.0,0.9128180029,recorded
+4,Renault Megan E-tech (2022),10.0,0.9172278091,recorded
+4,Renault Megan E-tech (2022),12.0,0.9257554528999999,recorded
+4,Renault Megan E-tech (2022),14.0,0.9288526557,recorded
+4,Renault Megan E-tech (2022),16.0,0.9250662465,recorded
+5,Kia EV6 (2022),6.0,0.8937959832,recorded
+5,Kia EV6 (2022),8.0,0.9054056040999999,recorded
+5,Kia EV6 (2022),10.0,0.9063211186,recorded
+5,Kia EV6 (2022),12.0,0.9140172307000001,recorded
+5,Kia EV6 (2022),14.0,0.9172862771,recorded
+5,Kia EV6 (2022),16.0,0.9187217166,recorded
+6,Kia Niro (2022),6.0,0.9011235000875459,recorded
+6,Kia Niro (2022),8.0,0.9086133712686624,recorded
+6,Kia Niro (2022),10.0,0.9127461540998351,recorded
+6,Kia Niro (2022),12.0,0.9136580285235028,recorded
+6,Kia Niro (2022),14.0,0.9153841051638681,recorded
+6,Kia Niro (2022),16.0,0.9135156133407522,recorded
+7,MG 5 (2022),6.0,0.8897886418597025,recorded
+7,MG 5 (2022),8.0,0.9098259922469104,recorded
+7,MG 5 (2022),10.0,0.9125473848971182,recorded
+7,MG 5 (2022),12.0,0.9147874602578087,recorded
+7,MG 5 (2022),14.0,0.9139751386281625,recorded
+7,MG 5 (2022),16.0,0.914872076013387,recorded
+8,VW ID3 Pro (2022),6.0,0.8743381293,recorded
+8,VW ID3 Pro (2022),8.0,0.8898732032,recorded
+8,VW ID3 Pro (2022),10.0,0.9011173379999999,recorded
+8,VW ID3 Pro (2022),12.0,0.9066925793,recorded
+8,VW ID3 Pro (2022),14.0,0.9049506938,recorded
+8,VW ID3 Pro (2022),16.0,0.9074152457,recorded
+8,VW ID3 Pro (2022),18.0,0.9095062724999999,recorded
+8,VW ID3 Pro (2022),20.0,0.9016057648,recorded
+9,Peugeot e-208 (2022),6.0,0.8561273056,recorded
+9,Peugeot e-208 (2022),8.0,0.8818148712999999,recorded
+9,Peugeot e-208 (2022),10.0,0.8992209977000001,recorded
+9,Peugeot e-208 (2022),12.0,0.9020716161,recorded
+9,Peugeot e-208 (2022),14.0,0.9083187408000001,recorded
+9,Peugeot e-208 (2022),16.0,0.9078273076000001,recorded
+10,Tesla Model Y (2022),6.0,0.8639344262,recorded
+10,Tesla Model Y (2022),8.0,0.8817290914,recorded
+10,Tesla Model Y (2022),10.0,0.8904628054,recorded
+10,Tesla Model Y (2022),12.0,0.8987058824,recorded
+10,Tesla Model Y (2022),14.0,0.8996460069,recorded
+10,Tesla Model Y (2022),16.0,0.9034468309,recorded
+11,VW ID4 GTX (2022),6.0,0.8599589512,recorded
+11,VW ID4 GTX (2022),8.0,0.8709187937999999,recorded
+11,VW ID4 GTX (2022),10.0,0.8793389531,recorded
+11,VW ID4 GTX (2022),12.0,0.8879865318,recorded
+11,VW ID4 GTX (2022),14.0,0.8902597861,recorded
+11,VW ID4 GTX (2022),16.0,0.8980673229999999,recorded
+12,Nissan LEAF e+ (2022),6.0,0.7670617816091954,recorded
+12,Nissan LEAF e+ (2022),8.0,0.8204435154828283,recorded
+12,Nissan LEAF e+ (2022),10.0,0.8359986466569183,recorded
+12,Nissan LEAF e+ (2022),12.0,0.8463168897602518,recorded
+12,Nissan LEAF e+ (2022),14.0,0.8615007742711133,recorded
+12,Nissan LEAF e+ (2022),16.0,0.8692345961642354,recorded
+12,Nissan LEAF e+ (2022),18.0,0.879451333826561,recorded
+12,Nissan LEAF e+ (2022),20.0,0.8771668201147235,recorded
+12,Nissan LEAF e+ (2022),22.0,0.8776166032503002,recorded
+12,Nissan LEAF e+ (2022),24.0,0.884070381060982,recorded
+12,Nissan LEAF e+ (2022),26.0,0.8841816797472043,recorded
+12,Nissan LEAF e+ (2022),28.0,0.8833324790178705,recorded
+12,Nissan LEAF e+ (2022),30.0,0.8910696503205727,recorded
+13,Nissan Townstar-Hybrid (2022),6.0,0.0,invalid_efficiency_fraction_requires_review
+13,Nissan Townstar-Hybrid (2022),8.0,0.8108317964087195,recorded
+13,Nissan Townstar-Hybrid (2022),10.0,0.8394972909787087,recorded
+13,Nissan Townstar-Hybrid (2022),12.0,0.8573936062060505,recorded
+13,Nissan Townstar-Hybrid (2022),14.0,0.8719244175344331,recorded
+13,Nissan Townstar-Hybrid (2022),16.0,0.8825924196226194,recorded
+13,Nissan Townstar-Hybrid (2022),18.0,0.8905406123845213,recorded
+13,Nissan Townstar-Hybrid (2022),20.0,0.8976109881539389,recorded
+13,Nissan Townstar-Hybrid (2022),22.0,0.8985138401766284,recorded
+13,Nissan Townstar-Hybrid (2022),24.0,0.9014659813084325,recorded
+13,Nissan Townstar-Hybrid (2022),26.0,0.9041737301987058,recorded
+13,Nissan Townstar-Hybrid (2022),28.0,0.9049116494792144,recorded
+13,Nissan Townstar-Hybrid (2022),30.0,0.9060130208294054,recorded
+13,Nissan Townstar-Hybrid (2022),32.0,0.9091017556189454,recorded
+14,VW Multivan-Hybrid (2022),6.0,0.6925888981,recorded
+14,VW Multivan-Hybrid (2022),8.0,0.7472664226000001,recorded
+14,VW Multivan-Hybrid (2022),10.0,0.7812908577000001,recorded
+14,VW Multivan-Hybrid (2022),12.0,0.8072386668999999,recorded
+14,VW Multivan-Hybrid (2022),14.0,0.8198076294000001,recorded
+14,VW Multivan-Hybrid (2022),16.0,0.8263379738000001,recorded
+14,VW Multivan-Hybrid (2022),18.0,0.8290972399000001,recorded
+15,VW ID4 Pro (2021),6.0,0.898636214,recorded
+15,VW ID4 Pro (2021),8.0,0.9053369295,recorded
+15,VW ID4 Pro (2021),10.0,0.9104310873999999,recorded
+15,VW ID4 Pro (2021),12.0,0.9105915661,recorded
+15,VW ID4 Pro (2021),14.0,0.9109115365,recorded
+15,VW ID4 Pro (2021),16.0,0.9106622284,recorded
+15,VW ID4 Pro (2021),18.0,0.9125871501999999,recorded
+16,Hyudai Kona (2021),6.0,0.8765676062,recorded
+16,Hyudai Kona (2021),8.0,0.8987063695999999,recorded
+16,Hyudai Kona (2021),10.0,0.904068596,recorded
+16,Hyudai Kona (2021),12.0,0.9090451609,recorded
+16,Hyudai Kona (2021),14.0,0.9146772923,recorded
+16,Hyudai Kona (2021),16.0,0.9160617431,recorded
+17,Skoda Enyaq (2021),6.0,0.8782665065,recorded
+17,Skoda Enyaq (2021),8.0,0.8901897072,recorded
+17,Skoda Enyaq (2021),10.0,0.8951321040000001,recorded
+17,Skoda Enyaq (2021),12.0,0.9002130154,recorded
+17,Skoda Enyaq (2021),14.0,0.9018180888,recorded
+17,Skoda Enyaq (2021),16.0,0.9001467353,recorded
+18,MG Marvel R (2021),6.0,0.8461575169006116,recorded
+18,MG Marvel R (2021),8.0,0.8826563131057221,recorded
+18,MG Marvel R (2021),10.0,0.8962242344179969,recorded
+18,MG Marvel R (2021),12.0,0.9083715715960713,recorded
+18,MG Marvel R (2021),14.0,0.9092280550400591,recorded
+18,MG Marvel R (2021),16.0,0.9047228236233764,recorded
+19,Renault Zoe50N (2021),6.0,0.0,invalid_efficiency_fraction_requires_review
+19,Renault Zoe50N (2021),8.0,0.7649743325,recorded
+19,Renault Zoe50N (2021),10.0,0.8333424101999999,recorded
+19,Renault Zoe50N (2021),12.0,0.8587027068,recorded
+19,Renault Zoe50N (2021),14.0,0.8701086805,recorded
+19,Renault Zoe50N (2021),16.0,0.8924897119,recorded
+19,Renault Zoe50N (2021),18.0,0.8866204691999999,recorded
+19,Renault Zoe50N (2021),20.0,0.8939456982,recorded
+19,Renault Zoe50N (2021),22.0,0.9022131519,recorded
+19,Renault Zoe50N (2021),24.0,0.8977850526000001,recorded
+19,Renault Zoe50N (2021),26.0,0.9086718930000001,recorded
+19,Renault Zoe50N (2021),28.0,0.9063307376999999,recorded
+19,Renault Zoe50N (2021),30.0,0.9054938574000001,recorded
+19,Renault Zoe50N (2021),32.0,0.9173257139000001,recorded
+20,Tesla Model 3LR (2020),6.0,0.8902458446,recorded
+20,Tesla Model 3LR (2020),8.0,0.9046116924000001,recorded
+20,Tesla Model 3LR (2020),10.0,0.9117348326,recorded
+20,Tesla Model 3LR (2020),12.0,0.9162247266,recorded
+20,Tesla Model 3LR (2020),14.0,0.9170402131000001,recorded
+20,Tesla Model 3LR (2020),16.0,0.9187198929,recorded
+21,Tesla Model 3SR (2020),6.0,0.8737924519000001,recorded
+21,Tesla Model 3SR (2020),8.0,0.88874936,recorded
+21,Tesla Model 3SR (2020),10.0,0.9003253684000001,recorded
+21,Tesla Model 3SR (2020),12.0,0.9076657835,recorded
+21,Tesla Model 3SR (2020),14.0,0.9108061589,recorded
+21,Tesla Model 3SR (2020),16.0,0.9142237760999999,recorded
+22,Peugeot e-208 (2020),6.0,0.8420000000000001,recorded
+22,Peugeot e-208 (2020),8.0,0.872,recorded
+22,Peugeot e-208 (2020),10.0,0.889,recorded
+22,Peugeot e-208 (2020),12.0,0.894,recorded
+22,Peugeot e-208 (2020),14.0,0.903,recorded
+22,Peugeot e-208 (2020),16.0,0.9,recorded
+23,Nissan LEAF e+ Tekna (2020),6.0,0.7752968279,recorded
+23,Nissan LEAF e+ Tekna (2020),8.0,0.8191711248,recorded
+23,Nissan LEAF e+ Tekna (2020),10.0,0.8270477703,recorded
+23,Nissan LEAF e+ Tekna (2020),12.0,0.8368283221999999,recorded
+23,Nissan LEAF e+ Tekna (2020),14.0,0.8539989851,recorded
+23,Nissan LEAF e+ Tekna (2020),16.0,0.861091224,recorded
+23,Nissan LEAF e+ Tekna (2020),18.0,0.8632438612,recorded
+23,Nissan LEAF e+ Tekna (2020),20.0,0.8691173352,recorded
+23,Nissan LEAF e+ Tekna (2020),22.0,0.8805016288,recorded
+23,Nissan LEAF e+ Tekna (2020),24.0,0.8843621537999999,recorded
+23,Nissan LEAF e+ Tekna (2020),26.0,0.8840393019,recorded
+23,Nissan LEAF e+ Tekna (2020),28.0,0.8915158411999999,recorded
+23,Nissan LEAF e+ Tekna (2020),30.0,0.8933327112,recorded
+24,Renault Zoe50 (2020),6.0,0.0,invalid_efficiency_fraction_requires_review
+24,Renault Zoe50 (2020),8.0,0.6811127952949634,recorded
+24,Renault Zoe50 (2020),10.0,0.8009595144126016,recorded
+24,Renault Zoe50 (2020),12.0,0.8321248458807082,recorded
+24,Renault Zoe50 (2020),14.0,0.847462080979775,recorded
+24,Renault Zoe50 (2020),16.0,0.8636309647846168,recorded
+24,Renault Zoe50 (2020),18.0,0.8802561102734339,recorded
+24,Renault Zoe50 (2020),20.0,0.88006264711531,recorded
+24,Renault Zoe50 (2020),22.0,0.8862612799471528,recorded
+24,Renault Zoe50 (2020),24.0,0.877114339995234,recorded
+24,Renault Zoe50 (2020),26.0,0.8753094032239704,recorded
+24,Renault Zoe50 (2020),28.0,0.8853390086141555,recorded
+24,Renault Zoe50 (2020),30.0,0.8910523968301757,recorded
+24,Renault Zoe50 (2020),32.0,0.8943216399043271,recorded
+25,Audi Q8 55 e-tron (2019),6.0,0.8436898123000001,recorded
+25,Audi Q8 55 e-tron (2019),8.0,0.8521117447000001,recorded
+25,Audi Q8 55 e-tron (2019),10.0,0.8530011406,recorded
+25,Audi Q8 55 e-tron (2019),12.0,0.8511916257,recorded
+25,Audi Q8 55 e-tron (2019),14.0,0.8498553259,recorded
+25,Audi Q8 55 e-tron (2019),16.0,0.8579351359999999,recorded
+26,Renault Zoe41 (2019),6.0,0.0,invalid_efficiency_fraction_requires_review
+26,Renault Zoe41 (2019),8.0,0.7454582911,recorded
+26,Renault Zoe41 (2019),10.0,0.8267237772,recorded
+26,Renault Zoe41 (2019),12.0,0.8567449578,recorded
+26,Renault Zoe41 (2019),14.0,0.8795382155,recorded
+26,Renault Zoe41 (2019),16.0,0.890855663,recorded
+26,Renault Zoe41 (2019),18.0,0.8874501562,recorded
+26,Renault Zoe41 (2019),20.0,0.8888841527,recorded
+26,Renault Zoe41 (2019),22.0,0.9019965642,recorded
+26,Renault Zoe41 (2019),24.0,0.9009068084,recorded
+26,Renault Zoe41 (2019),26.0,0.8980109902,recorded
+26,Renault Zoe41 (2019),28.0,0.9009860965,recorded
+26,Renault Zoe41 (2019),30.0,0.8939995279,recorded
+26,Renault Zoe41 (2019),32.0,0.9005006965,recorded
+27,MG ZS EV (2019),6.0,0.8219147339,recorded
+27,MG ZS EV (2019),8.0,0.8201571176,recorded
+27,MG ZS EV (2019),10.0,0.8271457744,recorded
+27,MG ZS EV (2019),12.0,0.8483286926,recorded
+27,MG ZS EV (2019),14.0,0.8578162545000001,recorded
+27,MG ZS EV (2019),16.0,0.8706282888,recorded
+27,MG ZS EV (2019),18.0,0.8736516156999999,recorded
+27,MG ZS EV (2019),20.0,0.8798844936000001,recorded
+27,MG ZS EV (2019),22.0,0.8870237518999999,recorded
+27,MG ZS EV (2019),24.0,0.8853061945999999,recorded
+27,MG ZS EV (2019),26.0,0.8846397011,recorded
+27,MG ZS EV (2019),28.0,0.8920101271,recorded
+27,MG ZS EV (2019),30.0,0.8908545184000001,recorded
+27,MG ZS EV (2019),32.0,0.8867537154,recorded
+28,Nissan LEAF e+ (2019),6.0,0.7528363995714247,recorded
+28,Nissan LEAF e+ (2019),8.0,0.7734215488215487,recorded
+28,Nissan LEAF e+ (2019),10.0,0.8315873879928316,recorded
+28,Nissan LEAF e+ (2019),12.0,0.8372425745042174,recorded
+28,Nissan LEAF e+ (2019),14.0,0.8470021394155366,recorded
+28,Nissan LEAF e+ (2019),16.0,0.8543298000901933,recorded
+28,Nissan LEAF e+ (2019),18.0,0.8590833820793823,recorded
+28,Nissan LEAF e+ (2019),20.0,0.8695007076961961,recorded
+28,Nissan LEAF e+ (2019),22.0,0.8715547500607402,recorded
+28,Nissan LEAF e+ (2019),24.0,0.8742118910187778,recorded
+28,Nissan LEAF e+ (2019),26.0,0.8721350517612183,recorded
+28,Nissan LEAF e+ (2019),28.0,0.8700868857596842,recorded
+28,Nissan LEAF e+ (2019),30.0,0.8741351895734596,recorded
+29,Jaguar iPace (2018),6.0,0.7127792773,recorded
+29,Jaguar iPace (2018),8.0,0.7228950352,recorded
+29,Jaguar iPace (2018),10.0,0.7632286624,recorded
+29,Jaguar iPace (2018),12.0,0.7876452106,recorded
+29,Jaguar iPace (2018),14.0,0.7981847283000001,recorded
+29,Jaguar iPace (2018),16.0,0.8073753841,recorded
+29,Jaguar iPace (2018),18.0,0.8274677079999999,recorded
+29,Jaguar iPace (2018),20.0,0.8333378101,recorded
+29,Jaguar iPace (2018),22.0,0.83816054,recorded
+29,Jaguar iPace (2018),24.0,0.8417544585000001,recorded
+29,Jaguar iPace (2018),26.0,0.8494177922999999,recorded
+29,Jaguar iPace (2018),28.0,0.8478320671999999,recorded
+29,Jaguar iPace (2018),30.0,0.8483600183,recorded
+29,Jaguar iPace (2018),32.0,0.8598813169,recorded
+30,BMW i3 (2017),6.0,0.8629004185,recorded
+30,BMW i3 (2017),8.0,0.8847039691999999,recorded
+30,BMW i3 (2017),10.0,0.8903546774,recorded
+30,BMW i3 (2017),12.0,0.8964123241,recorded
+30,BMW i3 (2017),14.0,0.8994601539999999,recorded
+30,BMW i3 (2017),16.0,0.9019794983,recorded
+30,BMW i3 (2017),18.0,0.9025841253,recorded
+31,VW e-golf (2017),6.0,0.8282518392,recorded
+31,VW e-golf (2017),8.0,0.8583451155999999,recorded
+31,VW e-golf (2017),10.0,0.8665298176,recorded
+31,VW e-golf (2017),12.0,0.8728245370000001,recorded
+31,VW e-golf (2017),14.0,0.881989677,recorded
+31,VW e-golf (2017),16.0,0.88399285,recorded
+31,VW e-golf (2017),18.0,0.8832160136,recorded
+32,VW e-golf (2017),6.0,0.8297944691060856,recorded
+32,VW e-golf (2017),8.0,0.8665033279998259,recorded
+32,VW e-golf (2017),10.0,0.874007094190833,recorded
+32,VW e-golf (2017),12.0,0.8752462708597324,recorded
+32,VW e-golf (2017),14.0,0.8796929390574054,recorded
+32,VW e-golf (2017),16.0,0.8843565366757093,recorded
+32,VW e-golf (2017),18.0,0.884236536675709,recorded
+33,Nissan LEAF40 (2017),6.0,0.8570380712,recorded
+33,Nissan LEAF40 (2017),8.0,0.8609022555999999,recorded
+33,Nissan LEAF40 (2017),10.0,0.8703984758,recorded
+33,Nissan LEAF40 (2017),12.0,0.8823399602,recorded
+33,Nissan LEAF40 (2017),14.0,0.8844698395,recorded
+33,Nissan LEAF40 (2017),16.0,0.8825753057,recorded
+33,Nissan LEAF40 (2017),18.0,0.8860946459,recorded
+33,Nissan LEAF40 (2017),20.0,0.8871729277999999,recorded
+33,Nissan LEAF40 (2017),22.0,0.8900757294,recorded
+33,Nissan LEAF40 (2017),24.0,0.8891296062,recorded
+33,Nissan LEAF40 (2017),26.0,0.8803476696,recorded
+33,Nissan LEAF40 (2017),28.0,0.8848706044,recorded
+33,Nissan LEAF40 (2017),30.0,0.8816208072,recorded
+33,Nissan LEAF40 (2017),32.0,0.8791580723,recorded
+34,Hyundai Ioniq (2016),6.0,0.8181528150612171,recorded
+34,Hyundai Ioniq (2016),8.0,0.8386699407199651,recorded
+34,Hyundai Ioniq (2016),10.0,0.8529037454781665,recorded
+34,Hyundai Ioniq (2016),12.0,0.8628936605519465,recorded
+34,Hyundai Ioniq (2016),14.0,0.8687594675714811,recorded
+34,Hyundai Ioniq (2016),16.0,0.8720559149551419,recorded
+34,Hyundai Ioniq (2016),18.0,0.8767198058951419,recorded
+34,Hyundai Ioniq (2016),20.0,0.8602553689499999,recorded
+34,Hyundai Ioniq (2016),22.0,0.8641181347,recorded
+34,Hyundai Ioniq (2016),24.0,0.86544203235,recorded
+34,Hyundai Ioniq (2016),26.0,0.86488273095,recorded
+34,Hyundai Ioniq (2016),28.0,0.8663513358,recorded
+34,Hyundai Ioniq (2016),30.0,0.86499041275,recorded
+34,Hyundai Ioniq (2016),32.0,0.8695196946,recorded
+35,Tesla Model S P90D (2015),6.0,0.8240000000000001,recorded
+35,Tesla Model S P90D (2015),8.0,0.826,recorded
+35,Tesla Model S P90D (2015),10.0,0.8340000000000001,recorded
+35,Tesla Model S P90D (2015),12.0,0.838,recorded
+35,Tesla Model S P90D (2015),14.0,0.8412000000000001,recorded
+35,Tesla Model S P90D (2015),16.0,0.8454999999999999,recorded
+36,Nissan LEAF24 (2012),6.0,0.8088235294117645,recorded
+36,Nissan LEAF24 (2012),8.0,0.8333333333333331,recorded
+36,Nissan LEAF24 (2012),10.0,0.8333333333333331,recorded
+36,Nissan LEAF24 (2012),12.0,0.857142857142857,recorded
+36,Nissan LEAF24 (2012),14.0,0.8484848484848484,recorded
+36,Nissan LEAF24 (2012),16.0,0.8530183727034121,recorded
+37,Peugeot Ion (2011),6.0,0.8524603175,recorded
+37,Peugeot Ion (2011),8.0,0.8477926136,recorded
+37,Peugeot Ion (2011),10.0,0.857081448,recorded
+37,Peugeot Ion (2011),12.0,0.8597881264,recorded
+37,Peugeot Ion (2011),14.0,0.8509177215,recorded

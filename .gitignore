@@ -3,8 +3,24 @@
 .env.*
 !.env.example
 uploads/
-# Reproducible external data: fetch only the slices needed locally/in Codespaces
-data/external/
+# Only reviewed public snapshots are shared; new acquisitions/private packs stay ignored.
+data/external/*
+!data/external/real/
+data/external/real/*
+!data/external/real/tum/
+!data/external/real/dtu/
+!data/external/real/curves/
+!data/external/real/mobidata/
+!data/external/real/optimiseprime/
+!data/external/required/
+data/external/required/*
+!data/external/required/2019-04-01_2019-10-01/
+!data/external/acn/
+data/external/acn/*
+!data/external/acn/office001_public_mirror.csv
+!data/external/acn/office001_public_mirror.metadata.json
+!data/external/ACN_MIRROR_LICENSE.md
+!data/external/ACN_NOTICE.md
 data/raw/
 data/training/
 checkpoints/

@@ -1,0 +1,8 @@
+{
+  "published_transformer_cap_kw": 150,
+  "nominal_evse_voltage_v": 208,
+  "published_port_count": 54,
+  "cc_pod_limit_a": 80,
+  "av_pod_limit_a": 80,
+  "scope": "Published historical ACN network model; phase/transformer constraints also apply. Not a current site survey or per-vehicle acceptance rating."
+}

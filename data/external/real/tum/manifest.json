@@ -1,0 +1,61 @@
+{
+  "retrieved_at_utc": "2026-10-24T13:19:27.134315+00:00",
+  "soc_observations": 13764,
+  "vehicles": 1,
+  "license": "CC BY-NC 4.0; TUMFTM and the authors listed in README.MD",
+  "scope": "Real German field telemetry, 2022-11 to 2023-04. SoC readings include driving and parking; endpoints are not driver targets. No linkage to anonymous ACN vehicles.",
+  "files": [
+    {
+      "file": "cup3_observed_soc.csv",
+      "bytes": 481611,
+      "sha256": "af73c5d36c6ee2e0d845082e385e8aeda51b652b9fad6cee9e874ac60304d4c6"
+    },
+    {
+      "file": "cup3_vehicle.json",
+      "bytes": 575,
+      "sha256": "f8d649b0e1893a0c0de03bbf77162f543ccf6eeec6eb98ea513e0b1be696fda9"
+    },
+    {
+      "file": "LICENSE",
+      "bytes": 19347,
+      "sha256": "41003d4a74749c0220e33dd415042164b5a1093ed401f36277234f772d22d3d0"
+    },
+    {
+      "file": "README.MD",
+      "bytes": 6054,
+      "sha256": "287ca2c1e3dbdf809b384679d42429b96f871c51dfa38c0d6925d143ec09c530"
+    },
+    {
+      "file": "value_overview.csv",
+      "bytes": 2346,
+      "sha256": "17ebf87b8b0d57eeea0fbd6dcaf5b1836d51394b7508080c1f24602f39f29b57"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/README.MD",
+      "bytes": 6054,
+      "sha256": "287ca2c1e3dbdf809b384679d42429b96f871c51dfa38c0d6925d143ec09c530"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/LICENSE",
+      "bytes": 19347,
+      "sha256": "41003d4a74749c0220e33dd415042164b5a1093ed401f36277234f772d22d3d0"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/data/value_overview.csv",
+      "bytes": 2346,
+      "sha256": "17ebf87b8b0d57eeea0fbd6dcaf5b1836d51394b7508080c1f24602f39f29b57"
+    },
+    {
+      "url": "https://media.githubusercontent.com/media/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/data/uds_data/CUP3.parquet",
+      "bytes": 8814552,
+      "sha256": "38efe95854cfcd4014c4b5d96168e7d3d6a419d1daf7a45468772ee14ba38e26"
+    },
+    {
+      "url": "https://www.seat-cupra-mediacenter.com/CUPRA-Brand/presskits/cupra-born-se/technical-data",
+      "bytes": 41453,
+      "sha256": "24cf27c9ebed0d89ca599d5be8b10e970c4a831b914c94282e04f1845172e20e"
+    }
+  ]
+}

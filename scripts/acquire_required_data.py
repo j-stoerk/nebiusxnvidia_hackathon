@@ -1,6 +1,6 @@
 """Acquire the original design's public inputs, with field-level provenance.
 
-Raw ACN JSON/identities stay in memory. All acquired files are ignored by Git.
+Raw ACN JSON/identities stay in memory. Reviewed compact snapshots are shared in Git.
 Missing vehicle ratings, SoC and fault telemetry are never invented.
 """
 

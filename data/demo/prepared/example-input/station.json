@@ -1,0 +1,29 @@
+{
+  "simulated": true,
+  "station_id": "DEMO-01",
+  "timezone": "UTC",
+  "slot_minutes": 15,
+  "station_power_limit_kw": 22.0,
+  "charging_efficiency": 0.9,
+  "chargers": [
+    {
+      "charger_id": "CH-01",
+      "max_power_kw": 11.0,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-02",
+      "max_power_kw": 11.0,
+      "connector_type": "Type2",
+      "available": true
+    }
+  ],
+  "demand_tariff": {
+    "eur_per_kw": 15.2,
+    "period": "month",
+    "timezone": "Europe/Berlin",
+    "prior_peaks_kw": {}
+  },
+  "fixed_connections": true
+}

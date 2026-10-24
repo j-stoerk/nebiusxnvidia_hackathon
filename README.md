@@ -6,6 +6,8 @@ Compare **FCFS, earliest-deadline-first (EDF), least-laxity-first (LLF), and OR-
 
 Planning demo built with React/Vite, Tailwind CSS, Recharts, FastAPI, Pandas, Google OR-Tools, and NVIDIA Nemotron through Nebius Token Factory.
 
+Data included in this repo: [complete uploadable demo](data/demo/prepared/), [real vehicle/operator measurements](data/external/real/), [Caltech sessions and electricity prices](data/external/required/2019-04-01_2019-10-01/), and [Office 1 sessions](data/external/acn/). External datasets retain their source notices/licenses; private uploads stay ignored.
+
 ## Run
 
 Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and Node.js 22.12+ (or 24+).
@@ -41,7 +43,7 @@ Suggested story: **a small fleet depot planning charging under limited electrica
 
 CSV contracts and retained dataset provenance: [dataset-format.md](docs/dataset-format.md), [data-sources.md](docs/data-sources.md). Downloads are available in the app. External/reference datasets are retained; the default demo uses the small synthetic fixtures.
 
-To acquire the real-world inputs mapped to the original design, run `uv run python scripts/acquire_required_data.py`. The [field-by-field coverage](docs/data-sources.md#original-designs-required-inputs) distinguishes recorded request parameters, published equipment limits, actual German prices and missing vehicle/fault telemetry. The six-month pack stays outside Git and uses about 2.3 MB.
+To refresh the included real-world inputs mapped to the original design, run `uv run python scripts/acquire_required_data.py`. The [field-by-field coverage](docs/data-sources.md#original-designs-required-inputs) distinguishes recorded request parameters, published equipment limits, actual German prices and missing vehicle/fault telemetry. The shared six-month pack uses about 2.3 MB.
 
 ## Implementation
 
@@ -71,9 +73,9 @@ uv run --with acnportal==0.3.3 python scripts/fetch_acn.py
 uv run python scripts/evaluate.py --sessions data/external/acn/caltech_2019_h1.csv --prices PATH_TO_MATCHING_EUR_PRICES.csv --station PATH_TO_VERIFIED_STATION.json
 ```
 
-Acquisition writes a small normalized CSV into ignored `data/external/`. A 131 KB Office 1 snapshot (1,481 visits, 2019–2021) is available locally from a public research mirror; direct Caltech connections timed out. Its provenance distinguishes the mirror from an official download. The evaluator requires a clean Git revision, acquisition checksum and matching prices; it records protocol/input hashes, chronological splits, conformal coverage/widths/pinball loss, and paired seven-day-block bootstrap intervals. Replay preserves overnight energy and separate billing peaks. ACN workplace delivered energy/unplug times are retrospective proxies, not depot duty cycles or online inputs. Conformal bounds are an offline baseline; calibrated chance-constrained MPC, OCPP, PV/storage and V2G are not implemented. No 95% readiness claim is made.
+Acquisition writes a small normalized CSV into ignored `data/external/`. A 131 KB Office 1 snapshot (1,481 visits, 2019–2021) is included from a public research mirror; direct Caltech connections timed out. Its provenance distinguishes the mirror from an official download. The evaluator requires a clean Git revision, acquisition checksum and matching prices; it records protocol/input hashes, chronological splits, conformal coverage/widths/pinball loss, and paired seven-day-block bootstrap intervals. Replay preserves overnight energy and separate billing peaks. ACN workplace delivered energy/unplug times are retrospective proxies, not depot duty cycles or online inputs. Conformal bounds are an offline baseline; calibrated chance-constrained MPC, OCPP, PV/storage and V2G are not implemented. No 95% readiness claim is made.
 
-Real SoC, charger-efficiency experiments, digitized DC curves and German charger status are reproducible with `uv run --with pyarrow --with openpyxl python scripts/acquire_vehicle_data.py` (about 2.8 MB retained outside Git). See [field coverage, source terms and remaining depot-specific gaps](docs/data-sources.md#real-vehicle-and-operational-measurements); unrelated vehicles/sites are kept separate.
+Real SoC, charger-efficiency experiments, digitized DC curves and German charger status are reproducible with `uv run --with pyarrow --with openpyxl python scripts/acquire_vehicle_data.py` (about 2.8 MB in the shared snapshot). See [field coverage, source terms and remaining depot-specific gaps](docs/data-sources.md#real-vehicle-and-operational-measurements); unrelated vehicles/sites are kept separate.
 
 For linked Royal Mail vehicle/depot records, run `uv run python scripts/acquire_operator_data.py` (about 279 KB retained). For a complete, explicitly synthetic input pack, run `uv run python scripts/prepare_depot.py --demo`. The same converter accepts operator rosters with requested SoC targets and independently validates all four scheduling policies; [input files and dashboard import](docs/dataset-format.md#completing-a-demo-or-operator-roster).
 

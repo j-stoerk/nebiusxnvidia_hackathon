@@ -1,0 +1,32 @@
+{
+  "retrieved_at_utc": "2026-10-24T13:20:02.167221+00:00",
+  "curve_points": 18506,
+  "profiles": 99,
+  "flagged_points": 2,
+  "license": "CC BY 4.0; Morin, Chatra, Whitacre and Michalek; DOI 10.6084/m9.figshare.30570653.v1",
+  "scope": "Digitized Fastned/InsideEVs plots, not raw meter telemetry. Source labels mix SOC/SOE; not calibrated cell SOC. Out-of-range digitization points are preserved and flagged, not clipped. Capacity metadata contain model/filename inconsistencies and are deliberately excluded. No curve is assigned to an ACN or TUM vehicle.",
+  "files": [
+    {
+      "file": "digitized_dc_curves.csv",
+      "bytes": 2105379,
+      "sha256": "4c7d4ce926626a021259cae9d726044306b201c0079ad7951f373a5376f6517d"
+    },
+    {
+      "file": "source_notice.json",
+      "bytes": 3472,
+      "sha256": "56f14c14680d53a558067a87f12830e2d504b6a3a1b40491868d0ef56f2225c5"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://api.figshare.com/v2/articles/30570653/versions/1",
+      "bytes": 42488,
+      "sha256": "800a6f29f8f147acd6db86cae85a972b35c2288cc3711fb51af21a0c3b7892b8"
+    },
+    {
+      "url": "https://ndownloader.figshare.com/files/59409860",
+      "bytes": 4850699,
+      "sha256": "e7ad440c8dea322716f0976d2a67664fe7af5ce8388e38451404079ea417bfb7"
+    }
+  ]
+}

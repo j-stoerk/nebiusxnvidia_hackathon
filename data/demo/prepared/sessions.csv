@@ -1,0 +1,5 @@
+vehicle_id,arrival_time,departure_time,energy_required_kwh,max_charging_power_kw,connector_type,charger_id,battery_capacity_kwh,initial_soc,transition_soc
+VAN-01,2026-10-24T06:00:00Z,2026-10-24T12:00:00Z,18.0,11.0,Type2,CH-01,40.0,0.25,0.8
+VAN-02,2026-10-24T06:00:00Z,2026-10-24T12:00:00Z,18.0,11.0,Type2,CH-02,40.0,0.25,0.8
+VAN-03,2026-10-24T14:00:00Z,2026-10-24T20:00:00Z,24.0,11.0,Type2,CH-01,40.0,0.25,0.8
+VAN-04,2026-10-24T14:00:00Z,2026-10-24T20:00:00Z,24.0,11.0,Type2,CH-02,40.0,0.25,0.8

@@ -1,0 +1,50 @@
+{
+  "title": "Digitized Electric Vehicle Fast-Charging Profiles by Model (Power vs SOC/SOE, CSV Format) \u2013 Version 1",
+  "doi": "10.6084/m9.figshare.30570653.v1",
+  "url_public_html": "https://figshare.com/articles/dataset/Digitized_Electric_Vehicle_Fast-Charging_Profiles_by_Model_Power_vs_SOC_SOE_CSV_Format_Version_1/30570653/1",
+  "version": 1,
+  "authors": [
+    {
+      "id": 19268482,
+      "full_name": "HANNAH MORIN",
+      "first_name": "HANNAH",
+      "last_name": "MORIN",
+      "is_active": true,
+      "url_name": "HANNAH_MORIN",
+      "orcid_id": ""
+    },
+    {
+      "id": 22585094,
+      "full_name": "Aeka Chatra",
+      "first_name": "Aeka",
+      "last_name": "Chatra",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 22095974,
+      "full_name": "Jay F. Whitacre",
+      "first_name": "Jay F.",
+      "last_name": "Whitacre",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": "0000-0002-3439-4111"
+    },
+    {
+      "id": 22095260,
+      "full_name": "Jeremy Michalek",
+      "first_name": "Jeremy",
+      "last_name": "Michalek",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": "0000-0001-7678-8197"
+    }
+  ],
+  "license": {
+    "value": 1,
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "description": "<p dir=\"ltr\">This dataset contains digitized electric vehicle (EV) fast-charging profiles created from 100 publicly available images of charging curves. The profiles were primarily sourced from Fastned, a public EV charging network based in the Netherlands and from InsideEVs, an online media outlet that focuses exclusively on electric vehicles. These data were combined with publicly available attribute information, primarily from manufacturer specification documents, for variables such as usable and gross pack size. Fastned and InsideEVs were accessed between February 2025 - July 2025.<br><br>Each charging profile represents the power (kW) versus the vehicle\u2019s state of charge (<i>SOC</i>), where SOC represents the percentage of usable battery energy relative to the total available pack energy. State of Energy (SOE) is used interchangeably to distinguish the generalized use of SOC to mean amount of available energy.  Digitization was performed using WebPlotDigitizer, graphical extraction software to convert image-based plots into csv files with numerical data. Attribute information was accessed between February 2025 - November 2025.<br><br>The resulting dataset enables quantitative comparison of power and state of charge relationships across different vehicle models. It is suitable for use in modeling fast-charging dynamics, charging station throughput, and energy demand predictions, and provides a foundation for further statistical analysis of real-world EV charging heterogeneity.<br><br>1. vehicle-attributes-only contains each csv vehicle as a row with attribute information stored in columns, including the web link to where the attribute was found. <br>2. Profile Images contains the plot images that were digitized. <br>3. main-data-fastcharge-profile-het contains one row for each power and SOC pair taken from the plot images, with attributes of that pair, such as vehicle model, included in subsequent columns. Time is calculated using pack size. <br>4. For ease of use, the individual csv files are also provided. </p>"
+}

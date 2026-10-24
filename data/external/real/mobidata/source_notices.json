@@ -1,0 +1,36 @@
+[
+  {
+    "uid": "datex2_chargecloud",
+    "name": "Chargecloud Datex II",
+    "public_url": "https://mobilithek.info/offers/978597062404620288",
+    "static_data_updated_at": "2026-10-23T16:07:26Z",
+    "realtime_data_updated_at": "2026-10-24T13:20:33Z",
+    "attribution_license": "CC-0",
+    "attribution_contributor": null,
+    "attribution_url": null,
+    "static_status": "ACTIVE",
+    "realtime_status": "ACTIVE",
+    "static_error_count": 0,
+    "realtime_error_count": 0,
+    "id": 18,
+    "created": "2026-05-19T15:19:32Z",
+    "modified": "2026-10-24T03:28:14Z"
+  },
+  {
+    "uid": "datex2_ecomovement",
+    "name": "EcoMovement Datex II",
+    "public_url": "https://mobilithek.info/offers/954064102947180544",
+    "static_data_updated_at": "2026-10-23T03:45:13Z",
+    "realtime_data_updated_at": "2026-10-24T13:20:06Z",
+    "attribution_license": "CC-0",
+    "attribution_contributor": null,
+    "attribution_url": null,
+    "static_status": "ACTIVE",
+    "realtime_status": "ACTIVE",
+    "static_error_count": 0,
+    "realtime_error_count": 0,
+    "id": 17,
+    "created": "2026-05-06T14:51:50Z",
+    "modified": "2026-10-24T03:28:14Z"
+  }
+]

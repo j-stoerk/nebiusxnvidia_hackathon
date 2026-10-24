@@ -1,0 +1,37 @@
+{
+  "created_at_utc": "2026-10-24T13:33:36.618405+00:00",
+  "mode": "synthetic_demo",
+  "input_sha256": {
+    "roster.csv": "c9bc4b033ddae29f60dc23ed2949693e351352fa62d5ba33b82155cf0bd3b75b",
+    "prices.csv": "a5c0087c75f4d118d425201fd21613641008f611f2559ce1466b45439a3aeb3b",
+    "station.json": "508b423899d69fe5d34a83975b7450d875929f912cacc39abcdc206569210737"
+  },
+  "sessions": 4,
+  "target_method": "Declared kWh, or capacity * (requested target_soc - initial_soc); battery-side linear SoC/energy approximation",
+  "assumptions": [
+    "Demo roster, targets, hardware, availability and 0.9 efficiency are synthetic; 0.8 taper transition is an uncalibrated envelope; demand rate is an illustrative published German component, with synthetic energy prices and zero prior peak."
+  ],
+  "station_defaults": [],
+  "files": [
+    {
+      "file": "comparison.json",
+      "bytes": 858,
+      "sha256": "cde2aecf9615d2d8080ae385f855e59dfee7394a14b09c872db3f599cea0b574"
+    },
+    {
+      "file": "prices.csv",
+      "bytes": 1484,
+      "sha256": "a5c0087c75f4d118d425201fd21613641008f611f2559ce1466b45439a3aeb3b"
+    },
+    {
+      "file": "sessions.csv",
+      "bytes": 495,
+      "sha256": "205f6870729d321596afd3b9812fcf94c719e314e71dee40871edbd061f308b4"
+    },
+    {
+      "file": "station.json",
+      "bytes": 592,
+      "sha256": "508b423899d69fe5d34a83975b7450d875929f912cacc39abcdc206569210737"
+    }
+  ]
+}

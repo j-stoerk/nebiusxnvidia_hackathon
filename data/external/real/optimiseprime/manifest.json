@@ -1,0 +1,96 @@
+{
+  "retrieved_at_utc": "2026-10-24T13:36:37.093086+00:00",
+  "vehicles": 237,
+  "charger_socket_records": 229,
+  "depots": 9,
+  "telemetry_observations": 4738,
+  "asset_snapshot_before_utc": "2021-07-01T00:00:00+00:00",
+  "excluded_observations_missing_vehicle_type": 7078,
+  "license": "CC BY 4.0; UK Power Networks / Optimise Prime / Royal Mail",
+  "scope": "Real UK depot data. Configurations replayed from June 2021 messages; later reconfigurations are not replayed. July telemetry is a bounded, incomplete prefix, not an evaluation cohort. Vehicle/type joins use source IDs. Type maximum SoC is a hardware/configuration ceiling, not requested target SoC. kVA is not converted to kW. Shared CP/socket limits need verification before scheduler import. No duty roster, customer EUR tariff or target requests are inferred.",
+  "files": [
+    {
+      "file": "charger_assets.csv",
+      "bytes": 7231,
+      "sha256": "6ba85966b11b73383703a0e7cdd97bd3c3b70301fe92b3bd78e5a36cb247380c"
+    },
+    {
+      "file": "cp_counts.csv",
+      "bytes": 208,
+      "sha256": "cbd5e97c906d9699bb7f05c2b8a6e4d49b5b44415a162d6f1fc3d2ea3fcbcc08"
+    },
+    {
+      "file": "depot_assets.csv",
+      "bytes": 130,
+      "sha256": "df96c527159396bb54927f7b39bc178b3a28ff2fedea4e95dce20ff2c688b93b"
+    },
+    {
+      "file": "ev_detail_by_site.csv",
+      "bytes": 830,
+      "sha256": "a07b304ab00abe2e66e25795d6e2eeb3e445da70c59588bda9a5161c1a49ffdb"
+    },
+    {
+      "file": "observed_vehicle_telemetry.csv",
+      "bytes": 263336,
+      "sha256": "10e33ca5d9e58d60cf6d03ccd86ea138fcf3d971e37a1a85ec43501377d91608"
+    },
+    {
+      "file": "source_notice.json",
+      "bytes": 446,
+      "sha256": "9319f786b96a53f281ed70797c1fc247afb0bac68ab219a7137fc4e78b4d13dc"
+    },
+    {
+      "file": "vehicles.csv",
+      "bytes": 6386,
+      "sha256": "5c4a8b760776f435e7865fe23b94ec8e4fdad40c5e2dc47f12f0a20782344379"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://ukpowernetworks.opendatasoft.com/api/explore/v2.1/catalog/datasets/ukpn-optimise-prime",
+      "bytes": 67953,
+      "sha256": "0c65f7f3d2ce0cc44947026f861550e54c286bfffe1bd506b95bf7b8a7eb780d"
+    },
+    {
+      "url": "https://ukpnoppublicdata001.blob.core.windows.net/optimiseprime/WS2/Table%2010%20%E2%80%93%20depots/depots_202106.csv",
+      "bytes": 49228,
+      "sha256": "693be4d36cfdbdff42104e8696c521f0e4b4e9b450bcc1c384b3569c3762ecc2"
+    },
+    {
+      "url": "https://ukpnoppublicdata001.blob.core.windows.net/optimiseprime/WS2/Table%2013%20%E2%80%93%20evtypes/evtypes_202106.csv",
+      "bytes": 3854,
+      "sha256": "3e2c695e7360862c1f9bf8aa163ef73a0d5b509870f7807207e6d0e3f722199e"
+    },
+    {
+      "url": "https://ukpnoppublicdata001.blob.core.windows.net/optimiseprime/WS2/Table%2014%20%E2%80%93%20evehicles/evehicles_202106.csv",
+      "bytes": 207929,
+      "sha256": "53579821a423ec9320b257218c4f697adaef6ddbc74cd976dd0360e44aef15b8"
+    },
+    {
+      "url": "https://ukpnoppublicdata001.blob.core.windows.net/optimiseprime/WS2/Table%2011%20%E2%80%93%20cptypes/cptypes_202106.csv",
+      "bytes": 3632,
+      "sha256": "2056a19f4404270cc15ba1c9a5789acefe98301e717f5e16a5be5fcc5bea8487"
+    },
+    {
+      "url": "https://ukpnoppublicdata001.blob.core.windows.net/optimiseprime/WS2/Table%2012%20%E2%80%93%20chargepoints/chargepoints_202106.csv",
+      "bytes": 620668,
+      "sha256": "0adb7a3391e926d3291b2fbbbc4e9b3264c68e4445a877eeb964d315f75ebfa2"
+    },
+    {
+      "url": "https://ukpnoppublicdata001.blob.core.windows.net/optimiseprime/WS2/Table%2015%20%E2%80%93%20brand-a-charging/brand_a_charging_202107.csv",
+      "bytes": 8388608,
+      "sha256": "37bf4f86e74bf0df788c4fcde26e604046061874296c5107fd2bcad3dc56d460",
+      "scope": "First 8 MiB only, incomplete final CSV line excluded; not a complete month/day"
+    },
+    {
+      "url": "https://ukpnoppublicdata001.blob.core.windows.net/optimiseprime/WS2/Table%2028%20%E2%80%93%20EV%20details%20by%20site%20/ev_detail_by_site.csv",
+      "bytes": 830,
+      "sha256": "a07b304ab00abe2e66e25795d6e2eeb3e445da70c59588bda9a5161c1a49ffdb"
+    },
+    {
+      "url": "https://ukpnoppublicdata001.blob.core.windows.net/optimiseprime/WS2/Table%2029%20%E2%80%93%20CP%20count%20/cp_counts.csv",
+      "bytes": 208,
+      "sha256": "cbd5e97c906d9699bb7f05c2b8a6e4d49b5b44415a162d6f1fc3d2ea3fcbcc08"
+    }
+  ]
+}

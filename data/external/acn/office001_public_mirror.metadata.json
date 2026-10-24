@@ -1,0 +1,13 @@
+{
+  "source": "https://raw.githubusercontent.com/yvenn-amara/ev-load-open-data/3b1cb67d1b02f8fea0451c16fbcfaee34449ce46/1.%20Input%20Data/7.%20ACN%20Data/Office%201.json",
+  "site": "office001",
+  "observed_arrival_start": "2019-03-25T16:24:42+00:00",
+  "observed_arrival_end": "2021-04-12T19:54:58+00:00",
+  "kept": 1481,
+  "skipped_negative_energy_or_invalid_duration": 0,
+  "sha256": "8027fe439a65f89367f64b9b18ca0f1ee63bce9fc3dfe721855c167440506882",
+  "assumptions": "Observed delivered meter kWh and disconnect are retrospective proxies, not known requirements. Efficiency=1. Rated power is user-assumed, not inferred from future observations. Public station IDs and zero-energy occupied sessions are retained; station configuration must match these physical ports. No persistent vehicle IDs or SoC.",
+  "source_json_sha256": "7081eaf3130c476640e6698521cf10d62c987b51a242abc83a47caf2eb790619",
+  "source_commit": "3b1cb67d1b02f8fea0451c16fbcfaee34449ce46",
+  "acquisition": "Public research mirror; direct Caltech requests timed out; upstream extraction/timezone history unverified"
+}

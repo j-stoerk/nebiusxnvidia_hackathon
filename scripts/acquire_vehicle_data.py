@@ -1,7 +1,7 @@
 """Fetch compact, separate real-measurement references; never fabricate fleet joins.
 
 Run with optional readers: uv run --with pyarrow --with openpyxl python scripts/acquire_vehicle_data.py
-Raw archives stay in memory; generated data and source notices stay outside Git.
+Raw archives stay in memory; reviewed extracts and source notices are shared in Git.
 """
 
 import argparse
@@ -181,7 +181,7 @@ def acquire(name, loader):
     manifest = {"retrieved_at_utc": datetime.now(timezone.utc).isoformat(), **details,
                 "files": files, "sources": registry}
     save_json(folder / "manifest.json", manifest)
-    # A small tracked inventory makes the ignored data discoverable/reproducible.
+    # Keep the inventory consistent with each acquired snapshot.
     report_path = ROOT / "data/acquisition-report.json"
     report = json.loads(report_path.read_text(encoding="utf-8"))
     report["sources"][f"real_{name}"] = {"status": "downloaded", **manifest,

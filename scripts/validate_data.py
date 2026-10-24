@@ -177,15 +177,25 @@ def main():
         require(math.isclose(energy_minute, energy_quarter, rel_tol=1e-10, abs_tol=1e-8), "NLR resampling changed energy")
         time_grid(reference / "nasa_power_berlin_2019-01-07_week.csv", "timestamp", 168, 60)
         require((reference / "NLR_DATA_LICENSE.txt").stat().st_size > 1000, "Missing NLR notice")
+    if (demo / "prepared/manifest.json").exists():
+        verified += verify_manifest(demo / "prepared/manifest.json")
     if args.external:
         external = ROOT / "data" / "external"
-        verified += verify_manifest(external / "manifest.json")
+        local_manifest = external / "manifest.json"
+        if local_manifest.exists():
+            verified += verify_manifest(local_manifest)
         for manifest in sorted((external / "required").glob("*/manifest.json")):
             verified += verify_manifest(manifest)
             required_pack(manifest.parent)
         for manifest in sorted((external / "real").glob("*/manifest.json")):
             verified += verify_manifest(manifest)
             real_pack(manifest.parent)
+        office = external / "acn/office001_public_mirror.csv"
+        if office.exists():
+            metadata = json.loads(office.with_suffix(".metadata.json").read_text())
+            require(hashlib.sha256(office.read_bytes()).hexdigest() == metadata["sha256"], "Office 1 hash mismatch")
+            require(len(read_csv(office)) == metadata["kept"], "Office 1 row count differs")
+            verified += 1
         if (external / "prepared/manifest.json").exists():
             verified += verify_manifest(external / "prepared/manifest.json")
         if (external / "opsd_prices_15min.csv").exists():
@@ -193,7 +203,7 @@ def main():
             quarter = time_grid(external / "opsd_prices_15min.csv", "timestamp", 672, 15)
             for i, row in enumerate(quarter):
                 require(math.isclose(float(row["price_eur_per_kwh"]), float(hourly[i // 4]["price_eur_per_mwh"]) / 1000), "Price unit conversion")
-        statuses = json.loads((external / "manifest.json").read_text())["sources"]
+        statuses = json.loads(local_manifest.read_text())["sources"] if local_manifest.exists() else {}
         for source, result in statuses.items():
             if result["status"] != "downloaded":
                 print(f"Not acquired: {source}: {result.get('error', result['status'])}")

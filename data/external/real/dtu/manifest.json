@@ -1,0 +1,64 @@
+{
+  "retrieved_at_utc": "2026-10-24T13:21:17.334769+00:00",
+  "observations": {
+    "efficiency_fraction": 315,
+    "power_factor": 295,
+    "reactive_power_var": 305
+  },
+  "license": "CC BY 4.0; Kristian Sevdari, DTU, DOI 10.11583/DTU.25425262.v1",
+  "scope": "Controlled onboard-charger experiments by model and current; missing test cells stay absent. Source zero efficiencies and out-of-range power factors are preserved and flagged for exclusion from models. Not measurements of the ACN or TUM vehicles; no automatic efficiency assignment.",
+  "files": [
+    {
+      "file": "efficiency_fraction.csv",
+      "bytes": 16996,
+      "sha256": "93a719599afafec05dd1daa8da2b830e63195619364f098ca3605d214e3d3926"
+    },
+    {
+      "file": "power_factor.csv",
+      "bytes": 17181,
+      "sha256": "fa491d7948b14fd73566a9a54675b2c2a602ecea39b7add0fa4a3c26cd424156"
+    },
+    {
+      "file": "reactive_power_var.csv",
+      "bytes": 14505,
+      "sha256": "eeb96351effeb2d241d4a75bcc6996ee03c8866e63c69fada49e731cd9f274b7"
+    },
+    {
+      "file": "README.txt",
+      "bytes": 847,
+      "sha256": "4dac70dc86d44ae6ed3263cffc02b2e042f9cf306c43051f9966c41e66c2c6d0"
+    },
+    {
+      "file": "source_notice.json",
+      "bytes": 1389,
+      "sha256": "254ee6d03830d695176ad51d00ee02df61ab603fd3a800709f1e8b6af8e6ea5c"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://api.figshare.com/v2/articles/25425262/versions/1",
+      "bytes": 14036,
+      "sha256": "2a02c9c6d0942bd7a0abc145694bb7754c72ae4e0a04fd024e4f2335ed4032c1"
+    },
+    {
+      "url": "https://ndownloader.figshare.com/files/45095290",
+      "bytes": 847,
+      "sha256": "4dac70dc86d44ae6ed3263cffc02b2e042f9cf306c43051f9966c41e66c2c6d0"
+    },
+    {
+      "url": "https://ndownloader.figshare.com/files/45095242",
+      "bytes": 14942,
+      "sha256": "38d777c24415cc26bbb394ef5d93673d572c26262202906d0eb26bed8b1a5ebd"
+    },
+    {
+      "url": "https://ndownloader.figshare.com/files/45095245",
+      "bytes": 14755,
+      "sha256": "acf21caaada8bac79e08ee8a2f5dc258b0a9d8d0e03d295893fd0df14c1d6410"
+    },
+    {
+      "url": "https://ndownloader.figshare.com/files/45095248",
+      "bytes": 12503,
+      "sha256": "942be2f1e1a84052c221f0855652d2078f9becb4bf7fa95ee4f85f18f8c5ab99"
+    }
+  ]
+}

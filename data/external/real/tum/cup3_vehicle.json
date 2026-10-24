@@ -1,0 +1,9 @@
+{
+  "vehicle_id": "CUP3",
+  "model": "CUPRA Born 2022",
+  "nominal_usable_battery_kwh": 58,
+  "rated_dc_max_kw": 120,
+  "capacity_source": "https://raw.githubusercontent.com/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/README.MD",
+  "power_source": "https://www.seat-cupra-mediacenter.com/CUPRA-Brand/presskits/cupra-born-se/technical-data",
+  "scope": "Model-level ratings. No measured capacity, current, charging power, requested target SoC or planned departure in this extract. Source timestamps are naive; timezone is unknown."
+}

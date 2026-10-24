@@ -1,0 +1,23 @@
+{
+  "title": "Experimental validation of onboard electric vehicle chargers to improve the efficiency of smart charging operation - dataset",
+  "doi": "10.11583/DTU.25425262.v1",
+  "url_public_html": "https://data.dtu.dk/articles/dataset/Experimental_validation_of_onboard_electric_vehicle_chargers_to_improve_the_efficiency_of_smart_charging_operation_-_dataset/25425262/1",
+  "version": 1,
+  "authors": [
+    {
+      "id": 9100340,
+      "full_name": "Kristian Sevdari",
+      "first_name": "Kristian",
+      "last_name": "Sevdari",
+      "is_active": true,
+      "url_name": "Kristian_Sevdari",
+      "orcid_id": "0000-0003-1588-3582"
+    }
+  ],
+  "license": {
+    "value": 1,
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "description": "<p>The following dataset is published as part of the following paper:</p>\n<p>\"K. Sevdari, L. Calearo, B. H. Bakken, P. B. Andersen, and M. Marinelli, \u201cExperimental validation of onboard electric vehicle chargers to improve the efficiency of smart charging operation,\u201d Sustainable Energy Technologies and Assessments, vol. 60, no. September, p. 103512, 2023.\"</p>\n<p>Please cite the paper when using this dataset.</p>\n<p>Link of the paper: <a href=\"https://doi.org/10.1016/j.seta.2023.103512\" target=\"_blank\">https://doi.org/10.1016/j.seta.2023.103512</a></p>"
+}

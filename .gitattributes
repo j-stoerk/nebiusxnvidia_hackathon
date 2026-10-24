@@ -4,3 +4,6 @@
 *.csv text eol=lf
 *.json text eol=lf
 *.yml text eol=lf
+# Preserve acquired bytes and provenance checksums on Windows and Linux.
+/data/external/** -text -whitespace
+/data/demo/prepared/** -text

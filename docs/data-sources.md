@@ -38,7 +38,7 @@ uv run --with pyarrow --with openpyxl python scripts/acquire_vehicle_data.py
 uv run python scripts/validate_data.py --external
 ```
 
-Acquired on 2026-10-24 under ignored `data/external/real/`, about **2.8 MB** including source notices. The optional readers are acquisition dependencies; the demo needs neither. Raw Parquet/Excel/source CSV files are processed in memory, with a 32 MiB limit per download. Use `--sources tum dtu curves mobidata` to select sources. Each folder has file/source SHA-256 checksums, retrieval time, attribution and limitations; the small tracked acquisition report inventories the files.
+Acquired on 2026-10-24 under shared `data/external/real/`, about **2.8 MB** including source notices. The optional readers are acquisition dependencies; the demo needs neither. Raw Parquet/Excel/source CSV files are processed in memory, with a 32 MiB limit per download. Use `--sources tum dtu curves mobidata` to select sources. Each folder has file/source SHA-256 checksums, retrieval time, attribution and limitations; the small tracked acquisition report inventories the files.
 
 | Missing field/reference | Acquired real source | How it can be used |
 | --- | --- | --- |
@@ -74,7 +74,7 @@ For a usable demo now, `uv run python scripts/prepare_depot.py --demo` fills eve
 | NLR charging load | Simulated aggregate two-port 150 kW DC station; first 10,080 one-minute points plus 672 quarter-hour means | `data/reference/` |
 | NASA POWER | Berlin solar/weather, 168 hours, 2019-01-07 through 2019-01-13 UTC; units/location metadata retained | `data/reference/` |
 | OPSD | Historical Germany/DE-LU load, wind/solar and wholesale prices; 168 hours and 672 derived price slots | Ignored `data/external/`, when acquired |
-| ACN | Office 1 public research mirror: 1,481 real-session records, 2019–2021; normalized locally, personal fields stripped | Offline evaluation; outside Git |
+| ACN | Office 1 public research mirror: 1,481 real-session records, 2019–2021; normalized locally, personal fields stripped | Shared `data/external/acn/` |
 
 Exact URLs, transformations, byte sizes, row counts, and SHA-256 values are in each manifest and `data/acquisition-report.json`. External observations retain provider terms; the project's MIT license does not relicense them.
 
@@ -88,7 +88,7 @@ ACN source: [Caltech ACN-Data](https://ev.caltech.edu/dataset.html). The [offici
 
 The [website export](https://ev.caltech.edu/dataset) is an alternative: `uv run python scripts/fetch_acn.py --json PATH.json --site office001 --output data/external/acn/office001.csv`. The importer accepts a full session array or `_items` JSON, parses RFC 1123/ISO timestamps with explicit offsets, rejects incomplete API pages, and needs no token/client. Old web downloads made before the portal's October 2019 timezone fix may contain shifted timestamps; the portal documents this issue.
 
-Direct Caltech connections timed out. A [public research mirror](https://github.com/yvenn-amara/ev-load-open-data/tree/master/1.%20Input%20Data/7.%20ACN%20Data) supplied Office 1: 1,481 visits, 2019-03-25–2021-04-12, eight distinct ports, no overlapping same-port records, longest stay 73.85 h. Only the 134,334-byte normalized CSV and provenance/checksums are retained under ignored `data/external/acn/`; raw JSON and personal fields are not saved. The mirror is distinct from a live Caltech acquisition, and its upstream extraction/timezone history has not been independently verified.
+Direct Caltech connections timed out. A [public research mirror](https://github.com/yvenn-amara/ev-load-open-data/tree/master/1.%20Input%20Data/7.%20ACN%20Data) supplied Office 1: 1,481 visits, 2019-03-25–2021-04-12, eight distinct ports, no overlapping same-port records, longest stay 73.85 h. Only the 134,334-byte normalized CSV and provenance/checksums are shared under `data/external/acn/`; raw JSON and personal fields are not saved. The mirror is distinct from a live Caltech acquisition, and its upstream extraction/timezone history has not been independently verified.
 
 The adapter labels its assumptions: observed meter energy as a retrospective target proxy (efficiency=1), unplug time as availability, and 6.6 kW as an explicitly assumed cap. Public station IDs and zero-energy occupied sessions are retained; the evaluation station configuration must match the actual ports, rather than silently assigning them to fictional demo chargers. These are not known-at-arrival requirements or measured battery SoC. Real workplace sessions are not depot duty cycles. Do not represent California sessions paired with German prices as an observed local deployment. See [evaluation.md](evaluation.md) for chronology, leakage checks and claim limits.
 
