@@ -27,7 +27,6 @@ export function Metric({
   title,
   value,
   unit,
-  icon,
   detail,
   positive,
   warning,
@@ -35,17 +34,13 @@ export function Metric({
   title: string;
   value: string;
   unit?: string;
-  icon: ReactNode;
   detail: string;
   positive?: boolean;
   warning?: boolean;
 }) {
   return (
     <article className="metric">
-      <div className="metric-label">
-        {title}
-        <span className="metric-icon">{icon}</span>
-      </div>
+      <div className="metric-label">{title}</div>
       <div className="metric-value">
         {value}
         <small>{unit}</small>
@@ -119,7 +114,8 @@ export function PowerChart({ workspace }: { workspace: Workspace }) {
             tickFormatter={(value) => number(Number(value), 0)}
             domain={[
               0,
-              (max: number) => Math.max(max, workspace.station.station_power_limit_kw) * 1.1,
+              (max: number) =>
+                Math.ceil(Math.max(max, workspace.station.station_power_limit_kw) * 1.05 / 20) * 20,
             ]}
           />
           <YAxis
@@ -234,6 +230,7 @@ export function StationPanel({
             >
               <PlugZap size={18} />
               <small>{charger.charger_id.replace("CH-", "")}</small>
+              <span className="charger-status" aria-hidden="true" />
             </div>
           );
         })}
@@ -342,7 +339,7 @@ export function Timeline({
       {sessions.length === 0 && <p className="empty-inline">No matching vehicles.</p>}
       <div className="timeline-footer">
         <span>
-          <span className="legend-block" />
+          <span className={`legend-block ${schedule?.kind === "baseline" ? "baseline-bar" : ""}`} />
           Scheduled charging
         </span>
         <span>

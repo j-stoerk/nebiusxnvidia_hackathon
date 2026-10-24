@@ -1,10 +1,7 @@
 import {
-  Activity,
   ArrowRight,
-  BatteryCharging,
   Bot,
   Clock3,
-  Gauge,
   PlugZap,
   Settings2,
   ShieldCheck,
@@ -52,7 +49,6 @@ export function Summary({ ui }: { ui: Controller }) {
     {
       title: "Charging cost",
       value: measured ? money(measured.cost_eur) : "—",
-      icon: <span className="euro">€</span>,
       detail:
         comparison?.cost_savings_eur != null
           ? costDifference(comparison.cost_savings_eur, comparison.cost_savings_percent)
@@ -65,21 +61,18 @@ export function Summary({ ui }: { ui: Controller }) {
       title: "Peak station demand",
       value: number(measured?.peak_power_kw || 0),
       unit: "kW",
-      icon: <Gauge size={20} />,
       detail: `${number(data.station.station_power_limit_kw)} kW station limit`,
     },
     {
       title: "Departure targets met",
       value: number(measured?.target_success_percent || 0),
       unit: "%",
-      icon: <BatteryCharging size={20} />,
       detail: `${data.analytics.vehicles} vehicles · ${number(data.analytics.total_energy_required_kwh)} kWh required`,
     },
     {
       title: "Unserved energy",
       value: number(measured?.unserved_kwh || 0, 2),
       unit: "kWh",
-      icon: <Activity size={20} />,
       detail:
         measured && measured.unserved_kwh <= 1e-5
           ? "All energy targets met by departure"
@@ -166,10 +159,12 @@ function Overview({ ui }: { ui: Controller }) {
           />
           <PowerChart workspace={data} />
           <div className="chart-footer">
-            <span>
-              <span className="legend-line green" />
-              Optimized demand
-            </span>
+            {data.optimized && (
+              <span>
+                <span className="legend-line blue" />
+                Optimized demand
+              </span>
+            )}
             <span>
               <span className="legend-line grey" />
               FCFS baseline

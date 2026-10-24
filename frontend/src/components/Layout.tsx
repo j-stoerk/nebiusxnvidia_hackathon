@@ -6,9 +6,8 @@ import {
   Bot,
   LayoutDashboard,
   ListFilter,
-  ShieldCheck,
-  Zap,
 } from "lucide-react";
+import brand from "../assets/brand.svg";
 import type { Controller } from "../useWorkspace";
 
 const navigation = [
@@ -24,43 +23,30 @@ function Sidebar({ ui }: { ui: Controller }) {
       <a
         href="#"
         className="brand"
+        aria-label="ChargeWise home"
         onClick={(event) => {
           event.preventDefault();
           ui.set({ tab: "overview" });
         }}
       >
-        <span className="brand-symbol">
-          <Zap size={24} fill="currentColor" />
-        </span>
-        <span>
-          ChargeWise<span className="brand-ai">AI</span>
-        </span>
+        <img src={brand} width="32" height="32" alt="" />
+        <span>chargewise</span>
       </a>
-      <div className="workspace-pill">
-        <span className="workspace-avatar">CW</span>
-        <span>
-          Demo workspace<small>EV charging operations</small>
-        </span>
-      </div>
-      <div className="nav-label">WORKSPACE</div>
+      <div className="brand-caption">Fleet charging, planned.</div>
       <nav aria-label="Main navigation">
         {navigation.map(({ id, name, icon: Icon }) => (
           <button
             key={id}
             className={`nav-item ${ui.tab === id ? "selected" : ""}`}
+            aria-current={ui.tab === id ? "page" : undefined}
             onClick={() => ui.set({ tab: id })}
           >
             <Icon size={18} />
             {name}
-            {id === "agent" && (
-              <span className="nav-new" aria-hidden="true">
-                AI
-              </span>
-            )}
           </button>
         ))}
       </nav>
-      <div className="nav-label scenario-label">DEMO SCENARIOS</div>
+      <div className="nav-label scenario-label">Try a scenario</div>
       {[false, true].map((stress) => (
         <button
           key={String(stress)}
@@ -73,18 +59,13 @@ function Sidebar({ ui }: { ui: Controller }) {
         </button>
       ))}
       <div className="sidebar-bottom">
-        <div className="sidebar-note">
-          <ShieldCheck size={19} />
-          <strong>Every plan gets checked.</strong>
-          <p>Physical limits are validated before a new schedule is activated.</p>
-        </div>
         <a href="/api/demo/sessions" className="sidebar-download">
           <ArrowDownToLine size={16} />
           Download sample CSV
         </a>
         <div className="sidebar-footer">
           <span className="status-dot" />
-          Simulation environment<span>v0.1</span>
+          Simulation environment
         </div>
       </div>
     </aside>
@@ -118,9 +99,8 @@ function Topbar({ ui }: { ui: Controller }) {
         </select>
         <span className="environment">
           <span className="status-dot" />
-          SIMULATION
+          Demo workspace
         </span>
-        <span className="avatar">CW</span>
       </div>
     </header>
   );
@@ -135,10 +115,7 @@ export function Layout({ ui, children }: { ui: Controller; children: ReactNode }
         <main>
           {children}
           <footer className="main-footer">
-            <span>
-              <Zap size={14} />
-              ChargeWise AI · Simulated charging operations
-            </span>
+            <span>ChargeWise · Simulated charging operations</span>
             <a href="/docs" target="_blank" rel="noreferrer">
               API documentation <ArrowRight size={13} />
             </a>

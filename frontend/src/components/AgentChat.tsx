@@ -28,7 +28,7 @@ export function ChatPanel({
     <section className="panel chat-panel">
       <PanelTitle
         eyebrow="NVIDIA NEMOTRON VIA NEBIUS"
-        title="Ask. Understand. Replan."
+        title="Charging assistant"
         right={
           <span className={`target-pill ${workspace.agent.configured ? "" : "neutral"}`}>
             <span className="status-dot" />
