@@ -2,6 +2,21 @@
 
 Target: German fleet/depot operators choosing capacity **before committing capex**. The proposed differentiator is an auditable capacity frontier, uncertainty evaluation, and solver-checked alternatives. It is a hypothesis, not an established market gap.
 
+## First exploratory result
+
+[Machine-readable results, provenance and input hashes](evaluation-results.json) record code revision `dbf1a0f14eebc70a47336fc11f215b0868f650a1`, whose protocol was committed before replay. Training/calibration/test contain 1,188/109/184 sessions. The paired replay covers 188 complete days, 2020-10-08–2021-04-13, after warm-up. No cross-boundary labels were used for training/calibration and no same-port overlaps were found. This is a mirrored workplace-data scenario with the assumptions below, not a depot pilot or historical German bill.
+
+| Policy | Unserved proxy energy (kWh) | Mean daily peak (kW) | Maximum peak (kW) | Network-component cost (€) |
+| --- | ---: | ---: | ---: | ---: |
+| FCFS | 9.32533 | 5.3161 | 26.4 | 1,334.60 |
+| EDF | 9.32533 | 5.3161 | 26.4 | 1,334.60 |
+| LLF | 9.32533 | 5.3161 | 26.4 | 1,334.60 |
+| OR-Tools | 9.32534 | 5.5764 | 19.8 | 815.92 |
+
+The greedy policies tie because the assumed site ceiling equals the sum of port ratings; this run does not distinguish their priorities under a shared power bottleneck. H1 holds only within numerical tolerance. The optimizer-minus-reference **mean daily peak** difference is +0.2603 kW, with 95% seven-day-block bootstrap CI **[-0.0782, +0.6443]**: H2 is not supported. The **mean daily network-component cost** difference is -€2.7589, CI **[-€5.8854, -€0.5167]**, but post-cutoff delivered energy differs by 0.288 kWh: the predefined equal-energy gate fails, so H3 is not supported and this is **not labeled proven cost savings**. All three paired comparisons have the same result. Intervals are per metric, uncorrected for multiplicity; non-operating calendar days are retained.
+
+One-sided joint coverage is **96.74%** on 184 test visits; departure/energy pinball losses are **0.1847 h / 1.0697 kWh**. Two-sided joint interval coverage is 98.91%, but mean widths are **54.00 h / 61.78 kWh**. The conservative median/residual baseline is too imprecise for a useful readiness promise. Coverage alone does not establish risk-aware dispatch or `P(ready) >= 95%`. No chance-constrained MPC, OCPP or hardware result is implied.
+
 ## Locked hypotheses
 
 Use one site, six consecutive months where possible, with train/calibration/test calendar blocks (first 50% / next 25% / final 25%). No random session split. Freeze code, inputs, tariff, solver budget, seed 20261024, and this protocol's SHA-256 before the first test run. Do not tune on test results.

@@ -1,0 +1,270 @@
+{
+  "status": "complete_oracle_benchmark",
+  "information": "Daily rolling oracle with actual labels and arrivals through day-end; overnight history preserved; not causal MPC",
+  "git_sha": "dbf1a0f14eebc70a47336fc11f215b0868f650a1",
+  "sha256": {
+    "sessions": "8027fe439a65f89367f64b9b18ca0f1ee63bce9fc3dfe721855c167440506882",
+    "prices": "131cc8aad6976e048c28436e2470097133f94cdaf8f7200710245d828504e2f9",
+    "station": "1f2337b7947840c5be3f50059cacbcdd2b1e4386f85eb3a2e2da095f61cd6ea0",
+    "protocol": "a3e1fbc11a5c7e20ef14c0290ec6c7b0905170e51d56213c236d1d80c193b033",
+    "provenance": "3620d3300ee5aba6402c15d21a0eaadd58d40e000d5a02b1a10e8eb9dc78d9dd",
+    "context": "d62f4d8b29a0f1aa918628ba32f769afeaf67b193130ec4570bb471d28b300df"
+  },
+  "context": {
+    "kind": "Exploratory network-charge sensitivity; not an observed German depot bill",
+    "data": "Office 1 ACN workplace visits from pinned public research mirror",
+    "source_commit": "3b1cb67d1b02f8fea0451c16fbcfaee34449ce46",
+    "equipment_assumptions": "8 recorded ports; assumed 6.6 kW each and per vehicle; assumed 52.8 kW site cap; efficiency=1; no battery SoC",
+    "tariff": "2026 Energienetze Berlin low-voltage monthly network components: EUR 15.20/kW/month and EUR 0.0273/kWh; applied counterfactually to 2019-2021 visits",
+    "tariff_source": "https://www.energienetze-berlin.de/download-service.html?file=files%2Fenergienetze-berlin.de%2Fpdf%2FEnergienetze+Berlin+GmbH%2FNetzzugang+%2B+Entgelte%2FNetznutzungsentgelte_2026.pdf",
+    "excluded": "Supply costs, taxes, existing building load, shared cabinets, phase/pilot constraints, measured SoC, hardware/control certification",
+    "interpretation": "Observed kWh and disconnect are retrospective proxies. No causal MPC or 95% readiness guarantee. Pandemic distribution shift retained."
+  },
+  "provenance": {
+    "source": "https://raw.githubusercontent.com/yvenn-amara/ev-load-open-data/3b1cb67d1b02f8fea0451c16fbcfaee34449ce46/1.%20Input%20Data/7.%20ACN%20Data/Office%201.json",
+    "site": "office001",
+    "observed_arrival_start": "2019-03-25T16:24:42+00:00",
+    "observed_arrival_end": "2021-04-12T19:54:58+00:00",
+    "kept": 1481,
+    "skipped_negative_energy_or_invalid_duration": 0,
+    "sha256": "8027fe439a65f89367f64b9b18ca0f1ee63bce9fc3dfe721855c167440506882",
+    "assumptions": "Observed delivered meter kWh and disconnect are retrospective proxies, not known requirements. Efficiency=1. Rated power is user-assumed, not inferred from future observations. Public station IDs and zero-energy occupied sessions are retained; station configuration must match these physical ports. No persistent vehicle IDs or SoC.",
+    "source_json_sha256": "7081eaf3130c476640e6698521cf10d62c987b51a242abc83a47caf2eb790619",
+    "source_commit": "3b1cb67d1b02f8fea0451c16fbcfaee34449ce46",
+    "acquisition": "Public research mirror; direct Caltech requests timed out; upstream extraction/timezone history unverified"
+  },
+  "split_sessions": {
+    "train": 1188,
+    "calibration": 109,
+    "test": 184,
+    "excluded_cross_boundary_labels": 0
+  },
+  "test_calendar_start": "2020-10-08",
+  "prediction": {
+    "sessions": 184,
+    "departure_lower_coverage": 0.9728260869565217,
+    "energy_upper_coverage": 0.9945652173913043,
+    "joint_coverage": 0.967391304347826,
+    "departure_pinball_hours": 0.18473601675724638,
+    "energy_pinball_kwh": 1.069737165062652,
+    "nominal_joint_coverage": 0.95,
+    "joint_two_sided_interval_coverage": 0.9891304347826086,
+    "mean_departure_interval_width_hours": 53.99796573067633,
+    "mean_energy_interval_width_kwh": 61.77645726826691,
+    "scope": "One-sided interval coverage, not executed readiness or a time-series coverage guarantee."
+  },
+  "evidence_scope": "Exploratory public-mirror sensitivity, not a confirmatory depot or causal control experiment",
+  "test_calendar_end": "2021-04-13",
+  "policies": {
+    "FCFS": {
+      "calendar_days": 188,
+      "delivered_kwh": 3610.7732691666665,
+      "unserved_kwh": 9.325333333333496,
+      "max_instantaneous_peak_kw": 26.4,
+      "mean_daily_instantaneous_peak_kw": 5.316098545497235,
+      "network_component_cost_eur": 1334.5975769149165,
+      "solver_statuses": [
+        "FCFS",
+        "NO_SESSIONS"
+      ]
+    },
+    "EDF": {
+      "calendar_days": 188,
+      "delivered_kwh": 3610.7732691666665,
+      "unserved_kwh": 9.325333333333496,
+      "max_instantaneous_peak_kw": 26.4,
+      "mean_daily_instantaneous_peak_kw": 5.316098545497235,
+      "network_component_cost_eur": 1334.5975769149165,
+      "solver_statuses": [
+        "EDF",
+        "NO_SESSIONS"
+      ]
+    },
+    "LLF": {
+      "calendar_days": 188,
+      "delivered_kwh": 3610.7732691666665,
+      "unserved_kwh": 9.325333333333496,
+      "max_instantaneous_peak_kw": 26.4,
+      "mean_daily_instantaneous_peak_kw": 5.316098545497235,
+      "network_component_cost_eur": 1334.5975769149165,
+      "solver_statuses": [
+        "LLF",
+        "NO_SESSIONS"
+      ]
+    },
+    "OR-Tools": {
+      "calendar_days": 188,
+      "delivered_kwh": 3611.0610954,
+      "unserved_kwh": 9.325340433333656,
+      "max_instantaneous_peak_kw": 19.8,
+      "mean_daily_instantaneous_peak_kw": 5.5763699781863885,
+      "network_component_cost_eur": 815.9169951204359,
+      "solver_statuses": [
+        "NO_SESSIONS",
+        "OPTIMAL"
+      ]
+    }
+  },
+  "paired_optimizer_minus_reference": {
+    "FCFS": {
+      "unserved_kwh": {
+        "mean": 3.776595828853411e-08,
+        "ci95": [
+          3.1914893045111175e-08,
+          4.361702185126836e-08
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "peak_power_kw": {
+        "mean": 0.2602714326891528,
+        "ci95": [
+          -0.07819894591530499,
+          0.6442670277089171
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "cost_eur": {
+        "mean": -2.7589392648642592,
+        "ci95": [
+          -5.885423194540582,
+          -0.5166649618192982
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "demand_cost_eur": {
+        "mean": -2.758981060907717,
+        "ci95": [
+          -5.887460530919194,
+          -0.5145766736224355
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "equal_total_delivered_energy": false,
+      "cost_comparison_valid": false,
+      "h1_supported": true,
+      "h2_supported": false,
+      "h3_supported": false
+    },
+    "EDF": {
+      "unserved_kwh": {
+        "mean": 3.776595828853411e-08,
+        "ci95": [
+          3.1914893045111175e-08,
+          4.361702185126836e-08
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "peak_power_kw": {
+        "mean": 0.2602714326891528,
+        "ci95": [
+          -0.07819894591530499,
+          0.6442670277089171
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "cost_eur": {
+        "mean": -2.7589392648642592,
+        "ci95": [
+          -5.885423194540582,
+          -0.5166649618192982
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "demand_cost_eur": {
+        "mean": -2.758981060907717,
+        "ci95": [
+          -5.887460530919194,
+          -0.5145766736224355
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "equal_total_delivered_energy": false,
+      "cost_comparison_valid": false,
+      "h1_supported": true,
+      "h2_supported": false,
+      "h3_supported": false
+    },
+    "LLF": {
+      "unserved_kwh": {
+        "mean": 3.776595828853411e-08,
+        "ci95": [
+          3.1914893045111175e-08,
+          4.361702185126836e-08
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "peak_power_kw": {
+        "mean": 0.2602714326891528,
+        "ci95": [
+          -0.07819894591530499,
+          0.6442670277089171
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "cost_eur": {
+        "mean": -2.7589392648642592,
+        "ci95": [
+          -5.885423194540582,
+          -0.5166649618192982
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "demand_cost_eur": {
+        "mean": -2.758981060907717,
+        "ci95": [
+          -5.887460530919194,
+          -0.5145766736224355
+        ],
+        "days": 188,
+        "block_days": 7,
+        "replicates": 2000,
+        "seed": 20261024
+      },
+      "equal_total_delivered_energy": false,
+      "cost_comparison_valid": false,
+      "h1_supported": true,
+      "h2_supported": false,
+      "h3_supported": false
+    }
+  },
+  "conclusions": [
+    "H1 holds only within numerical tolerance; no substantive served-energy advantage.",
+    "H2 is not supported: mean daily peak difference interval includes zero.",
+    "H3 is not supported: strict equal-delivered-energy comparability gate fails; lower component costs are not labeled proven savings.",
+    "Wide prediction intervals prevent a useful readiness guarantee; chronological test spans pandemic-era shift.",
+    "FCFS/EDF/LLF tie under the assumed 52.8 kW site cap; this is not evidence that the policies are generally equivalent."
+  ]
+}
