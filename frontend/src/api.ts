@@ -26,7 +26,7 @@ export async function api<T>(path: string, body?: unknown, method = "POST"): Pro
   return response.json();
 }
 
-export const createWorkspace = (demo = "normal") => api<Workspace>("/workspaces", { demo });
+export const createWorkspace = (demo = "capacity") => api<Workspace>("/workspaces", { demo });
 
 /** Every state change carries the version that the operator actually viewed. */
 export const updateWorkspace = (data: Workspace, endpoint: string, fields = {}, method = "POST") =>
@@ -39,9 +39,20 @@ export const updateWorkspace = (data: Workspace, endpoint: string, fields = {}, 
 export async function guideStep(data: Workspace, step: number) {
   if (step === 0) return updateWorkspace(data, "optimize");
   const { scenarios } = await api<{ scenarios: Record<string, SimEvent[]> }>("/demo/scenarios");
+  const offset =
+    new Date(data.horizon_start).setUTCHours(0, 0, 0, 0) - Date.parse("2019-01-07T00:00:00Z");
+  const source = step === 2 ? scenarios.price_spike[0] : scenarios.charger_outage[0];
+  const event = Object.fromEntries(
+    Object.entries(source).map(([key, value]) => [
+      key,
+      ["start_time", "end_time", "time"].includes(key) && value
+        ? new Date(Date.parse(String(value)) + offset).toISOString()
+        : value,
+    ]),
+  );
   // Reuse the original event ID for the replay; a new ID would apply it twice.
   const next = await updateWorkspace(data, "events", {
-    event: step === 2 ? scenarios.price_spike[0] : scenarios.charger_outage[0],
+    event,
   });
   if (
     step === 3 &&

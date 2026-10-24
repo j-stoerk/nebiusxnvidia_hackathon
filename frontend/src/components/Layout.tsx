@@ -55,9 +55,12 @@ function Sidebar({ ui }: { ui: Controller }) {
           onClick={() => ui.load(stress)}
         >
           <span className={`scenario-dot ${stress ? "amber" : ""}`} />
-          {stress ? "100 sessions · stress test" : "50 vehicles · normal day"}
+          {stress ? "100 sessions · stress test" : "50 sessions · vehicle moves"}
         </button>
       ))}
+      <button className="scenario-link" disabled={!!ui.busy} onClick={() => ui.load("capacity")}>
+        <span className="scenario-dot" />4 vans · depot day
+      </button>
       <div className="sidebar-bottom">
         <a href="/api/demo/sessions" className="sidebar-download">
           <ArrowDownToLine size={16} />
@@ -88,14 +91,15 @@ function Topbar({ ui }: { ui: Controller }) {
           onChange={(event) => {
             const value = event.target.value;
             event.target.value = "";
-            if (value) ui.load(value === "stress");
+            if (value) ui.load(value === "capacity" ? "capacity" : value === "stress");
           }}
         >
           <option value="" disabled>
             Load demo…
           </option>
-          <option value="normal">50 vehicles</option>
+          <option value="normal">50 sessions · moves</option>
           <option value="stress">100-session stress</option>
+          <option value="capacity">4 vans · depot day</option>
         </select>
         <span className="environment">
           <span className="status-dot" />

@@ -1,11 +1,4 @@
-import {
-  ArrowRight,
-  Bot,
-  Clock3,
-  PlugZap,
-  Settings2,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowRight, Bot, Clock3, PlugZap, Settings2, ShieldCheck } from "lucide-react";
 import type { Controller } from "../useWorkspace";
 import { costDifference, money, number, time } from "../format";
 import {
@@ -18,6 +11,7 @@ import {
   VehicleTable,
 } from "./Dashboard";
 import { ChatPanel } from "./AgentChat";
+import { PlanningPanel } from "./PlanningPanel";
 
 export function StatusStrip({ ui }: { ui: Controller }) {
   const data = ui.data!;
@@ -110,7 +104,7 @@ function Operations({ ui }: { ui: Controller }) {
   return (
     <section className="panel operations-panel">
       <PanelTitle eyebrow="SIMULATION" title="Events & replanning" />
-      <p className="muted">Compare both schedules under the same changed conditions.</p>
+      <p className="muted">Compare policies under the same changed conditions.</p>
       {actions.map(({ title, detail, icon: Icon, run, disabled }) => (
         <button className="event-card" key={title} disabled={!!ui.busy || disabled} onClick={run}>
           <span className="event-icon">
@@ -192,6 +186,10 @@ function Overview({ ui }: { ui: Controller }) {
         </section>
         <Operations ui={ui} />
       </div>
+      <PlanningPanel
+        key={`${data.workspace_id}-${data.state_version}-${data.schedule_version}`}
+        ui={ui}
+      />
     </>
   );
 }

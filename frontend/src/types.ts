@@ -5,6 +5,10 @@ export type Session = {
   energy_required_kwh: number;
   max_charging_power_kw: number;
   connector_type: string;
+  charger_id?: string | null;
+  battery_capacity_kwh?: number | null;
+  initial_soc?: number | null;
+  transition_soc?: number;
 };
 export type Charger = {
   charger_id: string;
@@ -20,6 +24,13 @@ export type Station = {
   station_power_limit_kw: number;
   charging_efficiency: number;
   chargers: Charger[];
+  fixed_connections: boolean;
+  demand_tariff: {
+    eur_per_kw: number;
+    period: "month" | "year";
+    timezone: "UTC" | "Europe/Berlin";
+    prior_peaks_kw: Record<string, number>;
+  };
 };
 export type Allocation = {
   vehicle_id: string;
@@ -40,6 +51,8 @@ export type VehicleMetric = {
 };
 export type Metrics = {
   cost_eur: number;
+  energy_cost_eur: number;
+  demand_cost_eur: number;
   peak_power_kw: number;
   delivered_kwh: number;
   unserved_kwh: number;
@@ -96,6 +109,7 @@ export type Workspace = {
   };
   baseline: Schedule | null;
   optimized: Schedule | null;
+  references: Record<string, Schedule>;
   stale: boolean;
   last_error: string | null;
   recovery_seconds: number | null;

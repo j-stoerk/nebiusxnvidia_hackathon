@@ -23,6 +23,8 @@ def _future_errors(scenario, record, session, charger):
         errors.append("Future allocation overlaps completed history")
     if charger.connector_type != session.connector_type:
         errors.append(f"Incompatible connector for {session.vehicle_id}")
+    if session.charger_id is not None and record.charger_id != session.charger_id:
+        errors.append(f"Wrong assigned charger for {session.vehicle_id}")
     if record.power_kw > min(session.max_charging_power_kw, charger.max_power_kw) + TOLERANCE:
         errors.append(f"Power rating exceeded for {session.vehicle_id}")
     if abs(record.charging_efficiency - scenario.station.charging_efficiency) > TOLERANCE:
@@ -88,10 +90,47 @@ def _allocations_errors(scenario, schedule):
         changes[record.end_time].append((-1, index, record))
     errors.extend(f"Excess energy delivered to {v}" for v, value in energy.items()
                   if value > sessions[v].energy_required_kwh + TOLERANCE)
-    return errors + _concurrency_errors(scenario, changes)
+    return errors + _concurrency_errors(scenario, changes) + _taper_errors(scenario, schedule) + _connection_errors(scenario, schedule)
 
 
-def validate_schedule(scenario, schedule):
+def _connection_errors(scenario, schedule):
+    if not scenario.station.fixed_connections:
+        return []
+    errors, reservations = [], defaultdict(list)
+    for session in scenario.sessions:
+        records = [r for r in schedule.allocations if r.vehicle_id == session.vehicle_id]
+        future = {r.charger_id for r in records if r.end_time > scenario.now}
+        past = sorted((r for r in records if r.end_time <= scenario.now), key=lambda r: r.end_time)
+        ids = future | ({past[-1].charger_id} if past else set()) | ({session.charger_id} if session.charger_id else set())
+        if len(ids) > 1:
+            errors.append(f"Fixed connection changed for {session.vehicle_id}")
+        if ids and session.departure_time > scenario.now:
+            reservations[next(iter(ids))].append((max(session.arrival_time, scenario.now), session.departure_time))
+    for charger, windows in reservations.items():
+        windows.sort()
+        if any(a[1] > b[0] for a, b in zip(windows, windows[1:])):
+            errors.append(f"Fixed plug occupancy overlaps on {charger}")
+    return errors
+
+
+def _taper_errors(scenario, schedule):
+    errors = []
+    for session in scenario.sessions:
+        if session.battery_capacity_kwh is None:
+            continue
+        delivered = 0
+        records = sorted((r for r in schedule.allocations if r.vehicle_id == session.vehicle_id), key=lambda r: r.start_time)
+        for record in records:
+            delivered += battery_energy(record)
+            # Reconstruct terminal SoC independently; maximum power only decreases.
+            headroom = session.battery_capacity_kwh * (1 - session.initial_soc) - delivered
+            ceiling = session.max_charging_power_kw * max(0, headroom) / (session.battery_capacity_kwh * (1 - session.transition_soc))
+            if record.power_kw > ceiling + TOLERANCE:
+                errors.append(f"CC/CV taper exceeded for {session.vehicle_id}")
+    return errors
+
+
+def validate_schedule(scenario, schedule, charger_budget=None):
     errors = []
     if schedule.state_version != scenario.state_version:
         errors.append("Schedule was calculated from stale state")
@@ -99,6 +138,9 @@ def validate_schedule(scenario, schedule):
     if Counter(map(signature, history)) != Counter(map(signature, scenario.history)):
         errors.append("Completed charging history changed")
     errors.extend(_allocations_errors(scenario, schedule))
+    used = {r.charger_id for r in schedule.allocations} | {s.charger_id for s in scenario.sessions if s.charger_id is not None}
+    if charger_budget is not None and len(used) > charger_budget:
+        errors.append("Physical charger count exceeded")
     if errors:
         raise InvalidSchedule("; ".join(dict.fromkeys(errors)))
     return True

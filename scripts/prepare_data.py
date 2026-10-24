@@ -5,7 +5,6 @@ External downloads are opt-in and ignored by Git. See docs/data-sources.md.
 """
 
 import argparse
-import base64
 import csv
 import hashlib
 from html.parser import HTMLParser
@@ -17,7 +16,6 @@ from pathlib import Path
 import random
 import shutil
 from datetime import datetime, timedelta, timezone
-from email.utils import parsedate_to_datetime
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -262,39 +260,22 @@ def nasa(folder):
 
 
 def acn(folder):
+    """Legacy acquisition entry point delegates to the official streaming client."""
+    from dotenv import load_dotenv
+    from fetch_acn import fetch
+    load_dotenv(ROOT / ".env")
     token = os.environ.get("ACN_API_TOKEN")
     if not token:
-        raise ValueError("ACN_API_TOKEN not set; register at https://ev.caltech.edu/dataset.html. Synthetic demo is already available.")
-    where = 'connectionTime >= "Mon, 07 Jan 2019 00:00:00 GMT" and connectionTime < "Mon, 14 Jan 2019 00:00:00 GMT"'
-    base = "https://ev.caltech.edu/api/v1/"
-    url = base + "sessions/caltech?" + urllib.parse.urlencode({"where": where, "sort": "connectionTime"})
-    first_url = url
-    auth = "Basic " + base64.b64encode((token + ":").encode()).decode()
-    rows = []
-    pages = 0
-    while url:
-        parsed = urllib.parse.urlparse(url)
-        if parsed.scheme != "https" or parsed.netloc != "ev.caltech.edu":
-            raise ValueError("Unexpected ACN pagination host")
-        payload = json.loads(read_small(url, {"Authorization": auth}))
-        pages += 1
-        if pages > 100:
-            raise ValueError("ACN pagination budget exceeded")
-        for item in payload.get("_items", []):
-            arrival = parsedate_to_datetime(item["connectionTime"])
-            departure = parsedate_to_datetime(item["disconnectTime"])
-            energy = float(item["kWhDelivered"])
-            if departure > arrival and energy > 0:
-                rows.append({"vehicle_id": f"ACN-SESSION-{len(rows) + 1:04}", "arrival_time": stamp(arrival),
-                             "departure_time": stamp(departure), "energy_required_kwh": energy,
-                             "max_charging_power_kw": 6.6})
-        next_link = payload.get("_links", {}).get("next", {}).get("href")
-        url = urllib.parse.urljoin(base, next_link) if next_link else None
-    target = folder / "acn_caltech_sessions.csv"
-    write_csv(target, rows)
-    return [record(target, first_url, pages=pages, measured=True,
-                   assumptions="Historical kWhDelivered as energy proxy; disconnectTime as availability proxy; 6.6 kW synthetic cap; session pseudonyms are not persistent vehicle IDs",
-                   license="Dataset redistribution license not established; ignored by Git; no user IDs, mobile inputs, raw records, or tokens saved")]
+        raise ValueError("Set ACN_API_TOKEN; see scripts/fetch_acn.py for six-month acquisition")
+    try:
+        from acnportal.acndata import DataClient
+    except ImportError as exc:
+        raise ValueError("Use uv run --with acnportal==0.3.3 python scripts/fetch_acn.py for optional ACN acquisition") from exc
+    target = folder / "acn/caltech_2019_h1.csv"
+    metadata = fetch(DataClient(token), "caltech", datetime(2019, 1, 1, tzinfo=timezone.utc),
+                     datetime(2019, 7, 1, tzinfo=timezone.utc), target, 6.6)
+    return [record(target, "https://ev.caltech.edu/dataset.html", measured=True,
+                   assumptions=metadata["assumptions"], license="Redistribution terms unverified; ignored by Git")]
 
 
 def main():

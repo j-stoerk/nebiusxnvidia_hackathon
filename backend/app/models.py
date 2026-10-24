@@ -30,6 +30,10 @@ class Session(Contract):
     energy_required_kwh: float = Field(ge=0, le=1000)
     max_charging_power_kw: float = Field(gt=0, le=1000)
     connector_type: str = Field(default="Type2", min_length=1, max_length=40)
+    charger_id: str | None = Field(default=None, min_length=1, max_length=80)
+    battery_capacity_kwh: float | None = Field(default=None, gt=0, le=2000)
+    initial_soc: float | None = Field(default=None, ge=0, le=1)
+    transition_soc: float = Field(default=0.8, gt=0, lt=1)
 
     _times = field_validator("arrival_time", "departure_time", mode="before")(utc)
 
@@ -44,6 +48,10 @@ class Session(Contract):
     def interval(self):
         if self.departure_time <= self.arrival_time:
             raise ValueError("Departure must follow arrival")
+        if (self.battery_capacity_kwh is None) != (self.initial_soc is None):
+            raise ValueError("Taper needs both battery_capacity_kwh and initial_soc")
+        if self.initial_soc is not None and self.energy_required_kwh > self.battery_capacity_kwh * (1 - self.initial_soc) + 1e-8:
+            raise ValueError("Energy target exceeds battery headroom")
         return self
 
 
@@ -54,6 +62,29 @@ class Charger(Contract):
     available: bool = True
 
 
+class DemandTariff(Contract):
+    """Incremental 15-minute demand cost; not an entire utility bill."""
+    eur_per_kw: float = Field(default=0, ge=0, le=10000)
+    period: Literal["month", "year"] = "month"
+    timezone: Literal["UTC", "Europe/Berlin"] = "Europe/Berlin"
+    prior_peaks_kw: dict[str, float] = Field(default_factory=dict, max_length=24)
+
+    @field_validator("prior_peaks_kw")
+    @classmethod
+    def peaks(cls, values):
+        import re
+        if any(not re.fullmatch(r"\d{4}(-(?:0[1-9]|1[0-2]))?", k) or not 0 <= v <= 100000 for k, v in values.items()):
+            raise ValueError("Prior peaks need YYYY or YYYY-MM keys and nonnegative finite kW")
+        return values
+
+    @model_validator(mode="after")
+    def matching_periods(self):
+        length = 7 if self.period == "month" else 4
+        if any(len(key) != length for key in self.prior_peaks_kw):
+            raise ValueError("Prior peak keys must match the selected month/year period")
+        return self
+
+
 class Station(Contract):
     simulated: bool = True
     station_id: str = Field(default="DEMO-01", min_length=1, max_length=80)
@@ -62,6 +93,8 @@ class Station(Contract):
     station_power_limit_kw: float = Field(gt=0, le=10000)
     charging_efficiency: float = Field(default=1, gt=0, le=1)
     chargers: list[Charger] = Field(min_length=1, max_length=30)
+    demand_tariff: DemandTariff = Field(default_factory=DemandTariff)
+    fixed_connections: bool = True
 
     @model_validator(mode="after")
     def unique(self):

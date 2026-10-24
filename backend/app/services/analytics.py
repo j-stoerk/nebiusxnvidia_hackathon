@@ -4,6 +4,7 @@ from collections import defaultdict
 from datetime import timedelta
 
 from .scenario import battery_energy, hours, price_at
+from .tariffs import demand_cost
 
 
 def metrics(scenario, schedule):
@@ -42,7 +43,10 @@ def metrics(scenario, schedule):
                      for record in schedule.allocations if record.start_time < end and record.end_time > cursor)
         series.append({"timestamp": cursor, "power_kw": energy / hours(cursor, end), "price_eur_per_kwh": price_at(scenario, cursor)})
         cursor = end
-    return {"cost_eur": costs, "peak_power_kw": peak, "delivered_kwh": sum(delivered.values()),
+    demand, billing_peaks = demand_cost(scenario, schedule.allocations)
+    return {"cost_eur": costs + demand, "energy_cost_eur": costs, "demand_cost_eur": demand,
+            "billing_peaks_kw": billing_peaks, "cost_scope": "Energy plus incremental demand charge over prior billing peaks; partial period",
+            "peak_power_kw": peak, "delivered_kwh": sum(delivered.values()),
             "unserved_kwh": sum(v["shortfall_kwh"] for v in vehicles),
             "target_success_percent": 100 * sum(v["target_met"] for v in vehicles) / len(vehicles),
             "vehicles": vehicles, "power_series": series}

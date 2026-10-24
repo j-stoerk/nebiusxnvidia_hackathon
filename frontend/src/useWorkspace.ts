@@ -70,7 +70,12 @@ export function useWorkspace() {
   }, []);
 
   async function run(operation: () => Promise<Workspace>, label: string, keepGuide = false) {
-    set({ busy: label, error: "", notice: "", ...(!keepGuide && { step: null }) });
+    set({
+      busy: label,
+      error: "",
+      notice: "",
+      ...(!keepGuide && { step: null }),
+    });
     try {
       return accept(await operation());
     } catch (error) {
@@ -78,7 +83,9 @@ export function useWorkspace() {
       // Refresh after a conflict without hiding the failed operation's message.
       if (state.data) {
         try {
-          set({ data: await api<Workspace>(`/workspaces/${state.data.workspace_id}`) });
+          set({
+            data: await api<Workspace>(`/workspaces/${state.data.workspace_id}`),
+          });
         } catch {
           /* Keep the last visible state. */
         }
@@ -94,8 +101,14 @@ export function useWorkspace() {
       "Calculating validated schedules",
     );
 
-  async function load(stress = false, guided = false) {
-    const next = await run(() => createWorkspace(stress ? "stress" : "normal"), "Loading scenario");
+  async function load(stress: boolean | "capacity" = false, guided = false) {
+    const next = await run(
+      () =>
+        createWorkspace(
+          guided || stress === "capacity" ? "capacity" : stress ? "stress" : "normal",
+        ),
+      "Loading scenario",
+    );
     if (next)
       set({
         step: guided ? 0 : null,
@@ -122,7 +135,12 @@ export function useWorkspace() {
   async function chat(message: string, allow_changes: boolean) {
     if (!state.data) return;
     const messages: ChatMessage[] = [...state.messages, { role: "user", text: message }];
-    set({ messages, busy: "Nemotron is working", error: "", ...(allow_changes && { step: null }) });
+    set({
+      messages,
+      busy: "Nemotron is working",
+      error: "",
+      ...(allow_changes && { step: null }),
+    });
     try {
       const response = await api<{ reply: Reply; workspace: Workspace }>(
         `/workspaces/${state.data.workspace_id}/chat`,
@@ -136,7 +154,11 @@ export function useWorkspace() {
       set({
         messages: [
           ...messages,
-          { role: "assistant", text: response.reply.message, reply: response.reply },
+          {
+            role: "assistant",
+            text: response.reply.message,
+            reply: response.reply,
+          },
         ],
       });
     } catch (error) {
@@ -153,7 +175,11 @@ export function useWorkspace() {
       "Validating CSV",
     );
     if (next && !next.stale)
-      set({ modal: null, messages: [], notice: "CSV validated. Both schedules are ready." });
+      set({
+        modal: null,
+        messages: [],
+        notice: "CSV validated. Both schedules are ready.",
+      });
   }
 
   async function configure(station: Station) {
@@ -164,7 +190,10 @@ export function useWorkspace() {
   async function simulate(event: object) {
     const next = await mutate("events", { event });
     if (next)
-      set({ modal: null, notice: next.stale ? "" : "Event handled. The validated plan is ready." });
+      set({
+        modal: null,
+        notice: next.stale ? "" : "Event handled. The validated plan is ready.",
+      });
   }
 
   const advance = () =>
@@ -173,7 +202,18 @@ export function useWorkspace() {
         Math.min(Date.parse(state.data!.now) + 3600000, Date.parse(state.data!.horizon_end)),
       ).toISOString(),
     });
-  return { ...state, set, load, mutate, nextStep, chat, upload, configure, simulate, advance };
+  return {
+    ...state,
+    set,
+    load,
+    mutate,
+    nextStep,
+    chat,
+    upload,
+    configure,
+    simulate,
+    advance,
+  };
 }
 
 export type Controller = ReturnType<typeof useWorkspace>;

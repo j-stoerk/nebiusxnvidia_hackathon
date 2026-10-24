@@ -49,6 +49,17 @@ def test_read_only_chat_cannot_mutate_and_unknown_tools_are_rejected(small_scena
     assert s.state_version == 1 and s.schedule_version == 0
 
 
+def test_typed_roster_and_counterfactual_tools_are_read_only(small_scenario):
+    s = small_scenario
+    result = execute_tool(s, "propose_constraints", {"rules": [{"vehicle_id": "EV-1", "energy_required_kwh": 1.5,
+                          "source_quote": "EV-1 needs 1.5 kWh"}]}, False, 1)
+    assert result["validated"] and not result["activated"]
+    assert result["proposed_rules"][0]["source_quote"] == "EV-1 needs 1.5 kWh"
+    alternative = execute_tool(s, "get_counterfactuals", {"vehicle_id": "EV-1"}, False, 1)
+    assert not alternative["activated"] and len(alternative["experiments"]) == 2
+    assert s.state_version == 1 and s.schedule_version == 0
+
+
 def test_allowed_simulation_tool_is_typed_and_versioned(small_scenario):
     s = small_scenario
     result = execute_tool(s, "simulate_event", {"expected_version": 1, "event": {"event_id": "agent-price", "type": "PRICE_CHANGED",

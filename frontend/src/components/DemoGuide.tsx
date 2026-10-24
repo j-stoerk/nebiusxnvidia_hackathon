@@ -5,20 +5,20 @@ import type { Workspace } from "../types";
 const steps = [
   [
     "Baseline",
-    "Review the first-come-first-served baseline",
-    "50 simulated vehicles, ten chargers, and an 80 kW site. Optimize this same scenario to compare results.",
+    "Review FCFS, earliest deadline, and least laxity",
+    "Four vans, fixed plugs, and an illustrative demand tariff. Every policy uses the installed chargers and the same physical limits.",
     "Optimize this plan",
   ],
   [
     "Optimize",
     "Compare energy and electricity cost",
-    "Both schedules are checked against the physical limits. Savings are shown only when delivered energy matches.",
+    "Every policy is independently checked. Compare unserved energy, peak demand and cost; a cheaper undercharged fleet is not a saving.",
     "Simulate charger outage",
   ],
   [
     "Outage",
     "Replan around a charger outage",
-    "CH-01 is unavailable from 09:00 to 12:00 UTC. Both schedules now include that outage.",
+    "CH-01 is unavailable from 09:00 to 12:00 UTC. All policies now include that outage.",
     "Apply the price change",
   ],
   [

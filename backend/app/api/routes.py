@@ -10,6 +10,8 @@ from pydantic import BaseModel
 from ..ai import agent
 from ..services.csv_validator import MAX_UPLOAD
 from ..models import AdvanceRequest, ChatRequest, EventRequest, SettingsRequest, VersionRequest
+from pydantic import Field
+from ..services.planning import capacity_frontier
 from ..services.schedule_service import ROOT, Workspaces, advance, apply_event, expected, replan, snapshot, update_station, upload
 
 router = APIRouter(prefix="/api")
@@ -33,12 +35,12 @@ def health():
 
 
 class CreateWorkspace(BaseModel):
-    demo: Literal["normal", "stress"] = "normal"
+    demo: Literal["normal", "stress", "capacity"] = "normal"
 
 
 @router.post("/workspaces", status_code=201)
 def create_workspace(body: CreateWorkspace):
-    scenario = store.create(stress=body.demo == "stress")
+    scenario = store.create(stress=body.demo == "stress", capacity=body.demo == "capacity")
     return view(scenario)
 
 
@@ -56,6 +58,21 @@ def optimize_workspace(workspace_id: str, body: VersionRequest):
         expected(scenario, body.expected_version)
         replan(scenario)
         return view(scenario)
+
+
+class CapacityRequest(VersionRequest):
+    counts: list[int] = Field(min_length=1, max_length=10)
+
+
+@router.post("/workspaces/{workspace_id}/capacity")
+def capacity_workspace(workspace_id: str, body: CapacityRequest):
+    scenario = workspace(workspace_id)
+    with scenario.lock:
+        expected(scenario, body.expected_version)
+        try:
+            return capacity_frontier(scenario, body.counts)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
 
 
 @router.post("/workspaces/{workspace_id}/events")

@@ -93,6 +93,10 @@ export function UploadForm({
         <br />
         energy_required_kwh, max_charging_power_kw
       </div>
+      <p className="form-help">
+        Add charger_id for vehicles already plugged in. Optional battery_capacity_kwh and
+        initial_soc enable battery taper. Uploads keep vehicles on their plugs until departure.
+      </p>
       <label>
         Prices CSV{" "}
         <span className="muted">(optional if the current price range covers your sessions)</span>
@@ -100,7 +104,7 @@ export function UploadForm({
       </label>
       <p className="form-help">
         Price columns: timestamp, price_eur_per_kwh. Supply one price for every UTC quarter-hour in
-        your session range.
+        your session range. Use both sample files together.
       </p>
       <div className="download-links">
         <a href="/api/demo/sessions">Sample sessions</a>
@@ -116,16 +120,22 @@ export function UploadForm({
 
 export function StationForm({
   station,
+  billingTime,
   disabled,
   onSubmit,
 }: {
   station: Station;
+  billingTime: string;
   disabled: boolean;
   onSubmit: (value: Station) => void;
 }) {
   const [cap, setCap] = useState(station.station_power_limit_kw),
     [efficiency, setEfficiency] = useState(station.charging_efficiency);
   const [chargers, setChargers] = useState<Charger[]>(station.chargers.map((c) => ({ ...c })));
+  const [tariff, setTariff] = useState(station.demand_tariff);
+  const periodKey = new Date(billingTime)
+    .toLocaleDateString("sv-SE", { timeZone: tariff.timezone })
+    .slice(0, tariff.period === "month" ? 7 : 4);
   function setCharger(index: number, value: Partial<Charger>) {
     setChargers((previous) => previous.map((c, i) => (i === index ? { ...c, ...value } : c)));
   }
@@ -139,6 +149,8 @@ export function StationForm({
           station_power_limit_kw: cap,
           charging_efficiency: efficiency,
           chargers,
+          demand_tariff: tariff,
+          fixed_connections: true,
         });
       }}
     >
@@ -172,6 +184,60 @@ export function StationForm({
           />
         </label>
       </div>
+      <div className="form-columns">
+        <label>
+          Demand price (EUR/kW per billing period)
+          <input
+            type="number"
+            min="0"
+            max="10000"
+            step="0.01"
+            value={tariff.eur_per_kw}
+            onChange={(e) => setTariff({ ...tariff, eur_per_kw: Number(e.target.value) })}
+            required
+          />
+        </label>
+        <label>
+          Demand billing period
+          <select
+            value={tariff.period}
+            onChange={(e) =>
+              setTariff({
+                ...tariff,
+                period: e.target.value as "month" | "year",
+                prior_peaks_kw: {},
+              })
+            }
+          >
+            <option value="month">Monthly</option>
+            <option value="year">Annual</option>
+          </select>
+        </label>
+      </div>
+      <label>
+        Prior metered peak for {periodKey} (kW)
+        <input
+          type="number"
+          min="0"
+          max="100000"
+          step="0.1"
+          value={tariff.prior_peaks_kw[periodKey] || 0}
+          onChange={(e) =>
+            setTariff({
+              ...tariff,
+              prior_peaks_kw: {
+                ...tariff.prior_peaks_kw,
+                [periodKey]: Number(e.target.value),
+              },
+            })
+          }
+          required
+        />
+        <span className="muted">
+          {tariff.timezone} periods; incremental 15-minute peak cost. Use a verified site tariff.
+          Default zero means no demand charge.
+        </span>
+      </label>
       <div className="charger-editor">
         {chargers.map((charger, index) => (
           <div key={charger.charger_id}>

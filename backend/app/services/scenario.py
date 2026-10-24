@@ -21,13 +21,15 @@ class Scenario:
     history: list[Allocation] = field(default_factory=list)
     baseline: Schedule | None = None
     optimized: Schedule | None = None
+    references: dict[str, Schedule] = field(default_factory=dict)
+    max_horizon_days: int = 3
     stale: bool = False
     last_error: str | None = None
     recovery_seconds: float | None = None
     lock: threading.RLock = field(default_factory=threading.RLock)
 
     def __post_init__(self):
-        self.start, self.end = check_scenario(self.sessions, self.station, self.prices)
+        self.start, self.end = check_scenario(self.sessions, self.station, self.prices, self.max_horizon_days)
         self.now = self.start
         self.price_map = {p.timestamp: p.price_eur_per_kwh for p in self.prices}
 

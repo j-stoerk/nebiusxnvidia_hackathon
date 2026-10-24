@@ -30,8 +30,8 @@ function PageHeader({ ui }: { ui: Controller }) {
         <h1>{titles[ui.tab]}</h1>
         {ui.tab === "overview" && (
           <p className="value-statement">
-            For fleet and depot managers: compare charging costs and departure targets, then test
-            how a charger outage changes the plan.
+            For fleet and depot managers: test the power and chargers your departures need, compare
+            costs, and check alternatives before committing to infrastructure.
           </p>
         )}
         <p className="scenario-meta">
@@ -107,7 +107,12 @@ function Dialogs({ ui }: { ui: Controller }) {
       {ui.modal === "upload" ? (
         <UploadForm disabled={!!ui.busy} onSubmit={ui.upload} />
       ) : ui.modal === "station" ? (
-        <StationForm station={ui.data.station} disabled={!!ui.busy} onSubmit={ui.configure} />
+        <StationForm
+          station={ui.data.station}
+          billingTime={ui.data.now}
+          disabled={!!ui.busy}
+          onSubmit={ui.configure}
+        />
       ) : (
         <EventForm workspace={ui.data} disabled={!!ui.busy} onSubmit={ui.simulate} />
       )}

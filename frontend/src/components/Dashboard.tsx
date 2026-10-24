@@ -115,7 +115,8 @@ export function PowerChart({ workspace }: { workspace: Workspace }) {
             domain={[
               0,
               (max: number) =>
-                Math.ceil(Math.max(max, workspace.station.station_power_limit_kw) * 1.05 / 20) * 20,
+                Math.ceil((Math.max(max, workspace.station.station_power_limit_kw) * 1.05) / 20) *
+                20,
             ]}
           />
           <YAxis
@@ -214,7 +215,7 @@ export function StationPanel({
           <span> / {workspace.station.chargers.length}</span>
         </strong>
         <span>
-          chargers available
+          chargers online
           <br />
           at {time(workspace.now)} UTC
         </span>
@@ -230,6 +231,7 @@ export function StationPanel({
             >
               <PlugZap size={18} />
               <small>{charger.charger_id.replace("CH-", "")}</small>
+              <small>{number(charger.max_power_kw)} kW</small>
               <span className="charger-status" aria-hidden="true" />
             </div>
           );
@@ -238,6 +240,12 @@ export function StationPanel({
       <div className="station-row">
         <span>Station power limit</span>
         <strong>{number(workspace.station.station_power_limit_kw)} kW</strong>
+      </div>
+      <div className="station-row">
+        <span>Combined charger ratings</span>
+        <strong>
+          {number(workspace.station.chargers.reduce((sum, c) => sum + c.max_power_kw, 0))} kW
+        </strong>
       </div>
       <div className="station-row">
         <span>Charging efficiency</span>
@@ -249,9 +257,9 @@ export function StationPanel({
       </div>
       <div className="station-note">
         <span className="status-dot" />
-        {workspace.events.length
-          ? "Availability includes applied events"
-          : "Simulated station · ready to plan"}
+        {workspace.station.fixed_connections
+          ? "Fixed plugs · shared power limit enforced"
+          : "Legacy demo · vehicle moves required"}
       </div>
     </section>
   );

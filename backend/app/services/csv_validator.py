@@ -42,7 +42,7 @@ def csv_frame(content: bytes) -> pd.DataFrame:
 def parse_sessions(content: bytes) -> list[Session]:
     frame = csv_frame(content)
     missing = REQUIRED - set(frame.columns)
-    unknown = set(frame.columns) - REQUIRED - {"connector_type"}
+    unknown = set(frame.columns) - REQUIRED - {"connector_type", "charger_id", "battery_capacity_kwh", "initial_soc", "transition_soc"}
     if missing or unknown:
         raise InputError(f"Missing columns: {', '.join(sorted(missing)) or 'none'}; unsupported columns: {', '.join(sorted(unknown)) or 'none'}")
     if not 1 <= len(frame) <= 100:
@@ -50,7 +50,7 @@ def parse_sessions(content: bytes) -> list[Session]:
     errors, sessions, seen = [], [], set()
     for number, row in enumerate(frame.to_dict("records"), 2):
         try:
-            session = Session.model_validate(row)
+            session = Session.model_validate({k: v for k, v in row.items() if v != ""})
             if session.vehicle_id in seen:
                 errors.append({"row": number, "column": "vehicle_id", "message": "Duplicate vehicle_id"})
             seen.add(session.vehicle_id)
@@ -84,10 +84,24 @@ def horizon(sessions, minutes):
     return start, end
 
 
-def check_scenario(sessions: list[Session], station: Station, prices: list[Price]):
+def check_scenario(sessions: list[Session], station: Station, prices: list[Price], max_days=3):
+    chargers = {c.charger_id: c for c in station.chargers}
+    for session in sessions:
+        if session.charger_id is None:
+            continue
+        if not station.fixed_connections:
+            raise InputError("A bound charger requires fixed connections")
+        charger = chargers.get(session.charger_id)
+        if charger is None or charger.connector_type != session.connector_type:
+            raise InputError(f"Unknown or incompatible assigned charger for {session.vehicle_id}")
+    bindings = [s for s in sessions if s.charger_id is not None]
+    for i, session in enumerate(bindings):
+        if any(other.charger_id == session.charger_id and other.arrival_time < session.departure_time
+               and other.departure_time > session.arrival_time for other in bindings[:i]):
+            raise InputError(f"Overlapping physical plug assignments on {session.charger_id}")
     start, end = horizon(sessions, station.slot_minutes)
-    if end - start > timedelta(days=3):
-        raise InputError("The demo supports a horizon of at most 72 hours")
+    if end - start > timedelta(days=max_days):
+        raise InputError(f"This run supports a horizon of at most {max_days * 24} hours")
     # Source price intervals are always 15 minutes, independent of scheduling slot duration.
     price_map = {p.timestamp: p.price_eur_per_kwh for p in prices}
     cursor = start
