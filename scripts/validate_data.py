@@ -24,11 +24,12 @@ def read_csv(path):
 def verify_manifest(path):
     payload = json.loads(path.read_text(encoding="utf-8"))
     entries = payload.get("files", [])
-    for source in payload.get("sources", {}).values():
+    sources = payload.get("sources", {})
+    for source in sources.values() if isinstance(sources, dict) else []:
         if source["status"] == "downloaded":
             entries.extend(source["files"])
     for entry in entries:
-        target = (ROOT / entry["path"]).resolve()
+        target = ((ROOT / entry["path"]) if "path" in entry else (path.parent / entry["file"])).resolve()
         require(target.is_relative_to(ROOT.resolve()), "Manifest path escapes project")
         require(target.is_file(), f"Missing file: {target}")
         content = target.read_bytes()
@@ -70,6 +71,26 @@ def time_grid(path, column, count, minutes, aware=True):
     return rows
 
 
+def required_pack(folder):
+    payload = json.loads((folder / "manifest.json").read_text())
+    observed = {r["vehicle_id"]: r for r in read_csv(folder / "caltech_observed_sessions.csv")}
+    requests = read_csv(folder / "caltech_requests_equipment_ceiling.csv")
+    require(len(observed) == payload["observed_sessions"], "Observed session count differs")
+    require(len(requests) == payload["requests_known_at_arrival"], "Requested-session count differs")
+    for row in requests:
+        source = observed[row["vehicle_id"]]
+        require(source["request_known_at_arrival"] == "True", "Future request leaked into the arrival cohort")
+        require(datetime.fromisoformat(source["request_recorded_at"]) <= datetime.fromisoformat(row["arrival_time"]), "Request was not known at arrival")
+        require(float(row["energy_required_kwh"]) == float(source["requested_energy_kwh"]), "Requested energy was replaced")
+        require(row["departure_time"] == source["requested_departure_time"], "Requested deadline was replaced")
+        require(float(row["max_charging_power_kw"]) == float(source["nominal_equipment_ceiling_kw"]), "Equipment ceiling differs")
+    hours = time_grid(folder / "germany_day_ahead_eur_mwh_hourly.csv", "timestamp", payload["german_price_hours"], 60)
+    quarters = time_grid(folder / "germany_day_ahead_eur_kwh_15min.csv", "timestamp", len(hours) * 4, 15)
+    for i, row in enumerate(quarters):
+        require(math.isclose(float(row["price_eur_per_kwh"]), float(hours[i // 4]["price_eur_per_mwh"]) / 1000), "SMARD price unit conversion differs")
+    time_grid(folder / "sce_historical_prices_usd_15min.csv", "timestamp", len(quarters), 15)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--external", action="store_true")
@@ -98,6 +119,9 @@ def main():
     if args.external:
         external = ROOT / "data" / "external"
         verified += verify_manifest(external / "manifest.json")
+        for manifest in sorted((external / "required").glob("*/manifest.json")):
+            verified += verify_manifest(manifest)
+            required_pack(manifest.parent)
         if (external / "opsd_prices_15min.csv").exists():
             hourly = time_grid(external / "opsd_germany_2019-01-07_week.csv", "timestamp", 168, 60)
             quarter = time_grid(external / "opsd_prices_15min.csv", "timestamp", 672, 15)

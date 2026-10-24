@@ -2,6 +2,37 @@
 
 All datasets are retained. The running application defaults to `data/demo/`; reference data are not silently mixed into that scenario.
 
+## Original design's required inputs
+
+The original workflow, recovered from commit `cb30fa6` (`ChargeWise AI — Project Workflow and Technology Stack.md`, section 2), requires five CSV columns and five station/price settings. The following pack covers the publicly recoverable values; it does **not** fill missing telemetry with invented measurements.
+
+```powershell
+uv run python scripts/acquire_required_data.py
+```
+
+Generated under `data/external/required/2019-04-01_2019-10-01/`: **5,392 recorded Caltech visits**, **261 usable request records known by arrival**, **54 published charger specifications**, **4,392 German price hours / 17,568 derived scheduling slots**, and the ACN team's historical SCE tariff/17,568 USD price slots. Total retained data is about **2.3 MB**; source JSON is processed in memory. Personal IDs and raw archives are not retained. File/source checksums and scope are in `manifest.json`; the tracked acquisition report records coverage.
+
+| Design input | Real source and acquired field | Status / limitation |
+| --- | --- | --- |
+| `vehicle_id` | Stable aliases for source session rows | Satisfies the original vehicle/session identifier contract; not persistent vehicle/VIN identity |
+| `arrival_time` | ACN `connectionTime` | Recorded plug-in time, explicit UTC |
+| `departure_time` | ACN `userInputs.requestedDeparture` | Recorded request parameter. Only versions timestamped at/before arrival enter the 261-row cohort. Observed unplug is kept separately |
+| `energy_required_kwh` | ACN `userInputs.kWhRequested` | Recorded requested kWh, **not** a substitution of delivered kWh. This archive lacks the later explicit user/default source flag; requests may include preferences/defaults |
+| `max_charging_power_kw` | Published ACN EVSE ceiling: 208 V × 32 A = 6.656 nominal kW at unity power factor | **Partial:** a documented equipment ceiling, not the vehicle's acceptance limit. The latter remains unknown |
+| Number of chargers | Published Caltech ACN network model | 54 ports in that historical model, not a live operational count |
+| Station power limit | Published Caltech transformer model | 150 kW nominal, plus shared-pod/phase constraints. It is not a German depot's available import budget |
+| Slot duration | Original design's 15-minute setting | A controller configuration, not a measured quantity |
+| Electricity prices | Bundesnetzagentur SMARD filter 4169, DE, hourly EUR/MWh; SCE historical tariff separately in USD | German native observations are divided by 1,000 and held across four slots. No California/EUR join or currency relabeling; neither product establishes a depot's retail contract |
+| Charger availability | Actual plug connection/disconnection windows in observed-session CSV | **Partial:** occupancy is known; operational online/fault state is unknown. Idle/zero current is not evidence of a fault |
+
+Files: `caltech_observed_sessions.csv` preserves measured availability/delivery and request provenance; `caltech_requests_equipment_ceiling.csv` has the five core columns plus actual port bindings and J1772 compatibility, with the equipment-ceiling qualification above. It is a reported-deadline cohort, **not** an executed readiness result; an early observed unplug remains separate. `caltech_charger_catalog.csv` includes phase angles and allowable pilot amperages; `caltech_site.json` records nominal/shared limits. The current scalar scheduler does not enforce the full ACN phase network or pilot quantization, so these data do not confer hardware certification. Full six-month files exceed the interactive 100-session/72-hour upload budget; use them for batch analysis, or select a compatible short roster deliberately.
+
+Optional older-blueprint fields `station_id`/`connector_type` have a source (Caltech public equipment identifiers and documented J1772 control). Actual battery capacity, current/target SoC and efficiency require vehicle/BMS data; they are absent from this AC-session snapshot. A fully observed German-depot pack still needs operator roster/telematics, a connection agreement, a retail tariff and OCPP status logs. The acquisition script records these gaps explicitly.
+
+Primary references: [ACN field definitions](https://ev.caltech.edu/dataset), [published Caltech network](https://github.com/zach401/acnportal/blob/14e723b11339e56ca3afd2bf4969f9e4bc8c2623/acnportal/acnsim/network/sites/caltech_acn.py), [EVSE pilot definitions](https://github.com/zach401/acnportal/blob/14e723b11339e56ca3afd2bf4969f9e4bc8c2623/acnportal/acnsim/models/evse.py), [ACN thesis: J1772/BMS limitations](https://thesis.library.caltech.edu/14191/1/Lee_Zachary_J_2021_Thesis.pdf), [SMARD market downloads](https://www.smard.de/en/downloadcenter/download-market-data/) and [required SMARD attribution/license](https://www.smard.de/en/datennutzung). The recorded sessions come from the [pinned research mirror](https://github.com/yvenn-amara/ev-load-open-data/tree/3b1cb67d1b02f8fea0451c16fbcfaee34449ce46/1.%20Input%20Data/7.%20ACN%20Data); original extraction/timezone history remains unverified. The SCE JSON is the ACN team's historical research representation, not a verified customer contract or complete current bill.
+
+## Retained datasets
+
 | Data | Contents and origin | Location |
 | --- | --- | --- |
 | Demo sessions | Deterministic synthetic generator, seed 2026; 50 EVs plus 100-session stress case | `data/demo/` |

@@ -105,15 +105,104 @@
       ]
     },
     "acn": {
-      "status": "failed",
-      "error": "ACN_API_TOKEN not set; register at https://ev.caltech.edu/dataset.html. Synthetic demo is already available.",
-      "previous_result": {}
+      "status": "downloaded",
+      "source": "Pinned public research mirror; direct Caltech connections timed out",
+      "initial_api_attempt": {
+        "status": "failed",
+        "error": "ACN_API_TOKEN not set; register at https://ev.caltech.edu/dataset.html. Synthetic demo is already available.",
+        "previous_result": {}
+      },
+      "files": [
+        {
+          "path": "data/external/acn/office001_public_mirror.csv",
+          "source": "https://raw.githubusercontent.com/yvenn-amara/ev-load-open-data/3b1cb67d1b02f8fea0451c16fbcfaee34449ce46/1.%20Input%20Data/7.%20ACN%20Data/Office%201.json",
+          "bytes": 134334,
+          "sha256": "8027fe439a65f89367f64b9b18ca0f1ee63bce9fc3dfe721855c167440506882",
+          "rows": 1481
+        }
+      ],
+      "scope": "Real recorded visits; historical request/vehicle/telemetry limitations are documented in docs/data-sources.md."
+    },
+    "original_design_inputs": {
+      "status": "downloaded",
+      "retrieved_at_utc": "2026-10-24T12:57:51.060094+00:00",
+      "files": [
+        {
+          "path": "data/external/required/2019-04-01_2019-10-01/caltech_charger_catalog.csv",
+          "bytes": 6664,
+          "sha256": "3c8d688c9e37e70a02c2fb2df581d4f57c8709402fc709afae275cc84c10c40a"
+        },
+        {
+          "path": "data/external/required/2019-04-01_2019-10-01/caltech_observed_sessions.csv",
+          "bytes": 859937,
+          "sha256": "6704ddaaa09df6c6e03ec21258ab841224c011d3e32f2a919c243e1aa11a2c4e"
+        },
+        {
+          "path": "data/external/required/2019-04-01_2019-10-01/caltech_requests_equipment_ceiling.csv",
+          "bytes": 24089,
+          "sha256": "4ac58e749d1bc6acad78ab6757453403cec9189fadbd313fa2bb439a9724c0d8"
+        },
+        {
+          "path": "data/external/required/2019-04-01_2019-10-01/caltech_site.json",
+          "bytes": 317,
+          "sha256": "f75591daf4cc681aa1e807c57e5a33644c9063c875476161038c3379523d2074"
+        },
+        {
+          "path": "data/external/required/2019-04-01_2019-10-01/germany_day_ahead_eur_kwh_15min.csv",
+          "bytes": 647412,
+          "sha256": "a58d547d2db96408c224c8ed0d932d96978855a2fa8704d998bc1715c86e47a9"
+        },
+        {
+          "path": "data/external/required/2019-04-01_2019-10-01/germany_day_ahead_eur_mwh_hourly.csv",
+          "bytes": 139893,
+          "sha256": "9f03410fff69020e31391b072f71f14c1e71f2d3683357114b5bc21717ad7d3f"
+        },
+        {
+          "path": "data/external/required/2019-04-01_2019-10-01/sce_historical_prices_usd_15min.csv",
+          "bytes": 593184,
+          "sha256": "ba75948ebbdf3f3bc0c6fa37a0fb2c71f39ed287ef1db325a04b5855124b454f"
+        },
+        {
+          "path": "data/external/required/2019-04-01_2019-10-01/sce_historical_tariff.json",
+          "bytes": 1432,
+          "sha256": "c4bdb6cec70af4119acb09e7931b9565adc83cbc5cb59c8980739cc23182e71e"
+        }
+      ],
+      "source_manifest": "data/external/required/2019-04-01_2019-10-01/manifest.json",
+      "design_source": "cb30fa6:ChargeWise AI ? Project Workflow and Technology Stack.md, section 2",
+      "start": "2019-04-01T00:00:00+00:00",
+      "end": "2019-10-01T00:00:00+00:00",
+      "counts": {
+        "observed_sessions": 5392,
+        "records_with_requested_parameters": 4632,
+        "requests_known_at_arrival": 261,
+        "german_price_hours": 4392,
+        "published_ports": 54
+      },
+      "field_coverage": {
+        "vehicle_id": "Session aliases, not persistent vehicles",
+        "arrival_time": "Measured connectionTime",
+        "departure_time": "Recorded requestedDeparture, version known by arrival",
+        "energy_required_kwh": "Recorded kWhRequested; not delivered-energy substitution",
+        "max_charging_power_kw": "Partial: published nominal EVSE ceiling, unknown per-vehicle acceptance power",
+        "charger_count": "54 published historical ports",
+        "station_power_limit": "150 kW published transformer plus phase/pod limits",
+        "slot_duration": "15-minute design choice",
+        "prices": "Measured German wholesale EUR; historical SCE research tariff separately USD",
+        "availability": "Partial: observed plug occupancy, unknown fault/online state"
+      },
+      "missing": [
+        "Per-vehicle maximum acceptance power",
+        "Actual battery capacity/SoC/target SoC and charging efficiency",
+        "Measured operational charger fault/online telemetry",
+        "German depot duty cycles, connection agreement and retail contract"
+      ]
     }
   },
   "shared_reference_manifest": "data/reference/manifest.json",
   "required_demo_manifest": "data/demo/manifest.json",
   "notes": [
-    "No API secrets, raw ACN identifiers, full archives, or model weights are stored.",
+    "No API secrets, personal identifiers, raw source archives, or model weights are stored; public equipment identifiers are retained for physical bindings.",
     "OPSD observations are acquired locally but not redistributed in Git; source terms require review.",
     "Small NLR/NASA reference slices and the complete NLR notice are committed.",
     "NLR load is simulated 2020 DC-station data, separate from the 2019 UTC German context and AC demo."

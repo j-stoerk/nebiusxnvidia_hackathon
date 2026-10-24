@@ -41,6 +41,8 @@ Suggested story: **a small fleet depot planning charging under limited electrica
 
 CSV contracts and retained dataset provenance: [dataset-format.md](docs/dataset-format.md), [data-sources.md](docs/data-sources.md). Downloads are available in the app. External/reference datasets are retained; the default demo uses the small synthetic fixtures.
 
+To acquire the real-world inputs mapped to the original design, run `uv run python scripts/acquire_required_data.py`. The [field-by-field coverage](docs/data-sources.md#original-designs-required-inputs) distinguishes recorded request parameters, published equipment limits, actual German prices and missing vehicle/fault telemetry. The six-month pack stays outside Git and uses about 2.3 MB.
+
 ## Implementation
 
 - `frontend/src/`: small React views, shared controls, and `useWorkspace.ts` for API transactions.
