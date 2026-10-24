@@ -1,202 +1,181 @@
-"""Workspace isolation, version checks, transactional activation, and replanning."""
+"""In-memory workspace orchestrating upload, optimize, simulation, and capacity."""
 
-from collections import OrderedDict
-from datetime import datetime, timedelta, timezone
-import json
-from pathlib import Path
-import threading
-import time
-from uuid import uuid4
-
-from .csv_validator import InputError, analytics, check_scenario, parse_prices, parse_sessions
-from .analytics import metrics
-from ..models import DemandTariff, Event, Session, Station
-from .scenario import Scenario, available_at, freeze_history, price_at
-from .schedule_validator import InvalidSchedule, validate_schedule
-from .scheduler import SchedulingError, baseline, optimize
-
-ROOT = Path(__file__).resolve().parents[3]
-DEMO = ROOT / "data" / "demo"
+from ..config import ROOT, get_settings
+from ..models import DemandTariff, PricePoint, ScheduleResult, SimulationEvent, StationConfig, VehicleSession
+from .analytics_service import compute_analytics
+from .baseline_scheduler import build_baseline
+from .capacity_service import run_capacity_study
+from .csv_validator import validate_prices_csv, validate_sessions_csv
+from .optimizer import optimize_schedule
+from .simulation_service import active_outages, apply_event, price_adjustments
 
 
-class Conflict(ValueError):
-    pass
+class AppState:
+    """Single in-memory MVP state (no database)."""
 
-
-def expected(scenario, version):
-    if version != scenario.state_version:
-        raise Conflict(f"State changed: expected version {version}, current version {scenario.state_version}. Refresh and retry.")
-
-
-def replan(scenario, optimized=True):
-    began = time.perf_counter()
-    try:
-        candidate_base = baseline(scenario)
-        validate_schedule(scenario, candidate_base)
-        candidate_base.validated = True
-        candidate_base.metrics = metrics(scenario, candidate_base)
-        references = {name: baseline(scenario, name) for name in ("EDF", "LLF")}
-        for reference in references.values():
-            validate_schedule(scenario, reference)
-            reference.validated = True
-            reference.metrics = metrics(scenario, reference)
-        candidate_opt = optimize(scenario) if optimized else None
-        if candidate_opt is not None:
-            validate_schedule(scenario, candidate_opt)
-            candidate_opt.validated = True
-            candidate_opt.metrics = metrics(scenario, candidate_opt)
-        # Activate as a pair only after both schedules independently pass validation.
-        scenario.schedule_version += 1
-        scenario.baseline, scenario.optimized = candidate_base, candidate_opt
-        scenario.references = references
-        scenario.stale, scenario.last_error = False, None
-        scenario.recovery_seconds = time.perf_counter() - began
-        return True
-    except (SchedulingError, InvalidSchedule) as exc:
-        scenario.last_error = str(exc)
-        # Existing schedules remain visible with their old versions; never activate a candidate.
-        scenario.stale = scenario.baseline is None or scenario.baseline.state_version != scenario.state_version
-        return False
-
-
-class Workspaces:
     def __init__(self):
-        self.items = OrderedDict()
-        self.lock = threading.Lock()
+        settings = get_settings()
+        self.sessions: list[VehicleSession] = []
+        self.prices: list[PricePoint] = []
+        self.station = StationConfig(
+            station_power_limit_kw=settings.default_station_power_kw,
+            charger_count=settings.default_charger_count,
+            charger_max_power_kw=settings.default_charger_power_kw,
+            slot_minutes=settings.default_slot_minutes,
+            charging_efficiency=1.0,
+            fixed_connections=True,
+            demand_tariff=DemandTariff(eur_per_kw=15.2, prior_peak_kw=40.0),
+        )
+        self.events: list[SimulationEvent] = []
+        self.baseline: ScheduleResult | None = None
+        self.optimized: ScheduleResult | None = None
+        self.capacity_study: dict | None = None
+        self.stale = False
+        self.last_error: str | None = None
 
-    def create(self, stress=False, capacity=False):
-        name = "infeasible_charging_sessions.csv" if stress else "sample_charging_sessions.csv"
-        scenario = Scenario(str(uuid4()), parse_sessions((DEMO / name).read_bytes()),
-                            Station.model_validate_json((DEMO / "station_config.json").read_text()),
-                            parse_prices((DEMO / "synthetic_prices_15min.csv").read_bytes()),
-                            label="Synthetic stress scenario" if stress else "Synthetic 50-vehicle demo")
-        if capacity:
-            scenario = _capacity_demo(scenario)
-        else:
-            # Retained legacy fixtures explicitly assume staff can move vehicles.
-            scenario.station.fixed_connections = False
-            scenario.label += " · vehicle moves assumed"
-        replan(scenario, optimized=False)
-        with self.lock:
-            self.items[scenario.workspace_id] = (time.monotonic(), scenario)
-            while len(self.items) > 16:
-                self.items.popitem(last=False)
-        return scenario
+    def snapshot(self) -> dict:
+        comparison = None
+        if self.baseline and self.optimized:
+            bm, om = self.baseline.metrics, self.optimized.metrics
+            comparison = {
+                "baseline_cost_eur": bm.cost_eur,
+                "optimized_cost_eur": om.cost_eur,
+                "cost_savings_eur": round(bm.cost_eur - om.cost_eur, 4),
+                "baseline_energy_cost_eur": bm.energy_cost_eur,
+                "optimized_energy_cost_eur": om.energy_cost_eur,
+                "baseline_demand_cost_eur": bm.demand_cost_eur,
+                "optimized_demand_cost_eur": om.demand_cost_eur,
+                "energy_cost_savings_eur": round(bm.energy_cost_eur - om.energy_cost_eur, 4),
+                "demand_cost_savings_eur": round(bm.demand_cost_eur - om.demand_cost_eur, 4),
+                "baseline_unserved_kwh": bm.unserved_kwh,
+                "optimized_unserved_kwh": om.unserved_kwh,
+                "baseline_peak_kw": bm.peak_power_kw,
+                "optimized_peak_kw": om.peak_power_kw,
+                "peak_reduction_kw": round(bm.peak_power_kw - om.peak_power_kw, 4),
+                "prior_peak_kw": om.prior_peak_kw,
+                "demand_tariff_eur_per_kw": om.demand_tariff_eur_per_kw,
+                "charging_efficiency": om.charging_efficiency,
+                "fixed_connections": self.station.fixed_connections,
+            }
+        at_risk = []
+        active = self.optimized or self.baseline
+        if active:
+            at_risk = [v for v in active.metrics.vehicles if not v.target_met]
 
-    def get(self, workspace_id):
-        with self.lock:
-            item = self.items.get(workspace_id)
-            if item is None or time.monotonic() - item[0] > 4 * 3600:
-                self.items.pop(workspace_id, None)
-                raise KeyError("Workspace expired or does not exist; load a new demo")
-            scenario = item[1]
-            self.items[workspace_id] = (time.monotonic(), scenario)
-            self.items.move_to_end(workspace_id)
-            return scenario
-
-
-def _capacity_demo(source):
-    """Small two-shift fixture; published capacity rate used as an illustration."""
-    start = datetime(2026, 10, 24, tzinfo=timezone.utc)
-    offset = start - source.prices[0].timestamp
-    sessions = [Session(vehicle_id=f"VAN-{i + 1:02}", arrival_time=start + timedelta(hours=arrival),
-                        departure_time=start + timedelta(hours=arrival + 6), energy_required_kwh=energy,
-                        max_charging_power_kw=11, battery_capacity_kwh=40, initial_soc=.25)
-                for i, (arrival, energy) in enumerate([(6, 18), (6, 18), (14, 24), (14, 24)])]
-    station = source.station.model_copy(update={"fixed_connections": True, "demand_tariff": DemandTariff(eur_per_kw=15.2)})
-    prices = [p.model_copy(update={"timestamp": p.timestamp + offset}) for p in source.prices]
-    return Scenario(source.workspace_id, sessions, station, prices, label="Synthetic two-shift depot · illustrative German demand price")
-
-
-def apply_event(scenario, event: Event, version):
-    existing = scenario.events.get(event.event_id)
-    if existing is not None:
-        if existing != event:
-            raise Conflict("An event_id cannot be reused with different contents")
-        # An exact retry is successful even if its original version is now old.
-        return {"status": "duplicate_ignored", "event_id": event.event_id}
-    expected(scenario, version)
-    if len(scenario.events) >= 100:
-        raise InputError("Reset the scenario after 100 simulation events")
-    if event.charger_id and event.charger_id not in {c.charger_id for c in scenario.station.chargers}:
-        raise InputError("Unknown charger_id")
-    start = event.time if event.type == "CHARGER_RECOVERED" else event.start_time
-    end = event.time if event.type == "CHARGER_RECOVERED" else event.end_time
-    if start < scenario.now or end > scenario.end:
-        raise InputError("Events must fall within the remaining simulation horizon; delivered history cannot change")
-    scenario.events[event.event_id] = event
-    scenario.state_version += 1
-    scenario.stale = True
-    success = replan(scenario)
-    return {"status": "replanned" if success else "replan_failed", "event_id": event.event_id}
+        return {
+            "simulated": True,
+            "station": self.station.model_dump(mode="json"),
+            "sessions": [s.model_dump(mode="json") for s in self.sessions],
+            "prices": [p.model_dump(mode="json") for p in self.prices],
+            "events": [e.model_dump(mode="json") for e in self.events],
+            "analytics": compute_analytics(self.sessions, self.station, self.prices),
+            "baseline": self.baseline.model_dump(mode="json") if self.baseline else None,
+            "optimized": self.optimized.model_dump(mode="json") if self.optimized else None,
+            "comparison": comparison,
+            "capacity_study": self.capacity_study,
+            "at_risk": [v.model_dump(mode="json") for v in at_risk],
+            "stale": self.stale,
+            "last_error": self.last_error,
+        }
 
 
-def advance(scenario, instant: datetime, version):
-    expected(scenario, version)
-    if not scenario.now < instant <= scenario.end:
-        raise InputError("Simulation time must advance within the scenario horizon")
+STATE = AppState()
+
+
+def load_demo_if_empty() -> None:
+    """Load sample CSV + synthetic prices when the workspace is empty."""
+    if STATE.sessions:
+        return
+    sample = ROOT / "data" / "sample_charging_sessions.csv"
+    prices = ROOT / "data" / "synthetic_prices_15min.csv"
+    if sample.is_file():
+        STATE.sessions = validate_sessions_csv(sample.read_bytes())
+    if prices.is_file():
+        STATE.prices = validate_prices_csv(prices.read_bytes())
+    else:
+        STATE.prices = _default_prices(STATE.sessions)
+
+
+def _default_prices(sessions: list[VehicleSession]) -> list[PricePoint]:
+    from datetime import timedelta
+    from ..utils.datetime_utils import floor_slot
+
+    if not sessions:
+        return []
+    start = floor_slot(min(s.arrival_time for s in sessions), 15)
+    end = max(s.departure_time for s in sessions)
+    points = []
+    cursor = start
+    while cursor <= end:
+        hour = cursor.hour
+        rate = 0.12 if hour < 6 or hour >= 22 else (0.28 if 7 <= hour < 10 or 17 <= hour < 21 else 0.18)
+        points.append(PricePoint(timestamp=cursor, price_eur_per_kwh=rate))
+        cursor += timedelta(minutes=15)
+    return points
+
+
+def upload_sessions(session_bytes: bytes, price_bytes: bytes | None = None) -> dict:
+    sessions = validate_sessions_csv(session_bytes)
+    prices = validate_prices_csv(price_bytes) if price_bytes else STATE.prices
+    if not prices:
+        prices = _default_prices(sessions)
+    STATE.sessions = sessions
+    STATE.prices = prices
+    STATE.events = []
+    STATE.baseline = None
+    STATE.optimized = None
+    STATE.capacity_study = None
+    STATE.stale = False
+    STATE.last_error = None
+    return STATE.snapshot()
+
+
+def update_station(payload: dict) -> dict:
+    data = {**payload}
+    data.pop("chargers", None)
+    station = StationConfig.model_validate(data)
+    STATE.station = station
+    STATE.stale = True
+    STATE.capacity_study = None
+    return STATE.snapshot()
+
+
+def run_optimization() -> dict:
+    if not STATE.sessions:
+        raise ValueError("Upload charging sessions before optimizing")
+    outages = active_outages(STATE.events)
+    adjustments = price_adjustments(STATE.events)
     try:
-        history = freeze_history(scenario, instant)
-    except ValueError as exc:
-        raise Conflict(str(exc)) from exc
-    scenario.history = history
-    scenario.now = instant
-    scenario.state_version += 1
-    scenario.stale = True
-    replan(scenario)
+        STATE.baseline = build_baseline(
+            STATE.sessions, STATE.station, STATE.prices, outages, adjustments
+        )
+        STATE.optimized = optimize_schedule(
+            STATE.sessions, STATE.station, STATE.prices, outages, adjustments
+        )
+        STATE.stale = False
+        STATE.last_error = None
+    except Exception as exc:
+        STATE.last_error = str(exc)
+        STATE.stale = True
+        raise
+    return STATE.snapshot()
 
 
-def update_station(scenario, station, version):
-    expected(scenario, version)
-    if station.fixed_connections and not scenario.station.fixed_connections and scenario.history:
-        raise InputError("Restart the legacy scenario before switching to fixed plugs; current physical bindings are unknown")
-    start, end = check_scenario(scenario.sessions, station, scenario.prices)
-    # Retained events reference physical charger identities.
-    ids = {c.charger_id for c in station.chargers}
-    if any(e.charger_id and e.charger_id not in ids for e in scenario.events.values()):
-        raise InputError("Cannot remove a charger referenced by an event; reset the scenario first")
-    scenario.station = station
-    scenario.start, scenario.end = start, end
-    scenario.state_version += 1
-    scenario.stale = True
-    replan(scenario)
+def run_capacity(counts: list[int] | None = None) -> dict:
+    STATE.capacity_study = run_capacity_study(STATE, counts=counts)
+    return {**STATE.snapshot(), "capacity_study": STATE.capacity_study}
 
 
-def upload(scenario, sessions_content, prices_content, version):
-    expected(scenario, version)
-    sessions = parse_sessions(sessions_content)
-    prices = parse_prices(prices_content) if prices_content is not None else scenario.prices
-    station = scenario.station.model_copy(update={"fixed_connections": True})
-    start, end = check_scenario(sessions, station, prices)
-    # All parsing and coverage checks precede replacing the existing simulation.
-    scenario.sessions, scenario.prices = sessions, prices
-    scenario.station = station
-    scenario.start, scenario.end, scenario.now = start, end, start
-    scenario.price_map = {p.timestamp: p.price_eur_per_kwh for p in prices}
-    scenario.events, scenario.history = {}, []
-    scenario.label = "Uploaded sessions · simulated station"
-    scenario.state_version += 1
-    scenario.stale = True
-    replan(scenario)
+def simulate(event: SimulationEvent, reoptimize: bool = True) -> dict:
+    result = apply_event(STATE.station, STATE.events, event)
+    STATE.stale = True
+    if reoptimize and STATE.sessions and result.get("applied"):
+        run_optimization()
+    return {"event_result": result, **STATE.snapshot()}
 
 
-def snapshot(scenario):
-    comparison = None
-    if scenario.baseline is not None and scenario.optimized is not None and not scenario.stale:
-        b, o = scenario.baseline.metrics, scenario.optimized.metrics
-        same_energy = abs(b["delivered_kwh"] - o["delivered_kwh"]) <= 1e-4
-        comparison = {"baseline_cost_eur": b["cost_eur"], "optimized_cost_eur": o["cost_eur"],
-                      "equal_delivered_energy": same_energy,
-                      "cost_savings_eur": b["cost_eur"] - o["cost_eur"] if same_energy else None,
-                      "cost_savings_percent": 100 * (b["cost_eur"] - o["cost_eur"]) / b["cost_eur"]
-                      if same_energy and b["cost_eur"] > 1e-8 else None}
-    return {"workspace_id": scenario.workspace_id, "label": scenario.label, "simulated": scenario.station.simulated,
-            "state_version": scenario.state_version, "schedule_version": scenario.schedule_version,
-            "now": scenario.now, "horizon_start": scenario.start, "horizon_end": scenario.end,
-            "station": scenario.station, "sessions": scenario.sessions,
-            "analytics": analytics(scenario.sessions, scenario.station, scenario.start, scenario.end),
-            "baseline": scenario.baseline, "optimized": scenario.optimized, "comparison": comparison,
-            "references": scenario.references,
-            "stale": scenario.stale, "last_error": scenario.last_error, "recovery_seconds": scenario.recovery_seconds,
-            "history_records": len(scenario.history), "events": list(scenario.events.values()),
-            "charger_status": [{"charger_id": c.charger_id, "available_now": available_at(scenario, c, scenario.now)} for c in scenario.station.chargers]}
+def reset_state() -> dict:
+    global STATE
+    STATE = AppState()
+    load_demo_if_empty()
+    return STATE.snapshot()

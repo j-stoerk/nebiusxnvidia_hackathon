@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: #f7f8ff;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-muted: #eef0fb;
+  --color-muted-foreground: #64748b;
+  --color-border: #dbe0f5;
+  --color-primary: #4f46e5;
+  --color-primary-foreground: #f8fafc;
+  --color-secondary: #7c3aed;
+  --color-secondary-foreground: #f8fafc;
+  --color-accent: #6366f1;
+  --color-accent-foreground: #f8fafc;
+  --color-destructive: #dc2626;
+  --color-ring: #818cf8;
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+}
+
+.dark {
+  --color-background: #0b1020;
+  --color-foreground: #e8ecff;
+  --color-card: #121833;
+  --color-card-foreground: #e8ecff;
+  --color-muted: #1a2140;
+  --color-muted-foreground: #94a3b8;
+  --color-border: #273056;
+  --color-primary: #818cf8;
+  --color-primary-foreground: #0b1020;
+  --color-secondary: #a78bfa;
+  --color-secondary-foreground: #0b1020;
+  --color-accent: #6366f1;
+  --color-accent-foreground: #f8fafc;
+  --color-ring: #a5b4fc;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image:
+      radial-gradient(900px 420px at 8% -10%, rgba(99, 102, 241, 0.18), transparent 55%),
+      radial-gradient(700px 380px at 100% 0%, rgba(124, 58, 237, 0.14), transparent 50%);
+    min-height: 100vh;
+  }
+
+  .dark body,
+  .dark {
+    background-image:
+      radial-gradient(900px 420px at 8% -10%, rgba(99, 102, 241, 0.22), transparent 55%),
+      radial-gradient(700px 380px at 100% 0%, rgba(124, 58, 237, 0.18), transparent 50%);
+  }
+}
+
+@layer utilities {
+  .animate-in-up {
+    animation: in-up 0.45s ease-out both;
+  }
+
+  .animate-fade {
+    animation: fade 0.35s ease-out both;
+  }
+
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(79, 70, 229, 0.12);
+  }
+}
+
+@keyframes in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.slot-bar {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.slot-bar:hover {
+  transform: scaleY(1.08);
+  filter: brightness(1.08);
+}

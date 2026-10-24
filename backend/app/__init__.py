@@ -1,1 +1,1 @@
-
+"""ChargeWise AI backend application."""
