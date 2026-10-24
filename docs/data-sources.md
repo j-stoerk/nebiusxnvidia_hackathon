@@ -6,6 +6,8 @@ All datasets are retained. The running application defaults to `data/demo/`; ref
 
 The original workflow, recovered from commit `cb30fa6` (`ChargeWise AI — Project Workflow and Technology Stack.md`, section 2), requires five CSV columns and five station/price settings. The following pack covers the publicly recoverable values; it does **not** fill missing telemetry with invented measurements.
 
+The single-file export [charging_sessions.csv](../data/charging_sessions.csv) contains exactly those five columns and all 261 usable Caltech requests, projected from `caltech_requests_equipment_ceiling.csv` below without changing values. Power remains a published equipment ceiling, not measured vehicle acceptance. This six-month reference exceeds the interactive upload limits; select at most 100 sessions within 72 hours for the dashboard. The seven-column source retains actual charger bindings and J1772 compatibility, which the original five-column format cannot express.
+
 ```powershell
 uv run python scripts/acquire_required_data.py
 ```
