@@ -108,7 +108,7 @@ def main():
             if result["status"] != "downloaded":
                 print(f"Not acquired: {source}: {result.get('error', result['status'])}")
     print(f"Validated {verified} provenance hashes; session contracts, price grids, and available reference data passed.")
-    print("This verifies inputs, not optimizer feasibility or application behavior; application is not implemented yet.")
+    print("This verifies dataset inputs; application and scheduling tests are in tests/.")
 
 
 if __name__ == "__main__":

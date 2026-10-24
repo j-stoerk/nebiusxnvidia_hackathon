@@ -1,45 +1,67 @@
 # ChargeWise AI
 
-EV charging planning for fleet and workplace operators: compare immediate charging with a constrained schedule, explain decisions with NVIDIA Nemotron via Nebius, and replan after simulated disruptions.
+EV charging operations demo built with React/Vite, Tailwind CSS, Recharts, FastAPI, Pandas, Google OR-Tools, and NVIDIA Nemotron through Nebius Token Factory.
 
-**Current status:** project documentation, source research, reproducible input datasets, and data tooling. The FastAPI backend, React UI, optimizer, and Nemotron integration are planned; this repository does not yet contain a working application or measured savings.
+Upload sessions, compare a first-come-first-served baseline with a validated optimized schedule, inspect costs and deadline risks, and replan after simulated charger or price changes.
 
-Repository: [j-stoerk/nebiusxnvidia_hackathon](https://github.com/j-stoerk/nebiusxnvidia_hackathon).
+## Run
 
-## Start here
+Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and Node.js 22.12+ (or 24+).
 
-- [Workflow and technology stack](ChargeWise%20AI%20%E2%80%94%20Project%20Workflow%20and%20Technology%20Stack.md)
-- [Hackathon requirements and submission checklist](docs/hackathon-rules.md)
-- [Dataset schemas and assumptions](docs/dataset-format.md)
-- [Verified sources, acquired data, and remaining access requirements](docs/data-sources.md)
-- [Storage strategy and cloud downloads](docs/storage.md)
-- [NVIDIA forecasting candidate and future fine-tuning data](docs/forecasting.md)
-- [Invite teammates and collaborate](CONTRIBUTING.md)
-- [Decisions retained from the retired blueprint](docs/blueprint-decisions.md)
-- [Target application structure](folder-structure.md)
-
-## Use the data now
-
-Python 3.11+ is sufficient; no dependency installation or local model download is needed for these scripts.
+One-command guided demo (builds the frontend if needed and opens your browser):
 
 ```powershell
-python scripts/prepare_data.py
-python scripts/validate_data.py
+uv run --locked python scripts/run_demo.py
 ```
 
-The committed `data/demo/` fixtures contain 50 synthetic sessions, a 100-session stress case, a week of synthetic 15-minute EUR prices, one simulated station with ten chargers, and disruption scenarios. Everything is labeled synthetic. Small NLR/NASA reference slices, provenance, and required notices are in `data/reference/`. [data/acquisition-report.json](data/acquisition-report.json) records acquisition results. Larger training corpora stay outside Git.
+Use `--no-browser` for a terminal-only launch, `--port 8001` for a different port, or `--host 0.0.0.0` for a Codespaces port forward. The guide uses the existing `data/demo/` inputs and real API/optimizer calls.
 
-Fetch small historical slices when needed:
+Manual setup:
 
 ```powershell
-python scripts/prepare_data.py --sources opsd nlr nasa
-python scripts/validate_data.py --external
+uv sync --locked
+npm ci --prefix frontend
+npm run build --prefix frontend
+uv run uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Outputs go into ignored `data/external/`. The script streams the OPSD source, reads the NLR archive in RAM, and retains only small slices. A registered ACN token enables `--sources acn`; synthetic sessions work without it. Scripts read credentials from the process environment, not automatically from `.env`.
+Open **http://127.0.0.1:8000**. API documentation: **http://127.0.0.1:8000/docs**.
 
-## Build next
+For frontend development, keep the API running and use `npm run dev --prefix frontend`; Vite proxies `/api` to port 8000.
 
-Implement CSV validation and analytics, a first-come-first-served baseline, OR-Tools scheduling with independent constraint checks, a dashboard, Nemotron tools, and outage/price-change replanning. Keep one end-to-end scenario working throughout development. See the workflow for acceptance criteria.
+## Nemotron
 
-Project-authored code, docs, and generated fixtures use the [MIT license](LICENSE). External datasets keep their own terms. Configure secrets separately in each developer environment and in the deployment host.
+Create an ignored root `.env` using `.env.example`. Set `NEBIUS_API_KEY` and the exact tool-capable NVIDIA Nemotron `NEBIUS_MODEL` available in your Token Factory account. The default base URL is `https://api.tokenfactory.nebius.com/v1`. Restart the backend after configuration changes.
+
+The agent reads state/schedules and can call typed optimization and simulated-event tools when **Allow simulation changes** is enabled. No credentials are sent to the frontend. Without credentials, chat is explicitly unavailable; all deterministic scheduling and simulation features work. Live inference has not been verified without an account key.
+
+## Demo
+
+Click **Guided demo** for baseline → optimization → charger outage → price spike → duplicate-event replay. Each step shows actual measured results. AI connection status remains explicit.
+
+Outside the guide, inspect vehicle risks/intervals, advance simulation time to preserve completed charging, configure the station, upload CSVs, or load the 100-session stress case. All simulation controls work without an AI key.
+
+CSV contracts and retained dataset provenance: [dataset-format.md](docs/dataset-format.md), [data-sources.md](docs/data-sources.md). Downloads are available in the app. External/reference datasets are retained; the default demo uses the small synthetic fixtures.
+
+## Implementation
+
+- `frontend/src/`: React dashboard, charts, upload/settings/event forms, and agent panel.
+- `backend/app/api/`: HTTP routes; `models.py`: validated contracts.
+- `backend/app/services/`: CSV ingestion, analytics, FCFS/OR-Tools scheduling, independent validation, and versioned simulation state.
+- `backend/app/ai/`: bounded Nemotron tool loop through Nebius.
+
+The optimizer first minimizes unserved battery energy, then grid electricity cost without worsening that shortfall. It enforces physical limits and reports solver/time-limit status. Schedules activate only after an independent sweep-line validator passes. Savings are reported only when delivered energy matches the baseline. Charging can pause or change compatible connectors at interval boundaries; no physical charger is controlled.
+
+Workspaces are separate, memory-only simulations (up to 16, four-hour idle expiry). Use one backend process; restarting loses sessions. Time is UTC, prices EUR/kWh, and the scheduling grid is 15 minutes, refined at availability/event boundaries. No database, forecasting model, training job, or physical hardware is required for this implementation.
+
+## Verify
+
+```powershell
+uv run pytest -q
+npm run build --prefix frontend
+uv run python scripts/validate_data.py
+```
+
+Python dependencies are locked in `uv.lock`; frontend dependencies in `frontend/package-lock.json`. Dependencies, model weights, build output, and credentials are ignored by Git.
+
+Project code/generated fixtures: [MIT](LICENSE). Retained external datasets keep their own notices and terms.
