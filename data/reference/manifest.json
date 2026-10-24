@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "path": "data/reference/nlr_ev_load_first_week.csv",
+      "source": "https://data.nlr.gov/system/files/176/electric_profiles.zip",
+      "bytes": 244375,
+      "sha256": "41680f505a4a7fb58c2c4a2e8921e1b1de4bab45c2073b8c678aae341483a58d",
+      "simulated": true,
+      "member": "electric_profiles/ev_station_2port_150kW_2event.csv",
+      "selection": "first 10080 observations; original time/index and column retained; timestamps start 2020-01-01, timezone unspecified",
+      "archive_sha256": "a2a37c496ac429c1dba13cd5a4bcf8392efdb72ca3a05b208d06d50f4e069474",
+      "license": "NLR notice: keep entire notice with any copied data and credit DOE/NREL/ALLIANCE",
+      "license_url": "https://data.nlr.gov/node/176/license",
+      "rows": 10080
+    },
+    {
+      "path": "data/reference/nlr_ev_load_15min.csv",
+      "source": "https://data.nlr.gov/system/files/176/electric_profiles.zip",
+      "bytes": 17096,
+      "sha256": "2a43c4e1ab120bb266841a863dd6fd7b56cfdfca916dc0c15e5e4ff60e5cece1",
+      "simulated": true,
+      "member": "electric_profiles/ev_station_2port_150kW_2event.csv",
+      "transformation": "Mean of each 15 one-minute kW values; original simulated timestamps, timezone unspecified",
+      "license": "NLR full notice in NLR_DATA_LICENSE.txt",
+      "rows": 672
+    },
+    {
+      "path": "data/reference/NLR_DATA_LICENSE.txt",
+      "source": "https://data.nlr.gov/node/176/license",
+      "bytes": 2449,
+      "sha256": "d606eab2f1b148e4c4b2b1b36f74c93605185219ea5b4bbe5221dcb714bf7787",
+      "kind": "required data notice"
+    },
+    {
+      "path": "data/reference/nasa_power_berlin_2019-01-07_week.csv",
+      "source": "https://power.larc.nasa.gov/api/temporal/hourly/point?parameters=ALLSKY_SFC_SW_DWN%2CT2M&community=RE&longitude=13.405&latitude=52.52&start=20190107&end=20190113&format=JSON&time-standard=UTC",
+      "bytes": 5192,
+      "sha256": "c40611dbfe660f3d000b4316c209aac13075903a2db8ff0ba404232c224d727f",
+      "geography": "Berlin, 52.52N 13.405E",
+      "source_type": "satellite/reanalysis/model products",
+      "license": "NASA POWER source acknowledgment; consult source metadata",
+      "units": {
+        "ALLSKY_SFC_SW_DWN": {
+          "units": "Wh/m^2",
+          "longname": "All Sky Surface Shortwave Downward Irradiance"
+        },
+        "T2M": {
+          "units": "C",
+          "longname": "Temperature at 2 Meters"
+        }
+      },
+      "rows": 168
+    },
+    {
+      "path": "data/reference/nasa_power_metadata.json",
+      "source": "https://power.larc.nasa.gov/api/temporal/hourly/point?parameters=ALLSKY_SFC_SW_DWN%2CT2M&community=RE&longitude=13.405&latitude=52.52&start=20190107&end=20190113&format=JSON&time-standard=UTC",
+      "bytes": 681,
+      "sha256": "b2ae34b345847ddc5dce9be5102335c5a116b061ffa1df028d74db58f5a042cc",
+      "kind": "units, location, and provider metadata"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "reviewed_date": "2026-10-24",
+  "scope": "Demo-sized data only; future fine-tuning and LoRA corpora remain separate in cloud storage.",
+  "sources": {
+    "opsd": {
+      "status": "downloaded",
+      "retrieved_at_utc": "2026-10-24T09:46:40.120784Z",
+      "files": [
+        {
+          "path": "data/external/opsd_germany_2019-01-07_week.csv",
+          "source": "https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min_singleindex.csv",
+          "bytes": 8038,
+          "sha256": "6ddf22e214eab0a74b668d126f0d8450792c91220b9caac96ca1c74b88e9ac1c",
+          "license": "Original-provider terms apply; package metadata does not declare a data license. Not redistributed in Git.",
+          "measured": true,
+          "geography": "Germany / DE-LU bidding zone",
+          "rows": 168
+        },
+        {
+          "path": "data/external/opsd_datapackage.json",
+          "source": "https://data.open-power-system-data.org/time_series/2020-10-06/datapackage.json",
+          "bytes": 227844,
+          "sha256": "e02c22810a93bb9bb347c845c2ab316a4fedcea49ec0ffcaed71e9758994c72d",
+          "kind": "provider metadata"
+        },
+        {
+          "path": "data/external/opsd_prices_15min.csv",
+          "source": "https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min_singleindex.csv",
+          "bytes": 21444,
+          "sha256": "c01755b6a3b96cd5263b900420228fe2f5115bedf852df93d2e26130fb72c168",
+          "license": "Original-provider terms apply; package metadata does not declare a data license. Not redistributed in Git.",
+          "transformation": "EUR/MWh divided by 1000; hourly values held across four quarters; wholesale, not retail tariff",
+          "rows": 672
+        }
+      ]
+    },
+    "nlr": {
+      "status": "downloaded",
+      "retrieved_at_utc": "2026-10-24T09:46:47.947845Z",
+      "files": [
+        {
+          "path": "data/external/nlr_ev_load_first_week.csv",
+          "source": "https://data.nlr.gov/system/files/176/electric_profiles.zip",
+          "bytes": 244375,
+          "sha256": "41680f505a4a7fb58c2c4a2e8921e1b1de4bab45c2073b8c678aae341483a58d",
+          "simulated": true,
+          "member": "electric_profiles/ev_station_2port_150kW_2event.csv",
+          "selection": "first 10080 observations; original time/index and column retained; timestamps start 2020-01-01, timezone unspecified",
+          "archive_sha256": "a2a37c496ac429c1dba13cd5a4bcf8392efdb72ca3a05b208d06d50f4e069474",
+          "license": "NLR notice: keep entire notice with any copied data and credit DOE/NREL/ALLIANCE",
+          "license_url": "https://data.nlr.gov/node/176/license",
+          "rows": 10080
+        },
+        {
+          "path": "data/external/nlr_ev_load_15min.csv",
+          "source": "https://data.nlr.gov/system/files/176/electric_profiles.zip",
+          "bytes": 17096,
+          "sha256": "2a43c4e1ab120bb266841a863dd6fd7b56cfdfca916dc0c15e5e4ff60e5cece1",
+          "simulated": true,
+          "member": "electric_profiles/ev_station_2port_150kW_2event.csv",
+          "transformation": "Mean of each 15 one-minute kW values; original simulated timestamps, timezone unspecified",
+          "license": "NLR full notice in NLR_DATA_LICENSE.txt",
+          "rows": 672
+        },
+        {
+          "path": "data/external/NLR_DATA_LICENSE.txt",
+          "source": "https://data.nlr.gov/node/176/license",
+          "bytes": 2449,
+          "sha256": "d606eab2f1b148e4c4b2b1b36f74c93605185219ea5b4bbe5221dcb714bf7787",
+          "kind": "required data notice"
+        }
+      ]
+    },
+    "nasa": {
+      "status": "downloaded",
+      "retrieved_at_utc": "2026-10-24T09:46:48.709978Z",
+      "files": [
+        {
+          "path": "data/external/nasa_power_berlin_2019-01-07_week.csv",
+          "source": "https://power.larc.nasa.gov/api/temporal/hourly/point?parameters=ALLSKY_SFC_SW_DWN%2CT2M&community=RE&longitude=13.405&latitude=52.52&start=20190107&end=20190113&format=JSON&time-standard=UTC",
+          "bytes": 5192,
+          "sha256": "c40611dbfe660f3d000b4316c209aac13075903a2db8ff0ba404232c224d727f",
+          "geography": "Berlin, 52.52N 13.405E",
+          "source_type": "satellite/reanalysis/model products",
+          "license": "NASA POWER source acknowledgment; consult source metadata",
+          "units": {
+            "ALLSKY_SFC_SW_DWN": {
+              "units": "Wh/m^2",
+              "longname": "All Sky Surface Shortwave Downward Irradiance"
+            },
+            "T2M": {
+              "units": "C",
+              "longname": "Temperature at 2 Meters"
+            }
+          },
+          "rows": 168
+        },
+        {
+          "path": "data/external/nasa_power_metadata.json",
+          "source": "https://power.larc.nasa.gov/api/temporal/hourly/point?parameters=ALLSKY_SFC_SW_DWN%2CT2M&community=RE&longitude=13.405&latitude=52.52&start=20190107&end=20190113&format=JSON&time-standard=UTC",
+          "bytes": 681,
+          "sha256": "b2ae34b345847ddc5dce9be5102335c5a116b061ffa1df028d74db58f5a042cc",
+          "kind": "units, location, and provider metadata"
+        }
+      ]
+    },
+    "acn": {
+      "status": "failed",
+      "error": "ACN_API_TOKEN not set; register at https://ev.caltech.edu/dataset.html. Synthetic demo is already available.",
+      "previous_result": {}
+    }
+  },
+  "shared_reference_manifest": "data/reference/manifest.json",
+  "required_demo_manifest": "data/demo/manifest.json",
+  "notes": [
+    "No API secrets, raw ACN identifiers, full archives, or model weights are stored.",
+    "OPSD observations are acquired locally but not redistributed in Git; source terms require review.",
+    "Small NLR/NASA reference slices and the complete NLR notice are committed.",
+    "NLR load is simulated 2020 DC-station data, separate from the 2019 UTC German context and AC demo."
+  ]
+}

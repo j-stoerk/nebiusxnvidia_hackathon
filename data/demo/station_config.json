@@ -1,0 +1,70 @@
+{
+  "simulated": true,
+  "station_id": "DEMO-01",
+  "timezone": "UTC",
+  "slot_minutes": 15,
+  "station_power_limit_kw": 80,
+  "charging_efficiency": 1.0,
+  "chargers": [
+    {
+      "charger_id": "CH-01",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-02",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-03",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-04",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-05",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-06",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-07",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-08",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-09",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    },
+    {
+      "charger_id": "CH-10",
+      "max_power_kw": 11,
+      "connector_type": "Type2",
+      "available": true
+    }
+  ]
+}

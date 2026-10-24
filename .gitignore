@@ -1,0 +1,28 @@
+# Credentials and private operator uploads
+.env
+.env.*
+!.env.example
+uploads/
+# Reproducible external data: fetch only the slices needed locally/in Codespaces
+data/external/
+data/raw/
+data/training/
+checkpoints/
+.cache/
+# Dependencies, build output, model weights
+.venv/
+venv/
+node_modules/
+dist/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.safetensors
+*.ckpt
+*.pt
+*.onnx
+*.zip
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/

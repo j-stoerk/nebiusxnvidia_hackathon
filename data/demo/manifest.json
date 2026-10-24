@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "generator": "scripts/prepare_data.py",
+  "period_utc": [
+    "2019-01-07T00:00:00Z",
+    "2019-01-14T00:00:00Z"
+  ],
+  "files": [
+    {
+      "path": "data/demo/events.json",
+      "source": "ChargeWise deterministic synthetic generator",
+      "bytes": 1115,
+      "sha256": "f23141d9e7adfec2ed6bc825568f768ca0e13574b08bdc4a2d73b25ad0bb427e",
+      "seed": 2026,
+      "simulated": true,
+      "license": "MIT (project-generated fixtures)"
+    },
+    {
+      "path": "data/demo/infeasible_charging_sessions.csv",
+      "source": "ChargeWise deterministic synthetic generator",
+      "bytes": 6448,
+      "sha256": "1c64f767694c915721fde8c522d63abec44341f4d493e43f44b7ff872efb610b",
+      "seed": 2026,
+      "simulated": true,
+      "license": "MIT (project-generated fixtures)",
+      "rows": 100
+    },
+    {
+      "path": "data/demo/sample_charging_sessions.csv",
+      "source": "ChargeWise deterministic synthetic generator",
+      "bytes": 3066,
+      "sha256": "15174ab72886d92c8053ae664d49a0d71e4cf03dc7133c6d16125f856cec501d",
+      "seed": 2026,
+      "simulated": true,
+      "license": "MIT (project-generated fixtures)",
+      "rows": 50
+    },
+    {
+      "path": "data/demo/station_config.json",
+      "source": "ChargeWise deterministic synthetic generator",
+      "bytes": 1426,
+      "sha256": "7c3be1e81be01b2365df839e5669406321c38271a46083b8913fb114e929ba94",
+      "seed": 2026,
+      "simulated": true,
+      "license": "MIT (project-generated fixtures)"
+    },
+    {
+      "path": "data/demo/synthetic_prices_15min.csv",
+      "source": "ChargeWise deterministic synthetic generator",
+      "bytes": 17500,
+      "sha256": "66214287b6f47aadab7ad51fed8e01108244d33dfe1e59170c6a2105128d8f03",
+      "seed": 2026,
+      "simulated": true,
+      "license": "MIT (project-generated fixtures)",
+      "rows": 672
+    }
+  ]
+}
