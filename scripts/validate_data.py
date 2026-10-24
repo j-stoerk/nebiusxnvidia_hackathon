@@ -91,6 +91,54 @@ def required_pack(folder):
     time_grid(folder / "sce_historical_prices_usd_15min.csv", "timestamp", len(quarters), 15)
 
 
+def real_pack(folder):
+    """Check measured values and exclusions, without assigning reference models to ACN."""
+    payload = json.loads((folder / "manifest.json").read_text())
+    if folder.name == "tum":
+        rows = read_csv(folder / "cup3_observed_soc.csv")
+        require(len(rows) == payload["soc_observations"], "SoC count differs")
+        for row in rows:
+            require(row["vehicle_id"] == "CUP3" and 0 <= float(row["soc_percent"]) <= 100, "Invalid measured SoC")
+            stamp = datetime.fromisoformat(row["source_time_unspecified_timezone"])
+            require(stamp.tzinfo is None, "Unknown source timezone was invented")
+        vehicle = json.loads((folder / "cup3_vehicle.json").read_text())
+        require("target_soc" not in vehicle and "efficiency" not in vehicle, "Unobserved vehicle fields were added")
+    elif folder.name == "dtu":
+        for metric, count in payload["observations"].items():
+            rows = read_csv(folder / f"{metric}.csv")
+            require(len(rows) == count, "Experimental observation count differs")
+            for row in rows:
+                value = float(row[metric])
+                valid = (0 < value <= 1 if metric == "efficiency_fraction" else
+                         0 <= value <= 1 if metric == "power_factor" else True)
+                require(math.isfinite(value) and (row["quality_flag"] == "recorded") == valid,
+                        "Invalid experiment value lost its quality flag")
+    elif folder.name == "curves":
+        rows = read_csv(folder / "digitized_dc_curves.csv")
+        require(len(rows) == payload["curve_points"], "Curve count differs")
+        flagged = 0
+        for row in rows:
+            axis, power = float(row["source_soc_or_soe_percent"]), float(row["power_kw"])
+            require(math.isfinite(axis) and math.isfinite(power), "Nonfinite curve point")
+            valid = 0 <= axis <= 100 and power >= 0
+            require((row["quality_flag"] == "digitized") == valid, "Curve quality flag differs")
+            flagged += not valid
+        require(flagged == payload["flagged_points"], "Flagged curve count differs")
+    elif folder.name == "mobidata":
+        rows = read_csv(folder / "german_evse_snapshot.csv")
+        require(len(rows) == payload["connector_rows"], "Connector count differs")
+        for row in rows:
+            require(row["evse_id"].startswith("DE*"), "Foreign equipment in German sample")
+            expected = "True" if row["reported_status"] == "AVAILABLE" else "" if row["reported_status"] in {"UNKNOWN", "STATIC"} else "False"
+            require(row["available_for_new_session"] == expected, "Unknown availability became operational")
+            if row["rated_connector_kw"]:
+                require(math.isfinite(float(row["rated_connector_kw"])) and float(row["rated_connector_kw"]) > 0,
+                        "Invalid published connector power")
+        history = read_csv(folder / "heilbronn_observed_status_history.csv")
+        require(len(history) == payload["history_snapshots"], "History count differs")
+        require(all(r["city"] == "Heilbronn" and r["station_id"] == "323832" for r in history), "Unrelated history joined")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--external", action="store_true")
@@ -122,6 +170,9 @@ def main():
         for manifest in sorted((external / "required").glob("*/manifest.json")):
             verified += verify_manifest(manifest)
             required_pack(manifest.parent)
+        for manifest in sorted((external / "real").glob("*/manifest.json")):
+            verified += verify_manifest(manifest)
+            real_pack(manifest.parent)
         if (external / "opsd_prices_15min.csv").exists():
             hourly = time_grid(external / "opsd_germany_2019-01-07_week.csv", "timestamp", 168, 60)
             quarter = time_grid(external / "opsd_prices_15min.csv", "timestamp", 672, 15)

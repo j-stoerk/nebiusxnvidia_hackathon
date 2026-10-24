@@ -197,6 +197,253 @@
         "Measured operational charger fault/online telemetry",
         "German depot duty cycles, connection agreement and retail contract"
       ]
+    },
+    "real_tum": {
+      "status": "downloaded",
+      "retrieved_at_utc": "2026-10-24T13:19:27.134315+00:00",
+      "soc_observations": 13764,
+      "vehicles": 1,
+      "license": "CC BY-NC 4.0; TUMFTM and the authors listed in README.MD",
+      "scope": "Real German field telemetry, 2022-11 to 2023-04. SoC readings include driving and parking; endpoints are not driver targets. No linkage to anonymous ACN vehicles.",
+      "files": [
+        {
+          "file": "cup3_observed_soc.csv",
+          "bytes": 481611,
+          "sha256": "af73c5d36c6ee2e0d845082e385e8aeda51b652b9fad6cee9e874ac60304d4c6",
+          "path": "data/external/real/tum/cup3_observed_soc.csv"
+        },
+        {
+          "file": "cup3_vehicle.json",
+          "bytes": 575,
+          "sha256": "f8d649b0e1893a0c0de03bbf77162f543ccf6eeec6eb98ea513e0b1be696fda9",
+          "path": "data/external/real/tum/cup3_vehicle.json"
+        },
+        {
+          "file": "LICENSE",
+          "bytes": 19347,
+          "sha256": "41003d4a74749c0220e33dd415042164b5a1093ed401f36277234f772d22d3d0",
+          "path": "data/external/real/tum/LICENSE"
+        },
+        {
+          "file": "README.MD",
+          "bytes": 6054,
+          "sha256": "287ca2c1e3dbdf809b384679d42429b96f871c51dfa38c0d6925d143ec09c530",
+          "path": "data/external/real/tum/README.MD"
+        },
+        {
+          "file": "value_overview.csv",
+          "bytes": 2346,
+          "sha256": "17ebf87b8b0d57eeea0fbd6dcaf5b1836d51394b7508080c1f24602f39f29b57",
+          "path": "data/external/real/tum/value_overview.csv"
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://raw.githubusercontent.com/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/README.MD",
+          "bytes": 6054,
+          "sha256": "287ca2c1e3dbdf809b384679d42429b96f871c51dfa38c0d6925d143ec09c530"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/LICENSE",
+          "bytes": 19347,
+          "sha256": "41003d4a74749c0220e33dd415042164b5a1093ed401f36277234f772d22d3d0"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/data/value_overview.csv",
+          "bytes": 2346,
+          "sha256": "17ebf87b8b0d57eeea0fbd6dcaf5b1836d51394b7508080c1f24602f39f29b57"
+        },
+        {
+          "url": "https://media.githubusercontent.com/media/TUMFTM/electric-vehicle-uds-dataset/6bac2936e280b2d7f45607e5cb624a18b41b3faa/data/uds_data/CUP3.parquet",
+          "bytes": 8814552,
+          "sha256": "38efe95854cfcd4014c4b5d96168e7d3d6a419d1daf7a45468772ee14ba38e26"
+        },
+        {
+          "url": "https://www.seat-cupra-mediacenter.com/CUPRA-Brand/presskits/cupra-born-se/technical-data",
+          "bytes": 41453,
+          "sha256": "24cf27c9ebed0d89ca599d5be8b10e970c4a831b914c94282e04f1845172e20e"
+        }
+      ],
+      "source_manifest": "data/external/real/tum/manifest.json"
+    },
+    "real_dtu": {
+      "status": "downloaded",
+      "retrieved_at_utc": "2026-10-24T13:21:17.334769+00:00",
+      "observations": {
+        "efficiency_fraction": 315,
+        "power_factor": 295,
+        "reactive_power_var": 305
+      },
+      "license": "CC BY 4.0; Kristian Sevdari, DTU, DOI 10.11583/DTU.25425262.v1",
+      "scope": "Controlled onboard-charger experiments by model and current; missing test cells stay absent. Source zero efficiencies and out-of-range power factors are preserved and flagged for exclusion from models. Not measurements of the ACN or TUM vehicles; no automatic efficiency assignment.",
+      "files": [
+        {
+          "file": "efficiency_fraction.csv",
+          "bytes": 16996,
+          "sha256": "93a719599afafec05dd1daa8da2b830e63195619364f098ca3605d214e3d3926",
+          "path": "data/external/real/dtu/efficiency_fraction.csv"
+        },
+        {
+          "file": "power_factor.csv",
+          "bytes": 17181,
+          "sha256": "fa491d7948b14fd73566a9a54675b2c2a602ecea39b7add0fa4a3c26cd424156",
+          "path": "data/external/real/dtu/power_factor.csv"
+        },
+        {
+          "file": "reactive_power_var.csv",
+          "bytes": 14505,
+          "sha256": "eeb96351effeb2d241d4a75bcc6996ee03c8866e63c69fada49e731cd9f274b7",
+          "path": "data/external/real/dtu/reactive_power_var.csv"
+        },
+        {
+          "file": "README.txt",
+          "bytes": 847,
+          "sha256": "4dac70dc86d44ae6ed3263cffc02b2e042f9cf306c43051f9966c41e66c2c6d0",
+          "path": "data/external/real/dtu/README.txt"
+        },
+        {
+          "file": "source_notice.json",
+          "bytes": 1389,
+          "sha256": "254ee6d03830d695176ad51d00ee02df61ab603fd3a800709f1e8b6af8e6ea5c",
+          "path": "data/external/real/dtu/source_notice.json"
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://api.figshare.com/v2/articles/25425262/versions/1",
+          "bytes": 14036,
+          "sha256": "2a02c9c6d0942bd7a0abc145694bb7754c72ae4e0a04fd024e4f2335ed4032c1"
+        },
+        {
+          "url": "https://ndownloader.figshare.com/files/45095290",
+          "bytes": 847,
+          "sha256": "4dac70dc86d44ae6ed3263cffc02b2e042f9cf306c43051f9966c41e66c2c6d0"
+        },
+        {
+          "url": "https://ndownloader.figshare.com/files/45095242",
+          "bytes": 14942,
+          "sha256": "38d777c24415cc26bbb394ef5d93673d572c26262202906d0eb26bed8b1a5ebd"
+        },
+        {
+          "url": "https://ndownloader.figshare.com/files/45095245",
+          "bytes": 14755,
+          "sha256": "acf21caaada8bac79e08ee8a2f5dc258b0a9d8d0e03d295893fd0df14c1d6410"
+        },
+        {
+          "url": "https://ndownloader.figshare.com/files/45095248",
+          "bytes": 12503,
+          "sha256": "942be2f1e1a84052c221f0855652d2078f9becb4bf7fa95ee4f85f18f8c5ab99"
+        }
+      ],
+      "source_manifest": "data/external/real/dtu/manifest.json"
+    },
+    "real_curves": {
+      "status": "downloaded",
+      "retrieved_at_utc": "2026-10-24T13:20:02.167221+00:00",
+      "curve_points": 18506,
+      "profiles": 99,
+      "flagged_points": 2,
+      "license": "CC BY 4.0; Morin, Chatra, Whitacre and Michalek; DOI 10.6084/m9.figshare.30570653.v1",
+      "scope": "Digitized Fastned/InsideEVs plots, not raw meter telemetry. Source labels mix SOC/SOE; not calibrated cell SOC. Out-of-range digitization points are preserved and flagged, not clipped. Capacity metadata contain model/filename inconsistencies and are deliberately excluded. No curve is assigned to an ACN or TUM vehicle.",
+      "files": [
+        {
+          "file": "digitized_dc_curves.csv",
+          "bytes": 2105379,
+          "sha256": "4c7d4ce926626a021259cae9d726044306b201c0079ad7951f373a5376f6517d",
+          "path": "data/external/real/curves/digitized_dc_curves.csv"
+        },
+        {
+          "file": "source_notice.json",
+          "bytes": 3472,
+          "sha256": "56f14c14680d53a558067a87f12830e2d504b6a3a1b40491868d0ef56f2225c5",
+          "path": "data/external/real/curves/source_notice.json"
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://api.figshare.com/v2/articles/30570653/versions/1",
+          "bytes": 42488,
+          "sha256": "800a6f29f8f147acd6db86cae85a972b35c2288cc3711fb51af21a0c3b7892b8"
+        },
+        {
+          "url": "https://ndownloader.figshare.com/files/59409860",
+          "bytes": 4850699,
+          "sha256": "e7ad440c8dea322716f0976d2a67664fe7af5ce8388e38451404079ea417bfb7"
+        }
+      ],
+      "source_manifest": "data/external/real/curves/manifest.json"
+    },
+    "real_mobidata": {
+      "status": "downloaded",
+      "retrieved_at_utc": "2026-10-24T13:20:41.759790+00:00",
+      "connector_rows": 422,
+      "evses": 406,
+      "history_snapshots": 137,
+      "license": "MobiData BW / chargecloud / EcoMovement; aggregate Datenlizenz Deutschland Namensnennung 2.0; selected source feeds declare CC0 in source_notices.json. See https://mobidata-bw.de/dataset/e-ladesaulen.",
+      "scope": "Bounded, status-stratified German sample, not a representative availability estimate. Multiple connectors on one EVSE are alternatives, not independent chargers. UNKNOWN/STATIC stay unknown. Published connector power takes precedence over voltage/current arithmetic. Historical counts are sampled observations, not exact transition times or OCPP fault causes. Not the ACN site.",
+      "files": [
+        {
+          "file": "german_evse_snapshot.csv",
+          "bytes": 73397,
+          "sha256": "7166837071d1b9f9e846e804283a97d972b8f123893cf5c9347f70226c34e55f",
+          "path": "data/external/real/mobidata/german_evse_snapshot.csv"
+        },
+        {
+          "file": "heilbronn_observed_status_history.csv",
+          "bytes": 18820,
+          "sha256": "4edb07d2626cd7bde30658e46262ff42b0dbde327605d68237db828ac6e475ca",
+          "path": "data/external/real/mobidata/heilbronn_observed_status_history.csv"
+        },
+        {
+          "file": "source_notices.json",
+          "bytes": 1191,
+          "sha256": "16ed7c24799a5e6b5e1d9a83a035fa864b79e46e72f33ae9143be31c03912231",
+          "path": "data/external/real/mobidata/source_notices.json"
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://api.mobidata-bw.de/ocpdb/api/public/v1/sources",
+          "bytes": 6678,
+          "sha256": "23789070c08eb9a71dc9dcd3f04cc03cadc13fdb86fe138b80f3b1fb4dc7d164"
+        },
+        {
+          "url": "https://api.mobidata-bw.de/ocpdb/api/public/ocpi/3.0/evses?status=AVAILABLE&limit=100&source_uid=datex2_chargecloud",
+          "bytes": 62119,
+          "sha256": "ecf36114d493b300f90468e3028ed59d729e76de6bf0b2f068f1a8bfa9508b92"
+        },
+        {
+          "url": "https://api.mobidata-bw.de/ocpdb/api/public/ocpi/3.0/evses?status=CHARGING&limit=100&source_uid=datex2_chargecloud",
+          "bytes": 61512,
+          "sha256": "256dfe756819c68ede0ed65c67a3914149124d8567fd3b6db6c72d0b349f00e6"
+        },
+        {
+          "url": "https://api.mobidata-bw.de/ocpdb/api/public/ocpi/3.0/evses?status=OUTOFORDER&limit=100&source_uid=datex2_chargecloud",
+          "bytes": 60721,
+          "sha256": "d5d0cfd85fb93bf0f0d840d3430fa4e8d4a5771039eb1b41861b58f84153a810"
+        },
+        {
+          "url": "https://api.mobidata-bw.de/ocpdb/api/public/ocpi/3.0/evses?status=INOPERATIVE&limit=100&source_uid=datex2_chargecloud",
+          "bytes": 59347,
+          "sha256": "46468bcb6d8dd1050163fbfdb4a604254d68b0d13e48ed0897e89f045cdbf7a4"
+        },
+        {
+          "url": "https://api.mobidata-bw.de/ocpdb/api/public/ocpi/3.0/evses?status=UNKNOWN&limit=100&source_uid=datex2_chargecloud",
+          "bytes": 3546,
+          "sha256": "22f3c412684f9ae70fe39446209824a761571414b6be2afdb66cbe8909864c53"
+        },
+        {
+          "url": "https://api.mobidata-bw.de/ocpdb/api/public/ocpi/3.0/evses?status=STATIC&limit=100&source_uid=datex2_chargecloud",
+          "bytes": 32,
+          "sha256": "9dc4027362a72650b8c3c2edbdb9d22ec104c7d749c7d73fc9fc0d5493bac3f0"
+        },
+        {
+          "url": "https://mobidata-bw.de/api/3/action/datastore_search?resource_id=89fb3a0b-cc42-48a6-b17a-8f1b46abccf1&filters=%7B%22station_id%22%3A+323832%7D&limit=1000&sort=_id+asc",
+          "bytes": 113456,
+          "sha256": "47514b71c46227543a508e70dddae8c5f161500863b0770434435185ade6f99d"
+        }
+      ],
+      "source_manifest": "data/external/real/mobidata/manifest.json"
     }
   },
   "shared_reference_manifest": "data/reference/manifest.json",
