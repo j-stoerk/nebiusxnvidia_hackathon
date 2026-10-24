@@ -137,6 +137,19 @@ def real_pack(folder):
         history = read_csv(folder / "heilbronn_observed_status_history.csv")
         require(len(history) == payload["history_snapshots"], "History count differs")
         require(all(r["city"] == "Heilbronn" and r["station_id"] == "323832" for r in history), "Unrelated history joined")
+    elif folder.name == "optimiseprime":
+        vehicles = {r["vehicle_id"]: r for r in read_csv(folder / "vehicles.csv")}
+        require(len(vehicles) == payload["vehicles"], "Operator vehicle count differs")
+        for vehicle in vehicles.values():
+            require(all(math.isfinite(float(vehicle[k])) and float(vehicle[k]) > 0 for k in
+                        ("battery_capacity_kwh", "max_charging_power_kw")), "Invalid operator vehicle specification")
+        observed = read_csv(folder / "observed_vehicle_telemetry.csv")
+        require(len(observed) == payload["telemetry_observations"], "Operator observation count differs")
+        for row in observed:
+            require(row["vehicle_id"] in vehicles and row["depot_id"] == vehicles[row["vehicle_id"]]["depot_id"], "Operator vehicle join differs")
+            require(not row["soc_percent"] or 0 <= float(row["soc_percent"]) <= 100, "SoC sentinel became a measurement")
+            require(datetime.fromisoformat(row["timestamp"]) >= datetime.fromisoformat(payload["asset_snapshot_before_utc"]),
+                    "Future configuration used for earlier telemetry")
 
 
 def main():
@@ -173,6 +186,8 @@ def main():
         for manifest in sorted((external / "real").glob("*/manifest.json")):
             verified += verify_manifest(manifest)
             real_pack(manifest.parent)
+        if (external / "prepared/manifest.json").exists():
+            verified += verify_manifest(external / "prepared/manifest.json")
         if (external / "opsd_prices_15min.csv").exists():
             hourly = time_grid(external / "opsd_germany_2019-01-07_week.csv", "timestamp", 168, 60)
             quarter = time_grid(external / "opsd_prices_15min.csv", "timestamp", 672, 15)

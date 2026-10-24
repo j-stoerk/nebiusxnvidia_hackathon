@@ -19,6 +19,22 @@ UTF-8 (optional BOM), 1–100 rows, at most 2 MiB. One unique vehicle/session ID
 
 Reject duplicate/unknown columns, invalid rows, missing offsets, NaN/infinity, and horizons over 72 hours. No SoC inference is performed. With capacity/SoC, acceptance power tapers linearly after transition SoC; constant-power intervals satisfy the terminal ceiling, a conservative approximation. An impossible charging-window target appears as unserved energy; a target exceeding declared battery headroom is invalid input.
 
+## Completing a demo or operator roster
+
+```powershell
+uv run python scripts/prepare_depot.py --demo
+# Replace the generated example inputs with your own exports/policies, then:
+uv run python scripts/prepare_depot.py --input uploads/my-depot --output data/external/my-depot
+```
+
+The demo creates `data/external/prepared/example-input/` with a complete four-van `roster.csv`, `prices.csv`, and `station.json`. All missing inputs are explicit synthetic choices: 40 kWh packs, 25% initial SoC, requested 70%/85% targets, 11 kW vehicle limits, two fixed Type 2 plugs, a 22 kW charging budget, and 90% efficiency. The 80% taper transition is an uncalibrated model parameter. Synthetic energy prices and the existing illustrative demand-rate component remain a scenario sensitivity. These choices do not overwrite measured data or change the existing guided demo.
+
+For operator input, `roster.csv` uses the session columns above, accepting an extra `target_soc` fraction. Supply either requested `energy_required_kwh`, or capacity + initial SoC + requested target SoC. The converter calculates battery-side kWh as `capacity * (target_soc - initial_soc)` under the app's linear SoC/energy approximation, and rejects inconsistent dual goals. An observed final SoC or a vehicle type's maximum SoC must not be substituted for a requested target. Use pseudonymous, unique session IDs for repeated vehicle visits. Operator inputs are labelled **operator-supplied, unverified**, not certified measurements.
+
+`station.json` must explicitly declare `simulated`, `station_id`, `station_power_limit_kw`, `charging_efficiency`, and `chargers`; each charger needs an ID, power, connector type and boolean availability. The site limit must be the usable **EV charging budget**, allowing for building load; a connection rating in kVA alone is insufficient. Use the existing demand-tariff object for actual contract terms and prior peaks. Missing top-level station defaults are listed in the output manifest. Prices must be matching-horizon EUR/kWh, not relabelled GBP or wholesale prices presented as a customer contract.
+
+Output contains uploadable `sessions.csv`/`prices.csv`, normalized `station.json`, input/output hashes, assumptions and `comparison.json`. FCFS/EDF/LLF/OR-Tools each pass the independent constraint validator; shortfalls remain explicit. **In the dashboard, first match Station settings to `station.json`, then upload the two output CSVs.** The original roster retains requested SoC; the upload uses the existing energy-target contract. Keep private source files in ignored `uploads/`, and generated packs in ignored `data/external/`.
+
 ## Prices CSV
 
 `timestamp,price_eur_per_kwh`. Timezone-aware ISO 8601 timestamps must map to UTC quarter-hour boundaries, with no duplicates and complete coverage of the uploaded session horizon. Maximum 1000 rows/2 MiB. Finite negative prices are supported; range -10 to 100 EUR/kWh. Price upload is optional only when the current series covers the new sessions.

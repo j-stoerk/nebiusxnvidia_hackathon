@@ -75,6 +75,8 @@ Acquisition writes a small normalized CSV into ignored `data/external/`. A 131 K
 
 Real SoC, charger-efficiency experiments, digitized DC curves and German charger status are reproducible with `uv run --with pyarrow --with openpyxl python scripts/acquire_vehicle_data.py` (about 2.8 MB retained outside Git). See [field coverage, source terms and remaining depot-specific gaps](docs/data-sources.md#real-vehicle-and-operational-measurements); unrelated vehicles/sites are kept separate.
 
+For linked Royal Mail vehicle/depot records, run `uv run python scripts/acquire_operator_data.py` (about 279 KB retained). For a complete, explicitly synthetic input pack, run `uv run python scripts/prepare_depot.py --demo`. The same converter accepts operator rosters with requested SoC targets and independently validates all four scheduling policies; [input files and dashboard import](docs/dataset-format.md#completing-a-demo-or-operator-roster).
+
 The [first exploratory replay](docs/evaluation.md#first-exploratory-result) is complete: 188 held-out calendar days, paired FCFS/EDF/LLF comparisons, seven-day-block confidence intervals and prediction evaluation. It does **not** establish mean daily peak reduction or equal-energy cost savings; prediction intervals are too wide for a useful readiness promise. Full daily output stays ignored; the compact evidence summary is tracked.
 
 ## Forecasting
