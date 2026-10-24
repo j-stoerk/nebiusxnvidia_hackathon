@@ -30,9 +30,7 @@ export function ChatPanel({
         eyebrow="NVIDIA NEMOTRON VIA NEBIUS"
         title="Ask. Understand. Replan."
         right={
-          <span
-            className={`target-pill ${workspace.agent.configured ? "" : "neutral"}`}
-          >
+          <span className={`target-pill ${workspace.agent.configured ? "" : "neutral"}`}>
             <span className="status-dot" />
             {workspace.agent.configured ? "Configured" : "Not connected"}
           </span>
@@ -45,10 +43,7 @@ export function ChatPanel({
               <Sparkles size={25} />
             </span>
             <h3>A clearer view of your charging plan.</h3>
-            <p>
-              Ask about priorities, shortfalls, or the impact of a simulated
-              change.
-            </p>
+            <p>Ask about priorities, shortfalls, or the impact of a simulated change.</p>
             {[
               "Which vehicles are at risk of missing their targets?",
               "Explain the current cost and peak-power comparison.",
@@ -79,9 +74,7 @@ export function ChatPanel({
               <details className="tool-trace" key={index}>
                 <summary>
                   {call.name} ·{" "}
-                  {call.result &&
-                  typeof call.result === "object" &&
-                  "error" in call.result
+                  {call.result && typeof call.result === "object" && "error" in call.result
                     ? "error"
                     : "result"}
                 </summary>
@@ -95,8 +88,8 @@ export function ChatPanel({
         <div className="connection-notice">
           <Bot size={18} />
           <span>
-            Nemotron is not connected. Configure its server credentials to
-            enable chat. Scheduling and simulation are available now.
+            Nemotron is not connected. Configure its server credentials to enable chat. Scheduling
+            and simulation are available now.
           </span>
         </div>
       )}

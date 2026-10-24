@@ -1,7 +1,5 @@
 export const money = (value: number) =>
-  new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(
-    value,
-  );
+  new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(value);
 export const number = (value: number, digits = 1) =>
   value.toLocaleString("en-GB", { maximumFractionDigits: digits });
 export const costDifference = (delta: number, percent: number | null) =>
@@ -19,7 +17,5 @@ export const date = (value: string) =>
     year: "numeric",
     timeZone: "UTC",
   });
-export const localInput = (value: string) =>
-  new Date(value).toISOString().slice(0, 16);
-export const isoInput = (value: string) =>
-  new Date(value + ":00Z").toISOString();
+export const localInput = (value: string) => new Date(value).toISOString().slice(0, 16);
+export const isoInput = (value: string) => new Date(value + ":00Z").toISOString();

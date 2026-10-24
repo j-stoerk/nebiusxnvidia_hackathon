@@ -50,9 +50,7 @@ export function Metric({
         {value}
         <small>{unit}</small>
       </div>
-      <div
-        className={`metric-detail ${positive ? "positive" : ""} ${warning ? "warn-text" : ""}`}
-      >
+      <div className={`metric-detail ${positive ? "positive" : ""} ${warning ? "warn-text" : ""}`}>
         {positive && <span className="mini-arrow">↘</span>}
         {detail}
       </div>
@@ -98,34 +96,30 @@ export function PowerChart({ workspace }: { workspace: Workspace }) {
       aria-label="Station power and electricity price over time"
     >
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          data={rows}
-          margin={{ top: 16, right: 12, left: -20, bottom: 2 }}
-        >
+        <ComposedChart data={rows} margin={{ top: 16, right: 12, left: -20, bottom: 2 }}>
           <defs>
             <linearGradient id="powerFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#337b55" stopOpacity={0.19} />
-              <stop offset="100%" stopColor="#337b55" stopOpacity={0.02} />
+              <stop offset="0%" stopColor="#4c7fc3" stopOpacity={0.19} />
+              <stop offset="100%" stopColor="#4c7fc3" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke="#edf0e9" vertical={false} />
+          <CartesianGrid stroke="#edf0f5" vertical={false} />
           <XAxis
             dataKey="timestamp"
             tickFormatter={time}
             minTickGap={35}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fill: "#879187" }}
+            tick={{ fontSize: 11, fill: "#75849a" }}
           />
           <YAxis
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fill: "#879187" }}
+            tick={{ fontSize: 11, fill: "#75849a" }}
             tickFormatter={(value) => number(Number(value), 0)}
             domain={[
               0,
-              (max: number) =>
-                Math.max(max, workspace.station.station_power_limit_kw) * 1.1,
+              (max: number) => Math.max(max, workspace.station.station_power_limit_kw) * 1.1,
             ]}
           />
           <YAxis
@@ -133,45 +127,37 @@ export function PowerChart({ workspace }: { workspace: Workspace }) {
             orientation="right"
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 10, fill: "#a4885e" }}
+            tick={{ fontSize: 10, fill: "#a77a2f" }}
             width={38}
             tickFormatter={(value) => `${Number(value).toFixed(2)}`}
           />
           <Tooltip
-            labelFormatter={(value) =>
-              `${date(String(value))} ${time(String(value))} UTC`
-            }
+            labelFormatter={(value) => `${date(String(value))} ${time(String(value))} UTC`}
             formatter={(value, name) => [
-              name === "price"
-                ? `${money(Number(value))}/kWh`
-                : `${number(Number(value))} kW`,
-              name === "optimized"
-                ? "Optimized"
-                : name === "baseline"
-                  ? "FCFS"
-                  : "Price",
+              name === "price" ? `${money(Number(value))}/kWh` : `${number(Number(value))} kW`,
+              name === "optimized" ? "Optimized" : name === "baseline" ? "FCFS" : "Price",
             ]}
             contentStyle={{
               borderRadius: 10,
-              border: "1px solid #e0e7dc",
+              border: "1px solid #dfe4eb",
               fontSize: 12,
             }}
           />
           <ReferenceLine
             y={workspace.station.station_power_limit_kw}
-            stroke="#8a9b88"
+            stroke="#8796aa"
             strokeDasharray="4 4"
             label={{
               value: "Station limit",
               position: "insideTopLeft",
               fontSize: 10,
-              fill: "#879187",
+              fill: "#75849a",
             }}
           />
           <Area
             type="stepAfter"
             dataKey="optimized"
-            stroke="#2c754d"
+            stroke="#2e6fd6"
             fill="url(#powerFill)"
             strokeWidth={2.5}
             isAnimationActive={false}
@@ -179,7 +165,7 @@ export function PowerChart({ workspace }: { workspace: Workspace }) {
           <Line
             type="stepAfter"
             dataKey="baseline"
-            stroke="#b5bdb2"
+            stroke="#a9b3c2"
             strokeDasharray="4 3"
             strokeWidth={1.5}
             dot={false}
@@ -189,7 +175,7 @@ export function PowerChart({ workspace }: { workspace: Workspace }) {
             yAxisId="price"
             type="stepAfter"
             dataKey="price"
-            stroke="#c8994d"
+            stroke="#bc872c"
             strokeWidth={1.5}
             dot={false}
             isAnimationActive={false}
@@ -209,14 +195,12 @@ export function StationPanel({
   onSettings: () => void;
   disabled: boolean;
 }) {
-  const available = workspace.charger_status.filter(
-    (c) => c.available_now,
-  ).length;
+  const available = workspace.charger_status.filter((c) => c.available_now).length;
   return (
     <section className="panel station-panel">
       <PanelTitle
         eyebrow="STATION HEALTH"
-        title="Capacity, at a glance."
+        title="Station capacity"
         right={
           <button
             className="icon-button"
@@ -241,9 +225,7 @@ export function StationPanel({
       </div>
       <div className="charger-grid">
         {workspace.station.chargers.map((charger) => {
-          const status = workspace.charger_status.find(
-            (c) => c.charger_id === charger.charger_id,
-          );
+          const status = workspace.charger_status.find((c) => c.charger_id === charger.charger_id);
           return (
             <div
               key={charger.charger_id}
@@ -290,14 +272,11 @@ export function Timeline({
   const [filter, setFilter] = useState("");
   const start = Date.parse(workspace.horizon_start),
     span = Date.parse(workspace.horizon_end) - start;
-  const position = (value: string) =>
-    (100 * (Date.parse(value) - start)) / span;
+  const position = (value: string) => (100 * (Date.parse(value) - start)) / span;
   const sessions = workspace.sessions
     .filter((s) => s.vehicle_id.toLowerCase().includes(filter.toLowerCase()))
     .slice(0, limit);
-  const ticks = Array.from({ length: 5 }, (_, i) =>
-    new Date(start + (span * i) / 4).toISOString(),
-  );
+  const ticks = Array.from({ length: 5 }, (_, i) => new Date(start + (span * i) / 4).toISOString());
   return (
     <div className="timeline-container">
       {!limit && (
@@ -354,18 +333,13 @@ export function Timeline({
                   />
                 ))}
               {workspace.now !== workspace.horizon_start && (
-                <div
-                  className="now-line"
-                  style={{ left: `${position(workspace.now)}%` }}
-                />
+                <div className="now-line" style={{ left: `${position(workspace.now)}%` }} />
               )}
             </div>
           </div>
         ))}
       </div>
-      {sessions.length === 0 && (
-        <p className="empty-inline">No matching vehicles.</p>
-      )}
+      {sessions.length === 0 && <p className="empty-inline">No matching vehicles.</p>}
       <div className="timeline-footer">
         <span>
           <span className="legend-block" />
@@ -397,21 +371,15 @@ export function VehicleTable({
     [selected, setSelected] = useState("");
   const rows = (schedule?.metrics.vehicles || []).filter(
     (v) =>
-      v.vehicle_id.toLowerCase().includes(search.toLowerCase()) &&
-      (!risksOnly || !v.target_met),
+      v.vehicle_id.toLowerCase().includes(search.toLowerCase()) && (!risksOnly || !v.target_met),
   );
-  const records =
-    schedule?.allocations.filter((a) => a.vehicle_id === selected) || [];
+  const records = schedule?.allocations.filter((a) => a.vehicle_id === selected) || [];
   return (
     <section className="panel">
       <PanelTitle
         eyebrow="VEHICLE READINESS"
         title="Departure targets & energy delivery"
-        right={
-          <span className="small-pill">
-            {workspace.sessions.length} sessions
-          </span>
-        }
+        right={<span className="small-pill">{workspace.sessions.length} sessions</span>}
       />
       <div className="table-toolbar">
         <label className="search-box">
@@ -448,10 +416,7 @@ export function VehicleTable({
             {rows.map((row) => (
               <tr key={row.vehicle_id}>
                 <td>
-                  <button
-                    className="vehicle-button"
-                    onClick={() => setSelected(row.vehicle_id)}
-                  >
+                  <button className="vehicle-button" onClick={() => setSelected(row.vehicle_id)}>
                     {row.vehicle_id}
                     <ArrowRight size={12} />
                   </button>
@@ -465,14 +430,8 @@ export function VehicleTable({
                   {number(row.shortfall_kwh, 2)} kWh
                 </td>
                 <td>
-                  <span
-                    className={`target-pill ${row.target_met ? "" : "at-risk"}`}
-                  >
-                    {row.target_met ? (
-                      <Check size={12} />
-                    ) : (
-                      <TriangleAlert size={12} />
-                    )}
+                  <span className={`target-pill ${row.target_met ? "" : "at-risk"}`}>
+                    {row.target_met ? <Check size={12} /> : <TriangleAlert size={12} />}
                     {row.target_met ? "Met" : "At risk"}
                   </span>
                 </td>
@@ -480,9 +439,7 @@ export function VehicleTable({
             ))}
           </tbody>
         </table>
-        {rows.length === 0 && (
-          <p className="empty-inline">No vehicles match this filter.</p>
-        )}
+        {rows.length === 0 && <p className="empty-inline">No vehicles match this filter.</p>}
       </div>
       {selected && (
         <div className="vehicle-inspector">
@@ -497,8 +454,8 @@ export function VehicleTable({
           <div className="interval-list">
             {records.map((record, i) => (
               <span key={i}>
-                {time(record.start_time)}–{time(record.end_time)} ·{" "}
-                {record.charger_id} · {number(record.power_kw, 2)} kW
+                {time(record.start_time)}–{time(record.end_time)} · {record.charger_id} ·{" "}
+                {number(record.power_kw, 2)} kW
               </span>
             ))}
           </div>
@@ -531,9 +488,7 @@ export function EventLog({
         }
       />
       {workspace.events.length === 0 ? (
-        <p className="empty-inline">
-          No disruptions yet. Add an event to exercise replanning.
-        </p>
+        <p className="empty-inline">No disruptions yet. Add an event to exercise replanning.</p>
       ) : (
         <div className="event-list">
           {[...workspace.events].reverse().map((event) => (
@@ -550,11 +505,7 @@ export function EventLog({
                 </small>
                 <code>{event.event_id}</code>
               </div>
-              <button
-                className="text-button"
-                disabled={disabled}
-                onClick={() => replay(event)}
-              >
+              <button className="text-button" disabled={disabled} onClick={() => replay(event)}>
                 Replay
               </button>
             </div>

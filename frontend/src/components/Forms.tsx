@@ -55,11 +55,7 @@ export function Modal({
       >
         <div className="modal-heading">
           <h2>{title}</h2>
-          <button
-            className="icon-button"
-            aria-label="Close dialog"
-            onClick={onClose}
-          >
+          <button className="icon-button" aria-label="Close dialog" onClick={onClose}>
             <X size={20} />
           </button>
         </div>
@@ -85,18 +81,12 @@ export function UploadForm({
       }}
     >
       <p className="muted">
-        Upload 1–100 sessions. Each CSV can be up to 2 MiB. Times need explicit
-        timezone offsets. A successful upload starts a fresh simulation.
+        Upload 1–100 sessions. Each CSV can be up to 2 MiB. Times need explicit timezone offsets. A
+        successful upload starts a fresh simulation.
       </p>
       <label>
         Charging sessions CSV
-        <input
-          name="sessions"
-          type="file"
-          accept=".csv,text/csv"
-          required
-          disabled={disabled}
-        />
+        <input name="sessions" type="file" accept=".csv,text/csv" required disabled={disabled} />
       </label>
       <div className="schema-example">
         vehicle_id, arrival_time, departure_time,
@@ -105,19 +95,12 @@ export function UploadForm({
       </div>
       <label>
         Prices CSV{" "}
-        <span className="muted">
-          (optional if the current price range covers your sessions)
-        </span>
-        <input
-          name="prices"
-          type="file"
-          accept=".csv,text/csv"
-          disabled={disabled}
-        />
+        <span className="muted">(optional if the current price range covers your sessions)</span>
+        <input name="prices" type="file" accept=".csv,text/csv" disabled={disabled} />
       </label>
       <p className="form-help">
-        Price columns: timestamp, price_eur_per_kwh. Supply one price for every
-        UTC quarter-hour in your session range.
+        Price columns: timestamp, price_eur_per_kwh. Supply one price for every UTC quarter-hour in
+        your session range.
       </p>
       <div className="download-links">
         <a href="/api/demo/sessions">Sample sessions</a>
@@ -142,13 +125,9 @@ export function StationForm({
 }) {
   const [cap, setCap] = useState(station.station_power_limit_kw),
     [efficiency, setEfficiency] = useState(station.charging_efficiency);
-  const [chargers, setChargers] = useState<Charger[]>(
-    station.chargers.map((c) => ({ ...c })),
-  );
+  const [chargers, setChargers] = useState<Charger[]>(station.chargers.map((c) => ({ ...c })));
   function setCharger(index: number, value: Partial<Charger>) {
-    setChargers((previous) =>
-      previous.map((c, i) => (i === index ? { ...c, ...value } : c)),
-    );
+    setChargers((previous) => previous.map((c, i) => (i === index ? { ...c, ...value } : c)));
   }
   return (
     <form
@@ -164,8 +143,8 @@ export function StationForm({
       }}
     >
       <p className="muted">
-        Changes apply to future charging. Delivered energy is preserved and the
-        new plan is checked before activation.
+        Changes apply to future charging. Delivered energy is preserved and the new plan is checked
+        before activation.
       </p>
       <div className="form-columns">
         <label>
@@ -201,9 +180,7 @@ export function StationForm({
                 type="checkbox"
                 aria-label={`${charger.charger_id} available`}
                 checked={charger.available}
-                onChange={(e) =>
-                  setCharger(index, { available: e.target.checked })
-                }
+                onChange={(e) => setCharger(index, { available: e.target.checked })}
               />
               {charger.charger_id}
             </label>
@@ -214,18 +191,14 @@ export function StationForm({
               max="1000"
               step="0.1"
               value={charger.max_power_kw}
-              onChange={(e) =>
-                setCharger(index, { max_power_kw: Number(e.target.value) })
-              }
+              onChange={(e) => setCharger(index, { max_power_kw: Number(e.target.value) })}
               required
             />
             <span>kW</span>
             <select
               aria-label={`${charger.charger_id} connector`}
               value={charger.connector_type}
-              onChange={(e) =>
-                setCharger(index, { connector_type: e.target.value })
-              }
+              onChange={(e) => setCharger(index, { connector_type: e.target.value })}
             >
               <option>Type2</option>
               <option>CCS</option>
@@ -254,9 +227,7 @@ export function EventForm({
   onSubmit: (event: SimEvent) => void;
 }) {
   const [type, setType] = useState<SimEvent["type"]>("CHARGER_FAILED");
-  const [charger, setCharger] = useState(
-    workspace.station.chargers[0].charger_id,
-  );
+  const [charger, setCharger] = useState(workspace.station.chargers[0].charger_id);
   const [start, setStart] = useState(localInput(workspace.now)),
     [end, setEnd] = useState(localInput(workspace.horizon_end)),
     [price, setPrice] = useState(0.2);
@@ -272,9 +243,7 @@ export function EventForm({
     setStart(localInput(new Date(begin).toISOString()));
     setEnd(
       localInput(
-        new Date(
-          Math.min(begin + 3 * 3600000, Date.parse(workspace.horizon_end)),
-        ).toISOString(),
+        new Date(Math.min(begin + 3 * 3600000, Date.parse(workspace.horizon_end))).toISOString(),
       ),
     );
   }, [type, workspace.now, workspace.horizon_end]);
@@ -297,15 +266,12 @@ export function EventForm({
       }}
     >
       <p className="muted">
-        Apply a future event to this simulation. Both schedules are recalculated
-        under the same changed conditions.
+        Apply a future event to this simulation. Both schedules are recalculated under the same
+        changed conditions.
       </p>
       <label>
         Event type
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as SimEvent["type"])}
-        >
+        <select value={type} onChange={(e) => setType(e.target.value as SimEvent["type"])}>
           <option value="CHARGER_FAILED">Charger outage</option>
           <option value="CHARGER_RECOVERED">Charger recovery</option>
           <option value="PRICE_CHANGED">Electricity price change</option>

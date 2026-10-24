@@ -1,36 +1,58 @@
-import {
-  ArrowRight,
-  Check,
-  CirclePlay,
-  LoaderCircle,
-  ShieldCheck,
-  X,
-} from "lucide-react";
+import { ArrowRight, Check, CirclePlay, LoaderCircle, X } from "lucide-react";
 import type { Workspace } from "../types";
-import { money, number } from "../format";
 
-const steps = ["Baseline", "Optimize", "Outage", "Price change", "Replay"];
-const titles = [
-  "Start with a real baseline calculation.",
-  "Same energy. A better charging plan.",
-  "One charger goes down. The plan adapts.",
-  "Prices change. Charging moves with them.",
-  "One event, applied exactly once.",
+// The guide drives real API calls; all financial/energy results stay in Summary.
+const steps = [
+  [
+    "Baseline",
+    "Review the first-come-first-served baseline",
+    "50 simulated vehicles, ten chargers, and an 80 kW site. Optimize this same scenario to compare results.",
+    "Optimize this plan",
+  ],
+  [
+    "Optimize",
+    "Compare energy and electricity cost",
+    "Both schedules are checked against the physical limits. Savings are shown only when delivered energy matches.",
+    "Simulate charger outage",
+  ],
+  [
+    "Outage",
+    "Replan around a charger outage",
+    "CH-01 is unavailable from 09:00 to 12:00 UTC. Both schedules now include that outage.",
+    "Apply the price change",
+  ],
+  [
+    "Price change",
+    "Respond to a price increase",
+    "The 15:00–18:00 price has increased by 0.20 EUR/kWh. Inspect the recalculated charging plan below.",
+    "Replay the same outage",
+  ],
+  [
+    "Replay",
+    "Verify duplicate event handling",
+    "Replaying the original event ID leaves state and schedule versions unchanged. The final plan is ready to inspect.",
+    "Explore the final schedule",
+  ],
 ];
-const descriptions = [
-  "50 simulated vehicles, ten chargers, and an 80 kW station. This first-come-first-served plan gives you a measured starting point.",
-  "The optimizer prioritizes energy targets, then electricity cost. The dashboard below shows the actual comparison, checked against physical limits.",
-  "Charger CH-01 is unavailable from 09:00 to 12:00 UTC. Both plans have been recalculated under that outage, preserving the same constraints.",
-  "A 0.20 EUR/kWh increase from 15:00 to 18:00 UTC is now part of the scenario. These are recomputed results, not a scripted savings claim.",
-  "The exact same outage was delivered again. Its ID was recognized, so no event or state change was applied twice. Explore the final schedule or ask Nemotron about it.",
-];
-const buttons = [
-  "Optimize this plan",
-  "Simulate charger outage",
-  "Apply the price change",
-  "Replay the same outage",
-  "Explore the final schedule",
-];
+
+function Progress({ step }: { step: number }) {
+  return (
+    <ol className="demo-progress grid grid-cols-5 border-t px-4 py-3">
+      {steps.map(([name], index) => (
+        <li
+          key={name}
+          aria-current={step === index ? "step" : undefined}
+          data-complete={index < step || step === 4}
+        >
+          <span className="step-number">
+            {index < step || step === 4 ? <Check size={12} /> : index + 1}
+          </span>
+          <span className="hidden sm:inline">{name}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
 
 export function DemoGuide({
   step,
@@ -45,109 +67,39 @@ export function DemoGuide({
   onNext: () => void;
   onClose: () => void;
 }) {
-  const active = workspace.optimized || workspace.baseline;
+  const [, title, description, button] = steps[step];
   return (
     <section
       aria-label="Guided demo"
       data-demo-step={step}
-      className="mb-5 overflow-hidden rounded-xl border border-[#dce8cf] bg-[#eef5e7]"
+      className="demo-guide mb-5 overflow-hidden rounded-lg border"
     >
-      <div className="flex items-center justify-between gap-3 border-b border-[#dce8cf] px-5 py-3">
-        <span className="flex items-center gap-2 text-[10px] font-semibold tracking-[1.5px] text-[#688052]">
-          <CirclePlay size={15} /> GUIDED DEMO{" "}
-          <span className="ml-2 font-normal tracking-normal opacity-70">
-            Step {step + 1} of 5
-          </span>
+      <header className="flex items-center justify-between border-b px-5 py-3">
+        <span>
+          <CirclePlay size={16} />
+          <strong>Guided demo</strong>
+          <small>Step {step + 1} of 5</small>
         </span>
         <button
+          className="icon-button"
           aria-label="Exit guided demo"
-          className="rounded p-1 text-[#7b9069] hover:bg-[#e1ecd6]"
           disabled={busy}
           onClick={onClose}
         >
           <X size={16} />
         </button>
-      </div>
-      <div className="grid gap-6 p-5 md:p-6 xl:grid-cols-[1.8fr_1fr]">
+      </header>
+      <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="m-0 text-[21px] font-medium tracking-[-0.5px] text-[#254a31]">
-            {step === 1 && !workspace.comparison?.equal_delivered_energy
-              ? "Compare energy and cost together."
-              : titles[step]}
-          </h2>
-          <p className="mt-3 max-w-xl text-[12px] leading-[1.8] text-[#687e56]">
-            {descriptions[step]}
-          </p>
-          <div className="mt-5 flex flex-wrap items-center gap-4">
-            <button
-              className="button primary"
-              disabled={busy || workspace.stale}
-              onClick={onNext}
-            >
-              {busy ? (
-                <LoaderCircle className="spin" size={16} />
-              ) : step === 4 ? (
-                <Check size={16} />
-              ) : (
-                <ArrowRight size={16} />
-              )}
-              {buttons[step]}
-            </button>
-            <span className="flex items-center gap-1.5 text-[10px] text-[#769260]">
-              <ShieldCheck size={14} />
-              {workspace.stale
-                ? "Replan needs attention"
-                : "Actual results · independently validated"}
-            </span>
-          </div>
+          <h2>{title}</h2>
+          <p>{description}</p>
         </div>
-        <div className="grid grid-cols-2 gap-3 self-center">
-          <div className="rounded-lg border border-[#dfe8d4] bg-white/70 p-4">
-            <span className="text-[9px] text-[#879674]">CURRENT PLAN</span>
-            <strong className="mt-2 block text-[25px] font-medium tracking-tight text-[#32513a]">
-              {active ? money(active.metrics.cost_eur) : "—"}
-            </strong>
-            <span className="mt-2 block text-[9px] text-[#81956c]">
-              {active
-                ? `${number(active.metrics.delivered_kwh, 1)} kWh delivered`
-                : "Awaiting calculation"}
-            </span>
-          </div>
-          <div className="rounded-lg border border-[#dfe8d4] bg-white/70 p-4">
-            <span className="text-[9px] text-[#879674]">TARGETS MET</span>
-            <strong className="mt-2 block text-[25px] font-medium tracking-tight text-[#32513a]">
-              {active
-                ? `${number(active.metrics.target_success_percent)}%`
-                : "—"}
-            </strong>
-            <span className="mt-2 block text-[9px] text-[#81956c]">
-              {workspace.agent.configured
-                ? "Nemotron configured"
-                : "AI not connected · scheduling works"}
-            </span>
-          </div>
-        </div>
+        <button className="button primary" disabled={busy || workspace.stale} onClick={onNext}>
+          {busy ? <LoaderCircle className="spin" size={16} /> : <ArrowRight size={16} />}
+          {button}
+        </button>
       </div>
-      <ol className="m-0 grid list-none grid-cols-5 border-t border-[#dce8cf] bg-white/30 px-4 py-3">
-        {steps.map((label, index) => (
-          <li
-            key={label}
-            className="flex items-center justify-center gap-2 text-[10px]"
-            aria-current={index === step ? "step" : undefined}
-          >
-            <span
-              className={`grid h-5 w-5 shrink-0 place-items-center rounded-full text-[9px] ${index < step || step === 4 ? "bg-[#517848] text-white" : index === step ? "border border-[#72925b] bg-[#dcebcf] text-[#426338]" : "border border-[#dbe4d1] text-[#a5b197]"}`}
-            >
-              {index < step || step === 4 ? <Check size={11} /> : index + 1}
-            </span>
-            <span
-              className={`hidden sm:block ${index <= step ? "text-[#5e7d4e]" : "text-[#a5b197]"}`}
-            >
-              {label}
-            </span>
-          </li>
-        ))}
-      </ol>
+      <Progress step={step} />
     </section>
   );
 }
