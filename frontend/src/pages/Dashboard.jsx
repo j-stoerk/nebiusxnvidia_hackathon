@@ -1,4 +1,4 @@
-import { LoaderCircle, PlugZap, RefreshCw, Zap } from "lucide-react";
+import { ChevronDown, LoaderCircle, PlugZap, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import AgentChat from "@/components/AgentChat";
 import CapacityPanel from "@/components/CapacityPanel";
@@ -17,6 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/api/client";
+import brand from "@/assets/brand.svg";
 import { eur, formatDuration, kwh, kw, pct, timeLabel } from "@/utils/formatters";
 
 export default function Dashboard({ state, theme }) {
@@ -53,14 +54,25 @@ export default function Dashboard({ state, theme }) {
       : null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <header className="mb-6 flex flex-col gap-4 animate-in-up sm:flex-row sm:items-start sm:justify-between">
+    <>
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <a href="/" className="flex items-center gap-2.5 rounded-sm focus-visible:outline-2 focus-visible:outline-primary" aria-label="ChargeWise home">
+            <span className="rounded-sm bg-white p-1"><img src={brand} alt="" width="30" height="30" /></span>
+            <span className="text-lg font-semibold tracking-tight">ChargeWise</span>
+            <span className="ml-3 hidden border-l border-border pl-4 text-sm text-muted-foreground sm:block">Depot planning</span>
+          </a>
+          <div className="flex items-center gap-4">
+            <span className="hidden text-xs text-muted-foreground sm:block">Simulation workspace</span>
+            <ThemeToggle theme={theme.theme} onToggle={theme.toggle} />
+          </div>
+        </div>
+      </div>
+    <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
+      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <Badge className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white border-0">
-              ChargeWise AI
-            </Badge>
-            <Badge variant="outline">Simulated planning</Badge>
+          <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span>Fleet operations</span><span aria-hidden="true">/</span><span>Charging planner</span>
             {data?.stale && <Badge variant="warning">Previous plan is stale · recalculate</Badge>}
             {busy ? (
               <Badge variant="secondary" className="gap-1">
@@ -68,22 +80,20 @@ export default function Dashboard({ state, theme }) {
               </Badge>
             ) : null}
           </div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight sm:text-4xl">
-            Get every van ready. Use less site power.
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Fleet charging planner
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground leading-relaxed">
-            For depot managers planning shared charging within a limited connection. Compare FCFS,
-            EDF, LLF and OR-Tools, check the required capacity, and replan around outages. All times are UTC.
+          <p className="mt-2 max-w-xl text-sm text-muted-foreground leading-relaxed">
+            Get every van ready within your site’s power limit.
           </p>
           {analytics?.earliest_arrival ? (
             <p className="mt-2 text-xs text-muted-foreground">
-              Horizon {timeLabel(analytics.earliest_arrival)} → {timeLabel(analytics.latest_departure)}
+              {timeLabel(analytics.earliest_arrival)} → {timeLabel(analytics.latest_departure)}
               {horizon ? ` · span ${horizon}` : ""}
             </p>
           ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <ThemeToggle theme={theme.theme} onToggle={theme.toggle} />
           <Button
             variant="outline"
             disabled={busy}
@@ -93,7 +103,6 @@ export default function Dashboard({ state, theme }) {
             Load sample
           </Button>
           <Button disabled={busy} onClick={() => run(() => api.optimize(), "Optimized schedule ready")}>
-            <Zap className="h-4 w-4" />
             Run optimizer
           </Button>
         </div>
@@ -101,7 +110,8 @@ export default function Dashboard({ state, theme }) {
 
       {(error || notice) && (
         <div
-          className={`mb-4 flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm animate-fade ${
+          role={error ? "alert" : "status"}
+          className={`mb-4 flex items-center justify-between gap-3 rounded-md border px-4 py-3 text-sm ${
             error
               ? "border-destructive/30 bg-red-500/10 text-destructive"
               : "border-emerald-500/30 bg-emerald-500/10 text-success"
@@ -121,7 +131,7 @@ export default function Dashboard({ state, theme }) {
         </div>
       )}
 
-      <section className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <section className="metrics-strip mb-5" aria-label="Plan summary">
         {[
           { label: "Vehicles", value: analytics?.vehicle_count ?? "—" },
           { label: "Energy required", value: kwh(analytics?.total_energy_required_kwh) },
@@ -136,70 +146,40 @@ export default function Dashboard({ state, theme }) {
             hint: optimized ? `Unserved ${kwh(optimized.metrics.unserved_kwh)}` : "Shows shortfalls if infeasible",
           },
           {
-            label: "Peak vs limit",
-            value: `${kw(optimized?.metrics?.peak_power_kw)} / ${kw(analytics?.station_power_limit_kw)}`,
+            label: "Peak power",
+            value: kw(optimized?.metrics?.peak_power_kw),
+            hint: `${kw(analytics?.station_power_limit_kw)} site limit`,
           },
           {
             label: "Chargers",
             value: `${analytics?.available_chargers ?? "—"} / ${analytics?.total_chargers ?? "—"}`,
             hint: "Simulated availability",
           },
-        ].map((m, i) => (
-          <MetricCard key={m.label} {...m} style={{ animationDelay: `${i * 40}ms` }} />
+        ].map(m => (
+          <MetricCard key={m.label} {...m} />
         ))}
       </section>
 
-      <section className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3" aria-label="Guided demo">
-        <div><p className="text-sm font-semibold">Four vans · two fixed plugs · a checked plan</p><p className="mt-1 text-xs text-muted-foreground">{[
+      <section className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-5 py-3" aria-label="Guided demo">
+        <div><p className="text-sm font-medium">Sample walkthrough <span className="ml-2 text-xs font-normal text-muted-foreground">{Math.min(demoStep + 1, 4)} of 4</span></p><p className="mt-1 text-xs text-muted-foreground">{[
           "Start with equal energy targets and an illustrative demand tariff.",
           "Compare cost and peak, then make CH-01 unavailable from 08:00 to 12:00 UTC.",
           "The plan preserves departures. Next, increase the afternoon electricity price.",
           "Inspect the new costs, then replay the same event to verify idempotency.",
           "Walkthrough complete. Check capacity or ask for a local computed summary.",
         ][demoStep]}</p></div>
-        <Button disabled={busy || demoStep === 4} onClick={demoNext}>{["Start guided demo", "Simulate outage", "Apply price change", "Replay event", "Complete"][demoStep]}</Button>
+        <Button variant="outline" size="sm" disabled={busy || demoStep === 4} onClick={demoNext}>{["Start guided demo", "Simulate outage", "Apply price change", "Replay event", "Complete"][demoStep]}</Button>
       </section>
-      <Tabs value={tab} onValueChange={setTab} className="animate-in-up">
-        <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList aria-label="Planner sections" className="flex h-auto w-full justify-start gap-x-2 overflow-x-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="schedule">Schedule</TabsTrigger>
           <TabsTrigger value="capacity">Capacity</TabsTrigger>
           <TabsTrigger value="operations">Operations</TabsTrigger>
-          <TabsTrigger value="agent">AI agent</TabsTrigger>
+          <TabsTrigger value="agent">Plan assistant</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload sessions</CardTitle>
-              <CardDescription>Validate CSV and load fleet charging demand.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FileUpload
-                busy={busy}
-                onUpload={(sessionsFile, prices) =>
-                  run(() => api.upload(sessionsFile, prices), "CSV validated and loaded")
-                }
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Station settings</CardTitle>
-              <CardDescription>Power limit, charger count, and slot length.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <StationSettings
-                station={data?.station}
-                busy={busy}
-                onSave={(station) =>
-                  run(() => api.updateStation(station), "Station updated — re-optimize when ready")
-                }
-              />
-            </CardContent>
-          </Card>
-
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>Cost & peak: baseline vs optimized</CardTitle>
@@ -222,6 +202,22 @@ export default function Dashboard({ state, theme }) {
               <EnergyChart series={series} baselineSeries={baseline?.metrics?.power_series} powerLimit={data?.station?.station_power_limit_kw} />
             </CardContent>
           </Card>
+          <details className="group rounded-lg border border-border bg-card lg:col-span-2">
+            <summary className="flex list-none items-center justify-between gap-3 p-5 focus-visible:outline-2 focus-visible:outline-primary">
+              <span><span className="block text-sm font-semibold">Scenario inputs</span><span className="mt-1 block text-xs text-muted-foreground">Import sessions and prices, or configure your station.</span></span>
+              <ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="grid gap-5 border-t border-border p-5 lg:grid-cols-2">
+              <div>
+                <h2 className="mb-4 text-sm font-semibold">Upload sessions</h2>
+                <FileUpload busy={busy} onUpload={(sessionsFile, prices) => run(() => api.upload(sessionsFile, prices), "CSV validated and loaded")} />
+              </div>
+              <div>
+                <h2 className="mb-4 text-sm font-semibold">Station settings</h2>
+                <StationSettings station={data?.station} busy={busy} onSave={station => run(() => api.updateStation(station), "Station updated — re-optimize when ready")} />
+              </div>
+            </div>
+          </details>
         </TabsContent>
 
         <TabsContent value="schedule" className="grid gap-4">
@@ -261,7 +257,7 @@ export default function Dashboard({ state, theme }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="max-h-64 overflow-auto rounded-xl border border-border">
+              <div className="max-h-64 overflow-auto rounded-md border border-border">
                 <table className="w-full text-left text-xs">
                   <thead className="sticky top-0 bg-muted/90">
                     <tr className="text-muted-foreground">
@@ -392,6 +388,10 @@ export default function Dashboard({ state, theme }) {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+      <footer className="mt-8 flex flex-wrap justify-between gap-2 border-t border-border pt-4 text-xs text-muted-foreground">
+        <span>ChargeWise · Fleet charging decisions</span><span>Planning simulation · All times UTC</span>
+      </footer>
+    </main>
+    </>
   );
 }

@@ -25,21 +25,15 @@ export default function EnergyChart({ series = [], baselineSeries = [], powerLim
   }
 
   return (
-    <div className="h-[300px] w-full animate-fade">
+    <div className="h-[300px] w-full text-muted-foreground">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data}>
-          <defs>
-            <linearGradient id="powerFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6366f1" stopOpacity={0.45} />
-              <stop offset="100%" stopColor="#6366f1" stopOpacity={0.02} />
-            </linearGradient>
-          </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border" />
-          <XAxis dataKey="time" minTickGap={28} tick={{ fontSize: 11 }} />
-          <YAxis tick={{ fontSize: 11 }} unit=" kW" width={56} />
+          <XAxis dataKey="time" minTickGap={28} tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} />
+          <YAxis tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} unit=" kW" width={56} />
           <Tooltip
             contentStyle={{
-              borderRadius: 12,
+              borderRadius: 6,
               border: "1px solid var(--color-border)",
               background: "var(--color-card)",
             }}
@@ -52,15 +46,16 @@ export default function EnergyChart({ series = [], baselineSeries = [], powerLim
             type="stepAfter"
             dataKey="power_kw"
             name="Station power"
-            stroke="#6366f1"
-            fill="url(#powerFill)"
+            stroke="var(--color-primary)"
+            fill="var(--color-primary)"
+            fillOpacity={0.08}
             strokeWidth={2}
           />
           <Area
             type="stepAfter"
             dataKey="limit"
             name="Power limit"
-            stroke="#7c3aed"
+            stroke="var(--color-warning)"
             fill="transparent"
             strokeDasharray="4 4"
             strokeWidth={1.5}

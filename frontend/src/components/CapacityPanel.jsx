@@ -21,7 +21,7 @@ export default function CapacityPanel({ study, busy, onRun }) {
       ) : (
         <>
           {rec ? (
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 p-4">
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 <h3 className="font-semibold">{study.minimum_proven ? "Smallest checked configuration" : "Best feasible candidate tested"}</h3>
                 <Badge variant="success">{study.minimum_proven ? "Minimum proven" : "Verified feasible"}</Badge>
@@ -35,12 +35,12 @@ export default function CapacityPanel({ study, busy, onRun }) {
               </p>
             </div>
           ) : (
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
+            <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
               {study.candidates.some(c => c.outcome === "unresolved") ? "Capacity check incomplete. Try a smaller roster; no minimum is certified." : "No tested configuration meets every target. Review the shortfalls and plug bindings."}
             </div>
           )}
 
-          <div className="max-h-56 overflow-auto rounded-xl border border-border">
+          <div className="max-h-56 overflow-auto rounded-md border border-border">
             <table className="w-full text-left text-xs">
               <thead className="sticky top-0 bg-muted/90">
                 <tr className="text-muted-foreground">

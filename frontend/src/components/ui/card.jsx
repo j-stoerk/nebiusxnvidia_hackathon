@@ -4,7 +4,7 @@ export function Card({ className, ...props }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-card/90 text-card-foreground shadow-sm backdrop-blur-sm hover-lift animate-in-up",
+        "min-w-0 rounded-lg border border-border bg-card text-card-foreground",
         className
       )}
       {...props}
@@ -19,7 +19,7 @@ export function CardHeader({ className, ...props }) {
 export function CardTitle({ className, ...props }) {
   return (
     <h3
-      className={cn("font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight", className)}
+      className={cn("text-base font-semibold tracking-tight", className)}
       {...props}
     />
   );

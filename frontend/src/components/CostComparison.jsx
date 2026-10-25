@@ -3,7 +3,7 @@ import { eur, kwh, kw, pct } from "@/utils/formatters";
 
 function Col({ title, rows, badge }) {
   return (
-    <div className="rounded-xl border border-border bg-muted/40 p-4 transition-colors hover:bg-muted/70">
+    <div className="rounded-md border border-border p-4">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold">{title}</h3>
         {badge}
@@ -56,7 +56,7 @@ export default function CostComparison({ comparison, optimized, baseline, refere
             ["Targets met", pct(optimized?.metrics?.target_success_percent)],
           ]}
         />
-        <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 p-4">
+        <div className="rounded-md border border-border bg-muted/40 p-4">
           <h3 className="text-sm font-semibold">Simulated comparison</h3>
           <p className="mt-3 text-2xl font-semibold text-primary">{eur(comparison.cost_savings_eur)}</p>
           <p className="mt-1 text-xs text-muted-foreground">{comparison.equal_energy_comparison ? "Cost difference at equal delivered energy" : "Different delivered energy: compare shortfalls first"}</p>
@@ -81,7 +81,7 @@ export default function CostComparison({ comparison, optimized, baseline, refere
           </p>
         </div>
       </div>
-      <div className="overflow-auto rounded-xl border border-border">
+      <div className="overflow-auto rounded-md border border-border">
         <table className="w-full text-left text-xs">
           <thead className="bg-muted"><tr>{["Policy", "Unserved kWh", "Peak kW", "Energy €", "Demand €", "Total €", "Checks"].map(h => <th key={h} className="px-3 py-2">{h}</th>)}</tr></thead>
           <tbody>{[["FCFS", baseline], ["EDF", references.EDF], ["LLF", references.LLF], ["OR-Tools", optimized]].filter(([, p]) => p).map(([name, plan]) => (

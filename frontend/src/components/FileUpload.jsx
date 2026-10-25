@@ -36,7 +36,7 @@ export default function FileUpload({ onUpload, busy }) {
           onChange={(e) => setPrices(e.target.files?.[0] || null)}
         />
       </div>
-      <Button type="submit" disabled={busy || !sessions}>
+      <Button type="submit" variant="outline" disabled={busy || !sessions}>
         <Upload className="h-4 w-4" />
         Upload & validate
       </Button>

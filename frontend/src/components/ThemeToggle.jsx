@@ -9,7 +9,6 @@ export default function ThemeToggle({ theme, onToggle }) {
       size="icon"
       aria-label="Toggle dark mode"
       onClick={onToggle}
-      className="rounded-full"
     >
       {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </Button>

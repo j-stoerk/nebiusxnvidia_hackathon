@@ -62,18 +62,18 @@ export default function AgentChat({ onWorkspace, busy, setBusy }) {
         )}
       </div>
 
-      <div className="max-h-72 space-y-3 overflow-auto rounded-xl border border-border bg-muted/30 p-3">
+      <div className="max-h-72 space-y-3 overflow-auto rounded-md border border-border bg-muted/30 p-3">
         {log.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Powered by NVIDIA Nemotron on Hugging Face Inference Providers. Ask why a vehicle is
-            scheduled, which vehicles miss deadlines, or how to cut cost. OR-Tools still owns
-            scheduling; the agent uses approved tools only.
+            Ask about departure readiness, site power or cost. {status?.configured
+              ? "The connected model uses checked results and approved tools."
+              : "No model is connected. Summaries report the current planner results without an AI call."}
           </p>
         ) : null}
         {log.map((entry, i) => (
           <div
             key={i}
-            className={`rounded-xl px-3 py-2 text-sm animate-in-up ${
+            className={`rounded-md px-3 py-2 text-sm ${
               entry.role === "user"
                 ? "ml-8 bg-primary text-primary-foreground"
                 : "mr-8 bg-card border border-border"

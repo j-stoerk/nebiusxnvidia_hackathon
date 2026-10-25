@@ -5,7 +5,7 @@ import { formatDuration, kwh, timeLabel } from "@/utils/formatters";
 export default function RiskList({ atRisk = [] }) {
   if (!atRisk.length) {
     return (
-      <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-muted-foreground">
+      <div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-muted-foreground">
         All scheduled vehicles meet their energy targets on the active plan.
       </div>
     );
@@ -21,7 +21,7 @@ export default function RiskList({ atRisk = [] }) {
         return (
           <li
             key={v.vehicle_id}
-            className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 transition-transform hover:-translate-y-0.5"
+            className="flex items-start gap-3 rounded-md border border-amber-500/20 bg-amber-500/5 p-3"
           >
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
             <div className="min-w-0 flex-1">

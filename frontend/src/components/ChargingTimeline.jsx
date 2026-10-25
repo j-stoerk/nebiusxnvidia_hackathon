@@ -4,11 +4,11 @@ import { Input } from "@/components/ui/input";
 import { formatClock, formatDuration, kw, slotRange, timeLabel } from "@/utils/formatters";
 
 const COLORS = [
-  "from-indigo-500 to-violet-500",
-  "from-blue-500 to-indigo-500",
-  "from-violet-500 to-fuchsia-500",
-  "from-sky-500 to-indigo-500",
-  "from-purple-500 to-indigo-600",
+  "bg-blue-600 dark:bg-blue-400",
+  "bg-teal-700 dark:bg-teal-400",
+  "bg-slate-600 dark:bg-slate-400",
+  "bg-amber-700 dark:bg-amber-400",
+  "bg-cyan-700 dark:bg-cyan-400",
 ];
 
 function SlotPopover({ tip, x, y }) {
@@ -17,7 +17,7 @@ function SlotPopover({ tip, x, y }) {
   const top = Math.max(12, y - 8);
   return (
     <div
-      className="pointer-events-none fixed z-[100] w-[260px] -translate-y-full rounded-xl border border-border bg-card p-3 text-xs shadow-xl shadow-indigo-500/15 animate-fade"
+      className="pointer-events-none fixed z-[100] w-[260px] -translate-y-full rounded-md border border-border bg-card p-3 text-xs shadow-md"
       style={{ left, top }}
       role="tooltip"
     >
@@ -141,7 +141,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-muted/30">
+      <div className="overflow-x-auto rounded-md border border-border bg-muted/30">
         <div className="min-w-[720px] p-3">
           <div className="mb-2 ml-[100px] relative h-6 border-b border-border">
             {ticks.map((tick) => (
@@ -180,7 +180,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
                   <div className="relative h-9 rounded-lg bg-card/80 ring-1 ring-border">
                     {session ? (
                       <div
-                        className="absolute inset-y-1 rounded-md bg-indigo-500/10 dark:bg-indigo-400/10 cursor-help"
+                        className="absolute inset-y-1 rounded-sm bg-primary/10 cursor-help"
                         style={{
                           left: `${Math.max(0, availLeft)}%`,
                           width: `${Math.min(100, Math.max(0, availWidth))}%`,
@@ -201,7 +201,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
                                 ],
                                 ["Range", slotRange(session.arrival_time, session.departure_time)],
                               ],
-                              note: "Light bar = vehicle is at the depot. Not charging unless a blue slot sits on top.",
+                              note: "Light bar = vehicle is at the depot. Solid segments show charging.",
                             },
                             e
                           )
@@ -217,7 +217,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
                       return (
                         <div
                           key={`${id}-${i}`}
-                          className={`slot-bar absolute top-1.5 bottom-1.5 z-10 rounded-md bg-gradient-to-r ${color} shadow-sm cursor-pointer`}
+                          className={`slot-bar absolute top-1.5 bottom-1.5 z-10 rounded-sm ${color} cursor-pointer`}
                           style={{
                             left: `${Math.max(0, left)}%`,
                             width: `${Math.max(0.4, width)}%`,
@@ -235,7 +235,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
                                   ["Duration", formatDuration(durationMs)],
                                   ["Slot", slotRange(a.start_time, a.end_time)],
                                 ],
-                                note: "Blue/purple segment = this vehicle is drawing power in this UTC window.",
+                                note: "Solid segment = this vehicle is drawing power in this UTC window.",
                               },
                               e
                             )
@@ -259,9 +259,9 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
         <p className="text-xs text-muted-foreground">Showing 30 of {vehicles.length} vehicles. Use filter to find others.</p>
       ) : null}
 
-      <div className="max-h-48 overflow-auto rounded-xl border border-border">
+      <div className="max-h-48 overflow-auto rounded-md border border-border">
         <table className="w-full text-left text-xs">
-          <thead className="sticky top-0 bg-muted/90 backdrop-blur">
+          <thead className="sticky top-0 bg-muted">
             <tr className="text-muted-foreground">
               <th className="px-3 py-2 font-medium">Vehicle</th>
               <th className="px-3 py-2 font-medium">Charger</th>

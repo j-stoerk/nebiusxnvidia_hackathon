@@ -49,7 +49,7 @@ export default function EventSimulator({ station, onSubmit, busy }) {
       <div className="grid gap-2">
         <Label>Simulated event</Label>
         <select
-          className="h-10 rounded-xl border border-border bg-card px-3 text-sm"
+          className="h-10 rounded-md border border-border bg-card px-3 text-sm"
           value={type}
           disabled={busy}
           onChange={(e) => setType(e.target.value)}
@@ -63,7 +63,7 @@ export default function EventSimulator({ station, onSubmit, busy }) {
         <div className="grid gap-2">
           <Label>Charger</Label>
           <select
-            className="h-10 rounded-xl border border-border bg-card px-3 text-sm"
+            className="h-10 rounded-md border border-border bg-card px-3 text-sm"
             value={chargerId}
             disabled={busy}
             onChange={(e) => setChargerId(e.target.value)}

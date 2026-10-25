@@ -31,10 +31,10 @@ export default function StationSettings({ station, onSave, busy }) {
     <NumberField id="efficiency" label="Charging efficiency (0–1)" value={form.charging_efficiency} min={.01} max={1} step={.01} busy={busy} onChange={v => set("charging_efficiency", v)} />
     <NumberField id="demand-rate" label="Demand tariff (EUR/kW per billing period)" value={form.demand_tariff.eur_per_kw} busy={busy} onChange={v => tariff("eur_per_kw", v)} />
     <NumberField id="prior-peak" label="Prior billing peak (kW)" value={form.demand_tariff.prior_peak_kw} busy={busy} onChange={v => tariff("prior_peak_kw", v)} />
-    <div className="grid gap-2"><Label htmlFor="objective">Planning goal</Label><select id="objective" className="h-10 rounded-xl border border-border bg-card px-3 text-sm" value={form.optimization_goal || "cost"} disabled={busy} onChange={e => set("optimization_goal", e.target.value)}>
+    <div className="grid gap-2"><Label htmlFor="objective">Planning goal</Label><select id="objective" className="h-10 rounded-md border border-border bg-card px-3 text-sm" value={form.optimization_goal || "cost"} disabled={busy} onChange={e => set("optimization_goal", e.target.value)}>
       <option value="cost">Lowest energy + demand cost</option><option value="peak">Lowest peak, then cost</option>
     </select><p className="text-xs text-muted-foreground">Meeting energy targets takes priority in both modes.</p></div>
-    <details className="rounded-xl border border-border p-3"><summary className="cursor-pointer text-sm font-medium">Charger inventory</summary>
+    <details className="rounded-md border border-border p-3"><summary className="cursor-pointer text-sm font-medium">Charger inventory</summary>
       <div className="mt-3 grid gap-4">{form.chargers.map((c, i) => <div key={c.charger_id} className="grid gap-2 border-b border-border pb-3">
         <NumberField id={`port-${i}`} label={`${c.charger_id} power (kW)`} value={c.max_power_kw} min={.1} busy={busy} onChange={v => port(i, "max_power_kw", v)} />
         <Label htmlFor={`connector-${i}`}>Connector</Label><Input id={`connector-${i}`} value={c.connector_type} disabled={busy} onChange={e => port(i, "connector_type", e.target.value)} />
