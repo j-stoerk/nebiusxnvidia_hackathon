@@ -37,8 +37,9 @@ export function useChargingData() {
         if (successMessage) setNotice(successMessage);
         return result;
       } catch (err) {
+        try { setData(await api.getState()); } catch { /* Keep the prior view if the network is down. */ }
         setError(err.message);
-        throw err;
+        return null;
       } finally {
         setBusy(false);
       }

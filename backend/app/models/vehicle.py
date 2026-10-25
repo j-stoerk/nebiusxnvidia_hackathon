@@ -8,7 +8,7 @@ from ..utils.datetime_utils import ensure_utc
 
 
 class VehicleSession(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
     vehicle_id: str = Field(min_length=1, max_length=80)
     arrival_time: datetime
@@ -16,9 +16,11 @@ class VehicleSession(BaseModel):
     energy_required_kwh: float = Field(ge=0, le=1000)
     max_charging_power_kw: float = Field(gt=0, le=1000)
     charger_id: str | None = Field(default=None, min_length=1, max_length=80)
+    connector_type: str = Field(default="Type2", min_length=1, max_length=40)
     battery_capacity_kwh: float | None = Field(default=None, gt=0, le=2000)
     initial_soc: float | None = Field(default=None, ge=0, le=1)
     requested_soc: float | None = Field(default=None, ge=0, le=1)
+    transition_soc: float = Field(default=.8, gt=0, lt=1)
 
     @field_validator("arrival_time", "departure_time", mode="before")
     @classmethod
@@ -51,4 +53,8 @@ class VehicleSession(BaseModel):
                 )
             elif self.requested_soc + 1e-6 < self.initial_soc:
                 raise ValueError("requested_soc must be >= initial_soc")
+            elif abs(self.battery_capacity_kwh * (self.requested_soc - self.initial_soc) - self.energy_required_kwh) > 1e-6:
+                raise ValueError("requested_soc conflicts with the declared battery energy target")
+        elif self.requested_soc is not None:
+            raise ValueError("requested_soc requires capacity and initial_soc")
         return self

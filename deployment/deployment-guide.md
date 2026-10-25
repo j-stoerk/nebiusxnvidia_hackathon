@@ -1,55 +1,33 @@
-# Deployment guide
+# Deployment
 
-## Local development
+The root `Dockerfile` builds the complete frontend and FastAPI app, with the small four-van demo. A GPU is unnecessary for optimization and local summaries. `frontend/Dockerfile` builds only static assets; use the root image for a working application.
 
-1. Create a virtualenv and install backend deps:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\pip install -r backend\requirements.txt
+```sh
+docker build -t chargewise .
+docker run --rm -p 8080:8080 chargewise
+# http://localhost:8080 ; health: /api/health
 ```
 
-2. Optional: copy `.env.example` to `.env` and set Nebius credentials for the AI agent.
+Keep one application worker/replica: simulations live in memory, isolated by browser cookie, with a four-hour idle expiry and at most 16 workspaces. A restart clears them. Serve HTTPS through the platform's ingress. Set the container port to **8080** and the readiness path to **/api/health**. No datasets, API keys or model weights need to be uploaded to run the CPU demo. The local application/build tests passed; the Docker engine was unavailable on the preparation laptop, so the container build still needs a Docker/cloud smoke test.
 
-3. Start the API:
+## NVIDIA Nemotron without an API token
 
-```powershell
-.\.venv\Scripts\uvicorn.exe backend.app.main:app --reload --port 8000
+Run the public NVIDIA model and ChargeWise on the **same Nebius GPU DevPod**. The application talks to a loopback vLLM server without an Authorization header; no HF/Nebius inference API token is required. Cloud console sign-in, GPU capacity and credits/billing are still needed. Model weights are downloaded **on the cloud host**, not the laptop.
+
+Choose a compatible GPU/runtime using [NVIDIA's model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16#use-it-with-vllm). The documented vLLM integration requires version 0.12 or later, the Nano reasoning parser and the Qwen3 tool parser; follow the current NVIDIA cookbook for hardware sizing. The prepared launcher uses a shorter context and fewer sequences for the demo:
+
+```sh
+# Inside an already provisioned GPU DevPod with vLLM >=0.12, uv and curl:
+# Install Node.js 22.12+ for the frontend, or copy frontend/dist from a local build.
+bash deployment/run-nebius-gpu.sh
 ```
 
-4. Start the frontend (separate terminal):
+Expose only application port 8080 through the DevPod's supported ingress/port forwarding. The model stays on `127.0.0.1:8001`; do not publish it as an unauthenticated model endpoint. The launcher is prepared but **has not been run on cloud GPUs**. Neither the launcher nor its presence in Git proves a live Nebius deployment.
 
-```powershell
-cd frontend
-npm install
-npm run dev
-```
+## Token Factory alternative
 
-Open http://127.0.0.1:5173 (Vite proxies `/api` to port 8000).
+If the team later chooses server-side inference credentials, configure `NEBIUS_API_KEY`, `NEBIUS_MODEL` and `NEBIUS_BASE_URL` in the host's secret/environment settings. Keep the key out of Git, the browser and recordings. Nebius is preferred over HF when both are configured. The local self-hosted option takes precedence when explicitly configured. With no provider, the UI labels responses **Local computed summary — no AI model call**.
 
-## Production-style single process
+## Before the final submission
 
-```powershell
-cd frontend
-npm install
-npm run build
-cd ..
-.\.venv\Scripts\uvicorn.exe backend.app.main:app --host 0.0.0.0 --port 8000
-```
-
-FastAPI serves `frontend/dist` when present.
-
-## Frontend container
-
-```powershell
-cd frontend
-docker build -t chargewise-frontend .
-docker run -p 8080:80 chargewise-frontend
-```
-
-Point the UI at your API or place a reverse proxy in front of both services.
-
-## Security notes
-
-- Never commit real API keys. Use `.env` (gitignored).
-- This MVP stores schedules in memory only; restarting the process clears state.
+Confirm a real NVIDIA model response through the deployed app, inspect the tool trace, test one read-only question and one explicitly authorized replan, and record the provider/model plus Nebius workload evidence. Test the public application URL from a signed-out browser. Record the demo and credits/model usage honestly. Per the [official hackathon rules](https://nebiusglobalaihackathon.devpost.com/rules), a credential-free optimizer simulation alone does not satisfy the required NVIDIA model runtime on Nebius; a local summary must never be submitted as proof of inference.

@@ -1,0 +1,13 @@
+.git
+.cache
+.venv
+**/node_modules
+**/dist
+**/__pycache__
+**/.env
+**/.env.*
+uploads
+data/external
+data/raw
+data/training
+checkpoints

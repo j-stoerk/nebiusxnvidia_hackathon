@@ -1,100 +1,74 @@
-"""Capacity planning: find smallest charger count / site power that still meets targets."""
+"""Search actual installed hardware; distinguish certificates from incomplete searches."""
+from itertools import combinations, islice
+import math
+import time
 
-from copy import deepcopy
-
-from ..models import StationConfig
-from .optimizer import OptimizationError, optimize_schedule
+from .optimizer import optimize_schedule, OptimizationError
 from .simulation_service import active_outages, price_adjustments
 
 
-def run_capacity_study(state, counts: list[int] | None = None, power_limits: list[float] | None = None) -> dict:
-    """
-    Independently re-solve with subsets of installed chargers and optional lower power caps.
-    A candidate is 'proven' only when unserved energy is ~0 and the solver finishes.
-    """
+def run_capacity_study(state, counts=None, power_limits=None):
     if not state.sessions:
-        raise ValueError("Upload sessions before running a capacity study")
-
-    counts = counts or [2, 4, 6, 8, 10, len(state.station.chargers)]
-    counts = sorted({max(1, min(c, len(state.station.chargers))) for c in counts})
-    power_limits = power_limits or [
-        max(11.0, round(state.station.station_power_limit_kw * f, 1))
-        for f in (0.25, 0.4, 0.55, 0.7, 0.85, 1.0)
-    ]
-    power_limits = sorted(set(power_limits))
-
-    outages = active_outages(state.events)
-    adjustments = price_adjustments(state.events)
+        raise ValueError("Upload sessions before studying capacity")
     installed = sorted(state.station.chargers, key=lambda c: c.charger_id)
-
+    total = len(installed)
+    counts = sorted(set(counts or [*range(1, min(total, 10) + 1), total]))
+    if any(not isinstance(n, int) or not 1 <= n <= total for n in counts):
+        raise ValueError("Candidate counts must use installed chargers")
+    if power_limits and any(limit > state.station.station_power_limit_kw or limit <= 0 for limit in power_limits):
+        raise ValueError("Candidate limits cannot exceed the available site connection")
+    bound = {s.charger_id for s in state.sessions if s.charger_id}
+    mandatory = [c for c in installed if c.charger_id in bound]
+    optional = [c for c in installed if c.charger_id not in bound]
+    deadline = time.monotonic() + 12
     candidates = []
     for n in counts:
-        subset = installed[:n]
-        ids = [c.charger_id for c in subset]
-        for limit in power_limits:
+        if n < len(bound):
+            candidates.append({"charger_count": n, "feasible": False, "proven": False,
+                "outcome": "infeasible", "enumeration_complete": True,
+                "reason": "Fewer ports than explicit physical plug bindings", "shortfall_optimal": True})
+            continue
+        subsets = ((*mandatory, *extra) for extra in combinations(optional, n - len(bound)))
+        subset_count = math.comb(total - len(bound), n - len(bound))
+        results, unresolved = [], False
+        for ports in islice(subsets, 40):
+            remaining = deadline - time.monotonic()
+            if remaining <= .2:
+                unresolved = True
+                break
             try:
-                result = optimize_schedule(
-                    state.sessions,
-                    state.station,
-                    state.prices,
-                    outages,
-                    adjustments,
-                    time_limit_seconds=4.0,
-                    charger_ids=ids,
-                    power_limit_kw=limit,
-                )
-                ok = result.metrics.unserved_kwh <= 1e-3
-                candidates.append(
-                    {
-                        "charger_count": n,
-                        "station_power_limit_kw": limit,
-                        "feasible": ok,
-                        "proven": ok and "OPTIMAL" in result.solver_status,
-                        "unserved_kwh": result.metrics.unserved_kwh,
-                        "peak_power_kw": result.metrics.peak_power_kw,
-                        "cost_eur": result.metrics.cost_eur,
-                        "energy_cost_eur": result.metrics.energy_cost_eur,
-                        "demand_cost_eur": result.metrics.demand_cost_eur,
-                        "target_success_percent": result.metrics.target_success_percent,
-                        "solver_status": result.solver_status,
-                        "runtime_seconds": result.runtime_seconds,
-                    }
-                )
-            except OptimizationError as exc:
-                candidates.append(
-                    {
-                        "charger_count": n,
-                        "station_power_limit_kw": limit,
-                        "feasible": False,
-                        "proven": False,
-                        "unserved_kwh": None,
-                        "peak_power_kw": None,
-                        "cost_eur": None,
-                        "error": str(exc),
-                    }
-                )
-
-    feasible = [c for c in candidates if c.get("feasible")]
-    feasible.sort(key=lambda c: (c["charger_count"], c["station_power_limit_kw"], c["cost_eur"] or 1e9))
-    recommendation = feasible[0] if feasible else None
-
-    proof = {
-        "method": "Independent OR-Tools re-solves on charger subsets and power caps",
-        "fixed_connections": state.station.fixed_connections,
-        "charging_efficiency": state.station.charging_efficiency,
-        "demand_tariff_eur_per_kw": state.station.demand_tariff.eur_per_kw,
-        "prior_peak_kw": state.station.demand_tariff.prior_peak_kw,
-        "installed_chargers": len(state.station.chargers),
+                result = optimize_schedule(state.sessions, state.station, state.prices,
+                    active_outages(state.events), price_adjustments(state.events), time_limit_seconds=min(3, remaining),
+                    charger_ids=[c.charger_id for c in ports],
+                    power_limit_kw=min(power_limits) if power_limits else None, goal="peak")
+                results.append(result)
+                unresolved |= not result.shortfall_optimal or not result.peak_optimal
+            except (OptimizationError, ValueError):
+                unresolved = True
+        complete = subset_count <= 40 and not unresolved
+        served = [r for r in results if r.validated and r.metrics.unserved_kwh <= 1e-5]
+        best = min(served, key=lambda r: (r.metrics.peak_power_kw, r.metrics.cost_eur)) if served else None
+        if best:
+            m = best.metrics
+            candidates.append({"charger_count": n, "station_power_limit_kw": m.peak_power_kw,
+                "peak_power_kw": m.peak_power_kw, "cost_eur": m.cost_eur, "energy_cost_eur": m.energy_cost_eur,
+                "demand_cost_eur": m.demand_cost_eur, "unserved_kwh": m.unserved_kwh,
+                "target_success_percent": m.target_success_percent, "feasible": True,
+                "proven": best.validated, "validated": best.validated, "outcome": "feasible",
+                "enumeration_complete": complete, "power_minimum_proven": complete and best.peak_optimal,
+                "solver_status": best.solver_status, "runtime_seconds": best.runtime_seconds})
+        else:
+            candidates.append({"charger_count": n, "feasible": False, "proven": False,
+                "outcome": "infeasible" if complete else "unresolved", "enumeration_complete": complete,
+                "unserved_kwh": min((r.metrics.unserved_kwh for r in results), default=None),
+                "reason": "Proven energy shortfall" if complete else "Search/solver limit; no infeasibility claim"})
+    feasible = [c for c in candidates if c["feasible"]]
+    recommendation = min(feasible, key=lambda c: (c["charger_count"], c["peak_power_kw"])) if feasible else None
+    minimum_proven = bool(recommendation and recommendation.get("power_minimum_proven") and
+        all(any(c["charger_count"] == n and c["outcome"] == "infeasible" for c in candidates)
+            for n in range(1, recommendation["charger_count"])))
+    return {"recommendation": recommendation, "candidates": candidates, "minimum_proven": minimum_proven,
+        "simulated": True, "proof": {"method": "Physical-port MIP plus independent record validation",
+        "fixed_connections": state.station.fixed_connections, "installed_chargers": total,
         "installed_power_limit_kw": state.station.station_power_limit_kw,
-        "note": (
-            "Proven means all energy targets met under the candidate hardware with an optimal/feasible solve. "
-            "This is a planning simulation, not a utility interconnection quote."
-        ),
-    }
-
-    return {
-        "recommendation": recommendation,
-        "candidates": candidates,
-        "proof": proof,
-        "simulated": True,
-    }
+        "note": "Feasible means a checked schedule meets every target. A minimum additionally requires all smaller counts excluded and complete power optimization. Timeouts stay unresolved. This is a planning simulation, not a connection quote."}}

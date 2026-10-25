@@ -1,98 +1,59 @@
 # ChargeWise AI
 
-ChargeWise helps **fleet and depot managers** plan shared EV charging within a limited site power supply. See which vehicles a plan can charge before departure, what it costs, and how it handles a charger outage.
+**For fleet and depot managers: get every van ready using less shared site power.** Compare charging policies, check the smallest configuration that serves a roster, and replan when a charger fails or prices change.
 
-Compare **FCFS, earliest-deadline-first (EDF), least-laxity-first (LLF), and OR-Tools** using installed charger ratings, fixed plugs, vehicle limits and shared site power. See which vehicles will be ready, then check the smallest configuration that covers the roster. Capacity proof remains available under a short result; no avoided capex is claimed without site data and quotes.
+React/Vite, Tailwind, Recharts, FastAPI, Pandas and OR-Tools SCIP. Optional NVIDIA Nemotron uses typed tools; an independent validator certifies every plan before it is shown. No physical charger is controlled.
 
-Planning demo built with React/Vite, Tailwind CSS, Recharts, FastAPI, Pandas, Google OR-Tools, and NVIDIA Nemotron through Nebius Token Factory.
+## Run the demo
 
-Data included in this repo: [complete uploadable demo](data/demo/prepared/), [real vehicle/operator measurements](data/external/real/), [Caltech sessions and electricity prices](data/external/required/2019-04-01_2019-10-01/), and [Office 1 sessions](data/external/acn/). External datasets retain their source notices/licenses; private uploads stay ignored.
-
-## Run
-
-Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and Node.js 22.12+ (or 24+).
-
-One-command guided demo (builds the frontend if needed and opens your browser):
+Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and Node.js 22.12+ or 24+. No API key, model download or payment is needed for the planning demo or local computed summaries.
 
 ```powershell
 uv run --locked python scripts/run_demo.py
 ```
 
-Use `--no-browser` for a terminal-only launch, `--port 8001` for a different port, or `--host 0.0.0.0` for a Codespaces port forward. The guide uses the existing `data/demo/` inputs and real API/optimizer calls.
+Open **http://127.0.0.1:8000** and click **Start guided demo**. The launcher builds the frontend when needed. Stop with Ctrl+C; restart with the same command. Use `--no-browser` or `--port 8001` as needed. API documentation: `/docs`.
 
-Open **http://127.0.0.1:8000**. API documentation: **http://127.0.0.1:8000/docs**.
+For development, run `uv run uvicorn backend.app.main:app --port 8000` and `npm run dev --prefix frontend` in separate terminals.
 
-Stop with **Ctrl+C**. If the browser does not open, use the printed URL. For frontend development, run `uv run uvicorn backend.app.main:app --port 8000` and `npm run dev --prefix frontend` in separate terminals; Vite proxies `/api` to the backend.
+## What to demonstrate
 
-## Nemotron
+1. **Optimize:** four vans, two fixed 11 kW plugs, 84 kWh requested and 90% efficiency. FCFS, EDF and LLF each peak at 22 kW; OR-Tools meets the same targets at **8.89 kW**.
+2. **Check capacity:** the fixture needs both bound ports and **8.89 kW**. Expand **Show capacity proof** for the independently checked candidate and exclusion of the smaller configuration.
+3. **Simulate an outage:** CH-01 is unavailable 08:00–12:00 UTC. The planner keeps every target and raises the required peak to **10 kW**.
+4. **Change prices and replay:** apply an afternoon price increase, then replay the identical event. Costs are recomputed once; duplicate delivery leaves the plan/version unchanged.
+5. **Summarize:** the assistant explains the computed state. Without a model it explicitly says **Local computed summary — no AI model call**.
 
-Create an ignored root `.env` using `.env.example`. Set `NEBIUS_API_KEY` and the exact tool-capable NVIDIA Nemotron `NEBIUS_MODEL` available in your Token Factory account. The default base URL is `https://api.tokenfactory.nebius.com/v1`. Restart the backend after configuration changes.
+The synthetic fixture's initial cost is EUR355.87 for each greedy policy versus EUR159.20 optimized. Energy cost increases from EUR21.47 to EUR24.09; incremental demand cost falls from EUR334.40 to EUR135.11. This uses an illustrative EUR15.20/kW/month component, zero prior peak and synthetic EUR energy prices. It is a partial-period scenario calculation, not measured depot savings, an annual bill or evidence of avoided capex.
 
-The agent reads state/schedules and can call typed optimization and simulated-event tools when **Allow simulation changes** is enabled. No credentials are sent to the frontend. Without credentials, chat is explicitly unavailable; all deterministic scheduling and simulation features work. Live inference has not been verified without an account key.
+## Planning contracts
 
-## Demo
+All policies use the same vehicle/charger ratings, connector compatibility, fixed occupancy, availability, site budget, efficiency and optional taper. Vehicles retain their plugs until departure, including idle time. Explicit port bindings and zero-energy occupied sessions remain binding. Constant interval power satisfies a conservative terminal-SoC CC/CV envelope when battery capacity/initial SoC are supplied; this is not a calibrated chemistry model.
 
-Suggested story: **a small fleet depot planning charging under limited electrical capacity**. This remains a planning simulation, with no hardware control.
+The optimizer first minimizes unserved energy, then **energy plus incremental demand cost**. Station settings also offer **lowest peak, then cost**. Demand uses 15-minute mean kW, the declared local month/year and prior peaks. Capacity search uses installed hardware only; incomplete searches are not declared infeasible or proven minimum.
 
-1. Open **Guided demo**: four-vans depot day → optimize → outage → price change → duplicate replay. The fixed-plug fixture meets all energy targets. All three greedy policies peak at 22 kW; OR-Tools reduces the peak to 8 kW with the illustrative demand tariff.
-2. Verify replay keeps the state and schedule versions unchanged. Advance time to preserve completed charging, then change station capacity.
-3. Load the **100-session stress case**: unserved energy must remain visible. Upload an invalid CSV to check actionable errors, then the downloadable sample to recover.
-4. With Nebius configured, ask **AI operations** to explain the comparison or risks. Enable simulation changes only when testing agent actions. No AI key is required for steps 1–3.
-5. Inspect the four-strategy comparison, then **Check capacity**. The result is **two fixed plugs and 8 kW** for this synthetic roster. Expand **Show capacity proof** for independent checks, minimum-power proof and any time limits. Station settings accept a verified demand price, billing period and prior peak.
-6. The fixture uses the published €15.20/kW/month capacity component with synthetic energy prices and no earlier billing peak. It demonstrates a demand-cost tradeoff, not a measured depot saving. The retained 50/100-session legacy fixtures explicitly assume vehicles can be moved; uploads and saved operator settings use fixed connections. The 50-session fixture cannot meet every target on ten fixed plugs.
+Replanning preserves completed delivery and its original efficiency. `/api/advance` freezes a checked plan up to a selected time. Per-browser workspaces use in-memory state, a four-hour idle expiry and a maximum of 16 workspaces. Mutations use versions; stale writes return 409. Use one backend worker/replica; restarting clears simulations.
 
-CSV contracts and retained dataset provenance: [dataset-format.md](docs/dataset-format.md), [data-sources.md](docs/data-sources.md). Downloads are available in the app. External/reference datasets are retained; the default demo uses the small synthetic fixtures.
+CSV formats: [dataset-format.md](docs/dataset-format.md). Original five-column export: [data/charging_sessions.csv](data/charging_sessions.csv). Ready-to-upload fixture: [data/demo/prepared/](data/demo/prepared/). Real datasets: [vehicle/operator measurements](data/external/real/), [Caltech requests and German prices](data/external/required/), [Office 1 sessions](data/external/acn/). [Source notices and limits](docs/data-sources.md) distinguish measured observations, configured equipment and synthetic assumptions. Private operator uploads stay ignored.
 
-To refresh the included real-world inputs mapped to the original design, run `uv run python scripts/acquire_required_data.py`. The [field-by-field coverage](docs/data-sources.md#original-designs-required-inputs) distinguishes recorded request parameters, published equipment limits, actual German prices and missing vehicle/fault telemetry. The shared six-month pack uses about 2.3 MB.
+## Optional NVIDIA Nemotron
 
-## Implementation
+To avoid inference API tokens, run Nemotron on the **same GPU host** and set `NEMOTRON_BASE_URL=http://127.0.0.1:8001/v1` and the exact NVIDIA `NEMOTRON_MODEL`. Only loopback self-hosted endpoints are accepted; no Authorization token is sent. See [Nebius GPU deployment](deployment/deployment-guide.md).
 
-- `frontend/src/`: small React views, shared controls, and `useWorkspace.ts` for API transactions.
-- `backend/app/api/`: HTTP routes; `models.py`: validated contracts.
-- `backend/app/services/`: CSV ingestion, analytics, FCFS/EDF/LLF/OR-Tools, taper, tariffs, capacity studies, independent validation, and versioned state.
-- `backend/app/ai/`: bounded Nemotron tool loop through Nebius.
+Alternatively, use an ignored `.env` based on `.env.example` for Nebius Token Factory or Hugging Face. Nebius is preferred over HF; explicitly configured self-hosted inference takes precedence. Keys stay server-side. The agent can only mutate the simulation when **Allow simulation changes** is enabled; OR-Tools produces plans and the validator checks them.
 
-The optimizer first minimizes unserved battery energy, then energy plus incremental demand cost without worsening shortfall. Demand uses 15-minute meter averages and local month/year boundaries (Europe/Berlin by default), including prior billing peaks. Optional capacity/SoC fields enable a conservative two-stage CC/CV envelope valid throughout each constant-power interval. Missing telemetry retains a constant-power model. Schedules activate only after independent validation. Fixed plugs are the default; optional CSV `charger_id` records an actual physical binding. A charger outage never authorizes moving a bound vehicle. No physical charger is controlled.
+The credential-free demo does **not** establish NVIDIA model execution on Nebius. A qualifying hackathon submission still needs a real NVIDIA model runtime on Nebius, a working public demo/test-build URL and a recording of the actual integration. Cloud GPU execution has not been verified or provisioned from this laptop. The [deployment guide](deployment/deployment-guide.md) includes a key-free cloud-host path.
 
-Workspaces are separate, memory-only simulations (up to 16, four-hour idle expiry). Use one backend process; restarting loses sessions. Dispatch timestamps are UTC, prices EUR/kWh, and the 15-minute grid is refined at availability/event boundaries. Capacity studies and typed roster/counterfactual tools are read-only; changing a proposal's source text is never treated as a validated semantic interpretation.
-
-## Real-data evaluation
-
-[Evaluation protocol and hypotheses](docs/evaluation.md) distinguish the implemented planning demo from outstanding research/control work. The proposed niche is **auditable depot capacity decisions**, rather than generic smart charging already offered commercially.
-
-The [ACN website](https://ev.caltech.edu/dataset) offers JSON exports separately from its authenticated API. Import a website export without installing the client or supplying a token:
-
-```powershell
-uv run python scripts/fetch_acn.py --json PATH_TO_EXPORT.json --site office001 --output data/external/acn/office001.csv
-```
-
-For the official Python client, configure `ACN_API_TOKEN` in `.env`, then fetch six months without raw time series, personal IDs, or permanent extra demo dependencies:
-
-```powershell
-uv run --with acnportal==0.3.3 python scripts/fetch_acn.py
-uv run python scripts/evaluate.py --sessions data/external/acn/caltech_2019_h1.csv --prices PATH_TO_MATCHING_EUR_PRICES.csv --station PATH_TO_VERIFIED_STATION.json
-```
-
-Acquisition writes a small normalized CSV into ignored `data/external/`. A 131 KB Office 1 snapshot (1,481 visits, 2019–2021) is included from a public research mirror; direct Caltech connections timed out. Its provenance distinguishes the mirror from an official download. The evaluator requires a clean Git revision, acquisition checksum and matching prices; it records protocol/input hashes, chronological splits, conformal coverage/widths/pinball loss, and paired seven-day-block bootstrap intervals. Replay preserves overnight energy and separate billing peaks. ACN workplace delivered energy/unplug times are retrospective proxies, not depot duty cycles or online inputs. Conformal bounds are an offline baseline; calibrated chance-constrained MPC, OCPP, PV/storage and V2G are not implemented. No 95% readiness claim is made.
-
-Real SoC, charger-efficiency experiments, digitized DC curves and German charger status are reproducible with `uv run --with pyarrow --with openpyxl python scripts/acquire_vehicle_data.py` (about 2.8 MB in the shared snapshot). See [field coverage, source terms and remaining depot-specific gaps](docs/data-sources.md#real-vehicle-and-operational-measurements); unrelated vehicles/sites are kept separate.
-
-For linked Royal Mail vehicle/depot records, run `uv run python scripts/acquire_operator_data.py` (about 279 KB retained). For a complete, explicitly synthetic input pack, run `uv run python scripts/prepare_depot.py --demo`. The same converter accepts operator rosters with requested SoC targets and independently validates all four scheduling policies; [input files and dashboard import](docs/dataset-format.md#completing-a-demo-or-operator-roster).
-
-The [first exploratory replay](docs/evaluation.md#first-exploratory-result) is complete: 188 held-out calendar days, paired FCFS/EDF/LLF comparisons, seven-day-block confidence intervals and prediction evaluation. It does **not** establish mean daily peak reduction or equal-energy cost savings; prediction intervals are too wide for a useful readiness promise. Full daily output stays ignored; the compact evidence summary is tracked.
-
-## Forecasting
-
-Use published tariffs directly. Prediction can help for prices beyond the published horizon or future demand. [NVIDIA Kumo-Forecast](https://huggingface.co/nvidia/Kumo-Forecast) is a candidate to evaluate on Nebius against a previous-day baseline using chronological holdouts and realized charging cost. The retained one-week slices are demo inputs, not sufficient evidence of forecast quality. No forecasting model or weights are installed.
-
-## Verify
+## Verify and deploy
 
 ```powershell
 uv run pytest -q
 npm run build --prefix frontend
-uv run python scripts/validate_data.py
+uv run python scripts/validate_data.py --external
 ```
 
-Python dependencies are locked in `uv.lock`; frontend dependencies in `frontend/package-lock.json`. Dependencies, model weights, build output, and credentials are ignored by Git.
+The root `Dockerfile` packages the full app on port 8080. `docker build -t chargewise .` then `docker run --rm -p 8080:8080 chargewise`. Docker/cloud execution remains to be smoke-tested where an engine/account is available; native app tests and frontend builds are checked locally.
 
-Project code/generated fixtures: [MIT](LICENSE). Retained external datasets keep their own notices and terms.
+The [historical evaluation](docs/evaluation.md) is exploratory and revision-specific; it does not establish current fleet savings or a 95% readiness guarantee. Calibrated chance-constrained MPC, forecasting, OCPP actuation, PV/storage and V2G are not implemented.
+
+Application code/generated fixtures: [MIT](LICENSE). External datasets keep their own notices and terms. Python/frontend dependencies are locked; model weights, credentials and private uploads are excluded from Git.

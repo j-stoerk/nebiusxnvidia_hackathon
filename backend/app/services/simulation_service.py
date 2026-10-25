@@ -9,7 +9,10 @@ def apply_event(station: StationConfig, events: list[SimulationEvent], event: Si
     and record the event for scheduling overlays.
     Returns a small result summary. All events are labeled simulated.
     """
-    if any(e.event_id == event.event_id for e in events):
+    existing = next((e for e in events if e.event_id == event.event_id), None)
+    if existing:
+        if existing != event:
+            raise ValueError("Event ID already exists with different content")
         return {"applied": False, "reason": "duplicate_event_id", "event_id": event.event_id}
 
     if event.type == "CHARGER_FAILED":
@@ -24,7 +27,6 @@ def apply_event(station: StationConfig, events: list[SimulationEvent], event: Si
     if event.type == "CHARGER_RECOVERED":
         for charger in station.chargers:
             if charger.charger_id == event.charger_id:
-                charger.available = True
                 charger.simulated = True
                 break
         else:
@@ -43,16 +45,14 @@ def apply_event(station: StationConfig, events: list[SimulationEvent], event: Si
 def active_outages(events: list[SimulationEvent]) -> list[tuple]:
     """Return (charger_id, start, end) windows for CHARGER_FAILED events."""
     outages = []
-    recovered = {}
-    for event in events:
-        if event.type == "CHARGER_RECOVERED" and event.charger_id and event.time:
-            recovered[event.charger_id] = event.time
     for event in events:
         if event.type != "CHARGER_FAILED" or not event.charger_id:
             continue
         end = event.end_time
-        if event.charger_id in recovered and recovered[event.charger_id] < end:
-            end = recovered[event.charger_id]
+        recoveries = [e.time for e in events if e.type == "CHARGER_RECOVERED" and e.charger_id == event.charger_id
+                      and e.time and event.start_time <= e.time < end]
+        if recoveries:
+            end = min(recoveries)
         outages.append((event.charger_id, event.start_time, end))
     return outages
 

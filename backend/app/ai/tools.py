@@ -1,24 +1,28 @@
 """Approved backend tools the Nemotron agent may call."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from ..models import SimulationEvent
 from ..services import schedule_service
 
 
-class ReadStateArgs(BaseModel):
+class ToolArgs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class ReadStateArgs(ToolArgs):
     pass
 
 
-class ReadScheduleArgs(BaseModel):
+class ReadScheduleArgs(ToolArgs):
     vehicle_id: str | None = Field(default=None, max_length=80)
 
 
-class OptimizeArgs(BaseModel):
+class OptimizeArgs(ToolArgs):
     pass
 
 
-class SimulateEventArgs(BaseModel):
+class SimulateEventArgs(ToolArgs):
     event: SimulationEvent
 
 
@@ -31,6 +35,12 @@ TOOL_SPECS = {
 
 
 def execute_tool(name: str, arguments: dict, allow_changes: bool) -> dict:
+    if name not in TOOL_SPECS:
+        return {"error": f"Unknown tool: {name}"}
+    try:
+        TOOL_SPECS[name][0].model_validate(arguments)
+    except ValidationError:
+        return {"error": "Tool arguments do not match the declared schema; no change applied"}
     if name == "get_state":
         snap = schedule_service.STATE.snapshot()
         return {

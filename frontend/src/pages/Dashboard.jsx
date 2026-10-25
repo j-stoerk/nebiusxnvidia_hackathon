@@ -1,4 +1,5 @@
 import { LoaderCircle, PlugZap, RefreshCw, Zap } from "lucide-react";
+import { useState } from "react";
 import AgentChat from "@/components/AgentChat";
 import CapacityPanel from "@/components/CapacityPanel";
 import ChargingTimeline from "@/components/ChargingTimeline";
@@ -26,6 +27,26 @@ export default function Dashboard({ state, theme }) {
   const series = optimized?.metrics?.power_series || baseline?.metrics?.power_series || [];
   const allocations = optimized?.allocations || baseline?.allocations || [];
   const sessions = data?.sessions || [];
+  const [tab, setTab] = useState("overview");
+  const [demoStep, setDemoStep] = useState(0);
+  async function demoNext() {
+    const start = new Date(Math.min(...sessions.map(s => new Date(s.arrival_time).getTime())));
+    const at = hours => new Date(start.getTime() + hours * 3600000).toISOString();
+    const priceEvent = { event_id: "guided-price", type: "PRICE_CHANGED", start_time: at(9), end_time: at(12), add_eur_per_kwh: .2 };
+    let result;
+    if (demoStep === 0) {
+      if (!await run(() => api.reset())) return;
+      result = await run(() => api.optimize(), "All four policies calculated and independently checked.");
+      setTab("overview");
+    } else if (demoStep === 1) {
+      result = await run(() => api.simulateEvent({ event_id: "guided-outage", type: "CHARGER_FAILED", charger_id: "CH-01", start_time: at(2), end_time: at(6) }), "Replanned around the outage; inspect the new peak and departure targets.");
+      setTab("schedule");
+    } else {
+      result = await run(() => api.simulateEvent(priceEvent), demoStep === 2 ? "Price change applied; compare energy and demand cost separately." : "Same event replayed: no duplicate change to the plan.");
+      setTab(demoStep === 2 ? "overview" : "operations");
+    }
+    if (result) setDemoStep(previous => previous + 1);
+  }
   const horizon =
     analytics?.earliest_arrival && analytics?.latest_departure
       ? formatDuration(new Date(analytics.latest_departure) - new Date(analytics.earliest_arrival))
@@ -40,6 +61,7 @@ export default function Dashboard({ state, theme }) {
               ChargeWise AI
             </Badge>
             <Badge variant="outline">Simulated planning</Badge>
+            {data?.stale && <Badge variant="warning">Previous plan is stale · recalculate</Badge>}
             {busy ? (
               <Badge variant="secondary" className="gap-1">
                 <LoaderCircle className="h-3 w-3 animate-spin" /> Working
@@ -47,11 +69,11 @@ export default function Dashboard({ state, theme }) {
             ) : null}
           </div>
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight sm:text-4xl">
-            Depot charging operations
+            Get every van ready. Use less site power.
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground leading-relaxed">
-            Plan shared EV charging under station power limits. Compare FCFS vs OR-Tools, simulate
-            outages and tariffs, and explain results with Nemotron. Times shown in UTC as HH:MM:SS.
+            For depot managers planning shared charging within a limited connection. Compare FCFS,
+            EDF, LLF and OR-Tools, check the required capacity, and replan around outages. All times are UTC.
           </p>
           {analytics?.earliest_arrival ? (
             <p className="mt-2 text-xs text-muted-foreground">
@@ -65,7 +87,7 @@ export default function Dashboard({ state, theme }) {
           <Button
             variant="outline"
             disabled={busy}
-            onClick={() => run(() => api.reset(), "Demo sample reloaded")}
+            onClick={() => { setDemoStep(0); run(() => api.reset(), "Demo sample reloaded"); }}
           >
             <RefreshCw className="h-4 w-4" />
             Load sample
@@ -127,7 +149,17 @@ export default function Dashboard({ state, theme }) {
         ))}
       </section>
 
-      <Tabs defaultValue="overview" className="animate-in-up">
+      <section className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3" aria-label="Guided demo">
+        <div><p className="text-sm font-semibold">Four vans · two fixed plugs · a checked plan</p><p className="mt-1 text-xs text-muted-foreground">{[
+          "Start with equal energy targets and an illustrative demand tariff.",
+          "Compare cost and peak, then make CH-01 unavailable from 08:00 to 12:00 UTC.",
+          "The plan preserves departures. Next, increase the afternoon electricity price.",
+          "Inspect the new costs, then replay the same event to verify idempotency.",
+          "Walkthrough complete. Check capacity or ask for a local computed summary.",
+        ][demoStep]}</p></div>
+        <Button disabled={busy || demoStep === 4} onClick={demoNext}>{["Start guided demo", "Simulate outage", "Apply price change", "Replay event", "Complete"][demoStep]}</Button>
+      </section>
+      <Tabs value={tab} onValueChange={setTab} className="animate-in-up">
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="schedule">Schedule</TabsTrigger>
@@ -172,12 +204,12 @@ export default function Dashboard({ state, theme }) {
             <CardHeader>
               <CardTitle>Cost & peak: baseline vs optimized</CardTitle>
               <CardDescription>
-                FCFS vs OR-Tools (unserved → peak → energy+demand cost). Efficiency{" "}
+                Equal physical limits and targets · {data?.station?.optimization_goal === "peak" ? "peak first, then cost" : "energy + incremental demand cost"}. Efficiency{" "}
                 {analytics?.charging_efficiency ?? "—"} · prior peak {kw(analytics?.prior_peak_kw)}.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CostComparison comparison={data?.comparison} optimized={optimized} baseline={baseline} />
+              <CostComparison comparison={data?.comparison} optimized={optimized} baseline={baseline} references={data?.references} />
             </CardContent>
           </Card>
 
@@ -187,7 +219,7 @@ export default function Dashboard({ state, theme }) {
               <CardDescription>15-minute meter intervals vs site power limit.</CardDescription>
             </CardHeader>
             <CardContent>
-              <EnergyChart series={series} powerLimit={data?.station?.station_power_limit_kw} />
+              <EnergyChart series={series} baselineSeries={baseline?.metrics?.power_series} powerLimit={data?.station?.station_power_limit_kw} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -348,10 +380,10 @@ export default function Dashboard({ state, theme }) {
         <TabsContent value="agent">
           <Card>
             <CardHeader>
-              <CardTitle>AI operations assistant</CardTitle>
+              <CardTitle>Plan assistant</CardTitle>
               <CardDescription>
-                NVIDIA Nemotron-3-Nano via Hugging Face Inference Providers (Featherless) — explains
-                measured results; does not replace OR-Tools.
+                Readiness, costs and constraints from checked results. Local summaries work offline;
+                optional NVIDIA Nemotron explains the plan when a model is connected.
               </CardDescription>
             </CardHeader>
             <CardContent>

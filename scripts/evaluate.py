@@ -13,14 +13,43 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from backend.app.models import Price, Session, Station
-from backend.app.services.analytics import metrics
-from backend.app.services.csv_validator import horizon
+from backend.app.models import PricePoint as Price, VehicleSession as Session, StationConfig as Station
+from backend.app.services.cost_calculator import compute_metrics
+from backend.app.utils.datetime_utils import floor_slot, ceil_slot
 from backend.app.services.evaluation import ConformalNeeds, chronological_split, coverage, paired_bootstrap
-from backend.app.services.planning import solve_checked
-from backend.app.services.scenario import Scenario, battery_energy
-from backend.app.services.schedule_validator import validate_schedule
-from backend.app.services.scheduler import baseline
+from backend.app.services.physics import battery_energy
+from backend.app.services.schedule_validator import validate_schedule as certify
+from backend.app.services.optimizer import optimize_schedule
+from backend.app.services.baseline_scheduler import build_baseline
+from types import SimpleNamespace
+
+
+def horizon(sessions, minutes):
+    return floor_slot(min(s.arrival_time for s in sessions), minutes), ceil_slot(max(s.departure_time for s in sessions), minutes)
+
+
+def Scenario(name, sessions, station, prices, max_horizon_days=7):
+    start, end = horizon(sessions, 15)
+    return SimpleNamespace(sessions=sessions, station=station, prices=prices, start=start, end=end,
+                           now=start, history=[], max_horizon_hours=max_horizon_days * 24)
+
+
+def baseline(scenario, policy):
+    return build_baseline(scenario.sessions, scenario.station, scenario.prices, policy=policy,
+                          history=scenario.history, now=scenario.now, max_horizon_hours=scenario.max_horizon_hours)
+
+
+def solve_checked(scenario, seconds):
+    return optimize_schedule(scenario.sessions, scenario.station, scenario.prices, history=scenario.history,
+                             now=scenario.now, time_limit_seconds=seconds, max_horizon_hours=scenario.max_horizon_hours)
+
+
+def validate_schedule(scenario, result):
+    return certify(scenario.sessions, scenario.station, result, history=scenario.history, now=scenario.now)
+
+
+def metrics(scenario, result):
+    return compute_metrics(scenario.sessions, result.allocations, scenario.station, scenario.prices).model_dump()
 
 
 def digest(path):

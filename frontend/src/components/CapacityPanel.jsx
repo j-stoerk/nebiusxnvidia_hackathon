@@ -9,8 +9,7 @@ export default function CapacityPanel({ study, busy, onRun }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground max-w-xl">
-          Capacity study re-solves with fewer chargers and lower site power caps. A candidate is proven
-          only when every energy target is met.
+          Find how much charging capacity this roster needs. Every feasible candidate has an independently checked schedule.
         </p>
         <Button type="button" disabled={busy} onClick={onRun}>
           Run capacity study
@@ -24,8 +23,8 @@ export default function CapacityPanel({ study, busy, onRun }) {
           {rec ? (
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                <h3 className="font-semibold">Recommended minimum</h3>
-                <Badge variant="success">{rec.proven ? "Proven" : "Feasible"}</Badge>
+                <h3 className="font-semibold">{study.minimum_proven ? "Smallest checked configuration" : "Best feasible candidate tested"}</h3>
+                <Badge variant="success">{study.minimum_proven ? "Minimum proven" : "Verified feasible"}</Badge>
               </div>
               <p className="text-lg font-semibold">
                 {rec.charger_count} chargers · {kw(rec.station_power_limit_kw)} site limit
@@ -37,8 +36,7 @@ export default function CapacityPanel({ study, busy, onRun }) {
             </div>
           ) : (
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-              No feasible smaller configuration found under the tested caps. Keep installed hardware or
-              raise limits.
+              {study.candidates.some(c => c.outcome === "unresolved") ? "Capacity check incomplete. Try a smaller roster; no minimum is certified." : "No tested configuration meets every target. Review the shortfalls and plug bindings."}
             </div>
           )}
 
@@ -63,7 +61,7 @@ export default function CapacityPanel({ study, busy, onRun }) {
                     <td className="px-3 py-2">{c.unserved_kwh != null ? kwh(c.unserved_kwh) : "—"}</td>
                     <td className="px-3 py-2">{c.cost_eur != null ? eur(c.cost_eur) : "—"}</td>
                     <td className="px-3 py-2">
-                      {c.proven ? "Proven" : c.feasible ? "Feasible" : c.error || "Infeasible"}
+                      {c.feasible ? "Verified feasible" : c.outcome === "unresolved" ? "Search incomplete" : "Proven shortfall / binding limit"}
                     </td>
                   </tr>
                 ))}
@@ -72,7 +70,7 @@ export default function CapacityPanel({ study, busy, onRun }) {
           </div>
 
           {study.proof ? (
-            <p className="text-[11px] text-muted-foreground leading-relaxed">{study.proof.note}</p>
+            <details className="text-xs text-muted-foreground"><summary className="cursor-pointer font-medium">Show capacity proof</summary><p className="mt-2">{study.proof.note}</p><p className="mt-2">Installed: {study.proof.installed_chargers} ports · {kw(study.proof.installed_power_limit_kw)} connection. Fixed plugs: {study.proof.fixed_connections ? "yes" : "no"}.</p></details>
           ) : null}
         </>
       )}

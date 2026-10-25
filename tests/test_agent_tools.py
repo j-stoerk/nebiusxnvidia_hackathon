@@ -12,3 +12,9 @@ def test_get_state_tool():
 def test_optimize_requires_allow_changes():
     blocked = execute_tool("optimize_schedule", {}, allow_changes=False)
     assert "error" in blocked
+
+
+def test_model_cannot_add_undeclared_tool_arguments():
+    result = execute_tool("simulate_event", {"event": {}, "override_permissions": True}, allow_changes=True)
+    assert "error" in result
+    assert not schedule_service.STATE.events

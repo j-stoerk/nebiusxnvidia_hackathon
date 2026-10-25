@@ -1,5 +1,9 @@
+let version = null;
+
 async function request(path, options = {}) {
-  const response = await fetch(`/api${path}`, options);
+  const headers = { ...options.headers };
+  if (version !== null && options.method && options.method !== "GET") headers["If-Match"] = String(version);
+  const response = await fetch(`/api${path}`, { ...options, headers });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     const detail = data.detail;
@@ -9,8 +13,12 @@ async function request(path, options = {}) {
         : Array.isArray(detail)
           ? detail.map((e) => e.message || JSON.stringify(e)).join("; ")
           : response.statusText;
-    throw new Error(message || "Request failed");
+    const error = new Error(message || "Request failed");
+    error.status = response.status;
+    throw error;
   }
+  const next = data.workspace || data;
+  if (next.state_version !== undefined) version = next.state_version;
   return data;
 }
 

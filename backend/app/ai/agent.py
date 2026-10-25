@@ -29,18 +29,31 @@ def _openai_tools() -> list:
     return tools
 
 
+def local_summary():
+    """Useful credential-free fallback; explicitly not an AI/model response."""
+    state = schedule_service.STATE.snapshot()
+    plan = state["optimized"] or state["baseline"]
+    if not plan:
+        message = "Run the optimizer to calculate a checked charging plan. No model inference is enabled."
+    else:
+        m = plan["metrics"]
+        message = (f"Local computed summary — no AI model call.\n"
+            f"Targets met: {m['target_success_percent']:.0f}%; unserved energy: {m['unserved_kwh']:.3f} kWh.\n"
+            f"Peak: {m['peak_power_kw']:.2f} kW. Energy cost: EUR {m['energy_cost_eur']:.2f}; "
+            f"incremental demand cost: EUR {m['demand_cost_eur']:.2f}.\n"
+            f"Independent constraints: {'passed' if plan['validated'] else 'not certified'}. "
+            f"{'The plan is stale; re-optimize after the latest change.' if state['stale'] else 'This is a simulated planning result.'}")
+    return {"mode": "local_summary", "message": message, "model": None, "tool_calls": [], "workspace": state}
+
+
 def chat(message: str, allow_changes: bool = False) -> dict:
     config = public_configuration()
     if not config["configured"]:
-        return {
-            "mode": "unavailable",
-            "message": config["reason"],
-            "model": None,
-            "tool_calls": [],
-        }
+        return local_summary()
 
     context = {
         "allow_changes": allow_changes,
+        "runtime_provider": config["provider"],
         "current_state": execute_tool("get_state", {}, False),
     }
     messages = [

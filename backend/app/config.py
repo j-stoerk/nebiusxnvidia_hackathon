@@ -23,6 +23,8 @@ class Settings(BaseModel):
     nebius_api_key: str = ""
     nebius_base_url: str = "https://api.tokenfactory.nebius.com/v1"
     nebius_model: str = ""
+    nemotron_base_url: str = ""
+    nemotron_model: str = ""
     default_charger_count: int = 10
     default_station_power_kw: float = 80.0
     default_slot_minutes: int = 15
@@ -40,4 +42,6 @@ def get_settings() -> Settings:
         nebius_api_key=os.getenv("NEBIUS_API_KEY", ""),
         nebius_base_url=os.getenv("NEBIUS_BASE_URL", "https://api.tokenfactory.nebius.com/v1").rstrip("/"),
         nebius_model=os.getenv("NEBIUS_MODEL", ""),
+        nemotron_base_url=os.getenv("NEMOTRON_BASE_URL", "").rstrip("/"),
+        nemotron_model=os.getenv("NEMOTRON_MODEL", ""),
     )

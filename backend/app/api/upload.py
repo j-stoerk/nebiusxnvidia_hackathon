@@ -37,13 +37,13 @@ def reset_workspace():
 
 @router.get("/sample/sessions")
 def download_sample_sessions():
-    path = ROOT / "data" / "sample_charging_sessions.csv"
+    path = ROOT / "data/demo/prepared/sessions.csv"
     return FileResponse(path, filename="sample_charging_sessions.csv", media_type="text/csv")
 
 
 @router.get("/sample/prices")
 def download_sample_prices():
-    path = ROOT / "data" / "synthetic_prices_15min.csv"
+    path = ROOT / "data/demo/prepared/prices.csv"
     if not path.is_file():
         raise HTTPException(404, "Sample prices not found")
     return FileResponse(path, filename="synthetic_prices_15min.csv", media_type="text/csv")

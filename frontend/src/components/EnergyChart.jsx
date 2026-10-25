@@ -10,12 +10,14 @@ import {
 } from "recharts";
 import { shortTime } from "@/utils/formatters";
 
-export default function EnergyChart({ series = [], powerLimit }) {
+export default function EnergyChart({ series = [], baselineSeries = [], powerLimit }) {
+  const baseline = Object.fromEntries(baselineSeries.map(p => [p.timestamp, p.power_kw]));
   const data = series.map((p) => ({
     time: shortTime(p.timestamp),
     power_kw: Number(p.power_kw?.toFixed?.(2) ?? p.power_kw),
     price: p.price_eur_per_kwh,
     limit: powerLimit,
+    baseline_kw: baseline[p.timestamp],
   }));
 
   if (!data.length) {
@@ -43,6 +45,9 @@ export default function EnergyChart({ series = [], powerLimit }) {
             }}
           />
           <Legend />
+          <Area
+            type="stepAfter" dataKey="baseline_kw" name="FCFS" stroke="#94a3b8" fill="transparent" strokeWidth={1.5} strokeDasharray="5 4"
+          />
           <Area
             type="stepAfter"
             dataKey="power_kw"

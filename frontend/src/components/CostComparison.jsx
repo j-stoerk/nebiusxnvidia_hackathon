@@ -20,7 +20,7 @@ function Col({ title, rows, badge }) {
   );
 }
 
-export default function CostComparison({ comparison, optimized, baseline }) {
+export default function CostComparison({ comparison, optimized, baseline, references = {} }) {
   if (!comparison) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -46,7 +46,7 @@ export default function CostComparison({ comparison, optimized, baseline }) {
         />
         <Col
           title="Optimized (OR-Tools)"
-          badge={<Badge>SCIP + peak</Badge>}
+          badge={<Badge>{optimized?.validated ? "Independently checked" : "Unchecked"}</Badge>}
           rows={[
             ["Total cost", eur(comparison.optimized_cost_eur)],
             ["Energy cost", eur(comparison.optimized_energy_cost_eur)],
@@ -57,9 +57,9 @@ export default function CostComparison({ comparison, optimized, baseline }) {
           ]}
         />
         <div className="rounded-xl border border-primary/30 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 p-4">
-          <h3 className="text-sm font-semibold">Measured advantage</h3>
+          <h3 className="text-sm font-semibold">Simulated comparison</h3>
           <p className="mt-3 text-2xl font-semibold text-primary">{eur(comparison.cost_savings_eur)}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Total cost savings (energy + demand)</p>
+          <p className="mt-1 text-xs text-muted-foreground">{comparison.equal_energy_comparison ? "Cost difference at equal delivered energy" : "Different delivered energy: compare shortfalls first"}</p>
           <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
             <li className="flex justify-between gap-2">
               <span>Energy €</span>
@@ -80,6 +80,15 @@ export default function CostComparison({ comparison, optimized, baseline }) {
             {comparison.fixed_connections ? " Fixed plugs enabled." : ""}
           </p>
         </div>
+      </div>
+      <div className="overflow-auto rounded-xl border border-border">
+        <table className="w-full text-left text-xs">
+          <thead className="bg-muted"><tr>{["Policy", "Unserved kWh", "Peak kW", "Energy €", "Demand €", "Total €", "Checks"].map(h => <th key={h} className="px-3 py-2">{h}</th>)}</tr></thead>
+          <tbody>{[["FCFS", baseline], ["EDF", references.EDF], ["LLF", references.LLF], ["OR-Tools", optimized]].filter(([, p]) => p).map(([name, plan]) => (
+            <tr key={name} className="border-t border-border"><td className="px-3 py-2 font-medium">{name}</td>
+              {[plan.metrics.unserved_kwh.toFixed(3), plan.metrics.peak_power_kw.toFixed(2), eur(plan.metrics.energy_cost_eur), eur(plan.metrics.demand_cost_eur), eur(plan.metrics.cost_eur), plan.validated ? "Passed" : "Unchecked"].map((v, i) => <td key={i} className="px-3 py-2 tabular-nums">{v}</td>)}
+            </tr>))}</tbody>
+        </table>
       </div>
     </div>
   );

@@ -44,5 +44,7 @@ class StationBody(BaseModel):
 def put_station(body: StationBody):
     try:
         return schedule_service.update_station(body.station.model_dump())
+    except schedule_service.Conflict:
+        raise
     except Exception as exc:
         raise HTTPException(422, str(exc)) from exc

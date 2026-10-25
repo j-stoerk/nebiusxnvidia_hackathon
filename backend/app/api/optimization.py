@@ -14,6 +14,8 @@ def optimize():
     schedule_service.load_demo_if_empty()
     try:
         return schedule_service.run_optimization()
+    except schedule_service.Conflict:
+        raise
     except OptimizationError as exc:
         raise HTTPException(422, str(exc)) from exc
     except ValueError as exc:
@@ -29,6 +31,8 @@ def capacity(body: CapacityBody | None = None):
     schedule_service.load_demo_if_empty()
     try:
         return schedule_service.run_capacity(counts=(body.counts if body else None))
+    except schedule_service.Conflict:
+        raise
     except OptimizationError as exc:
         raise HTTPException(422, str(exc)) from exc
     except ValueError as exc:

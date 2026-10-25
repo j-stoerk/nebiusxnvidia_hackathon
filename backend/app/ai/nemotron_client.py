@@ -26,8 +26,19 @@ def _hf_request_model(model: str, provider: str) -> str:
 
 
 def agent_configuration() -> dict:
-    """Prefer Hugging Face when HF_TOKEN is set; otherwise fall back to Nebius."""
+    """Prefer the hackathon runtime on Nebius; Hugging Face is optional."""
     settings = get_settings()
+    local = urlparse(settings.nemotron_base_url)
+    if local.scheme in {"http", "https"} and local.hostname in {"127.0.0.1", "localhost", "::1"} and not local.username and _is_nemotron(settings.nemotron_model):
+        return {"configured": True, "provider": "self-hosted", "hf_provider": None,
+                "model": settings.nemotron_model, "request_model": settings.nemotron_model,
+                "base": settings.nemotron_base_url, "key": "", "reason": None}
+
+    host = urlparse(settings.nebius_base_url)
+    if settings.nebius_api_key and host.scheme == "https" and (host.hostname or "").endswith(".nebius.com") and not host.username and _is_nemotron(settings.nebius_model):
+        return {"configured": True, "provider": "nebius", "hf_provider": None,
+                "model": settings.nebius_model, "request_model": settings.nebius_model,
+                "base": settings.nebius_base_url, "key": settings.nebius_api_key, "reason": None}
 
     if settings.hf_token and _is_nemotron(settings.hf_model):
         host = urlparse(settings.hf_base_url)
@@ -60,8 +71,8 @@ def agent_configuration() -> dict:
     reason = None
     if not configured:
         reason = (
-            "Set HF_TOKEN + NVIDIA Nemotron HF_MODEL (recommended), "
-            "or NEBIUS_API_KEY + NEBIUS_MODEL for Nebius."
+            "Local computed summaries are enabled without credentials. "
+            "NVIDIA model inference on Nebius is not configured."
         )
     return {
         "configured": configured,
@@ -83,6 +94,8 @@ def public_configuration() -> dict:
         "hf_provider": config.get("hf_provider"),
         "model": config["model"],
         "reason": config["reason"],
+        "available": True,
+        "mode": "model" if config["configured"] else "local_summary",
     }
 
 
@@ -101,16 +114,15 @@ def chat_completion(messages: list, tools: list, client: httpx.Client | None = N
     if tools:
         body["tools"] = tools
         body["tool_choice"] = "auto"
+    if config["provider"] == "self-hosted":
+        body["chat_template_kwargs"] = {"enable_thinking": False}
 
     own = client is None
     client = client or httpx.Client(timeout=120.0)
     try:
         response = client.post(
             f"{config['base']}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {config['key']}",
-                "Content-Type": "application/json",
-            },
+            headers={"Content-Type": "application/json", **({"Authorization": f"Bearer {config['key']}"} if config["key"] else {})},
             json=body,
         )
         response.raise_for_status()

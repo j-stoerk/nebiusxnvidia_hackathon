@@ -6,6 +6,8 @@ from datetime import timedelta
 from ..models import Allocation, PricePoint, ScheduleMetrics, StationConfig, VehicleSession
 from ..models.schedule import PowerPoint, VehicleMetric
 from ..utils.datetime_utils import hours, iter_slots
+from .physics import battery_energy
+from .tariffs import demand_cost as metered_demand_cost
 
 
 def price_at(prices: list[PricePoint], moment, adjustments: list[tuple] | None = None) -> float:
@@ -41,7 +43,7 @@ def compute_metrics(
 
     for record in allocations:
         duration = hours(record.start_time, record.end_time)
-        delivered[record.vehicle_id] += record.power_kw * duration * efficiency
+        delivered[record.vehicle_id] += battery_energy(record)
         bound_charger.setdefault(record.vehicle_id, record.charger_id)
         cuts = {record.start_time, record.end_time}
         cursor = record.start_time.replace(
@@ -52,6 +54,7 @@ def compute_metrics(
         while cursor < record.end_time:
             cuts.add(cursor)
             cursor += timedelta(minutes=station.slot_minutes)
+        cuts.update(t for a, b, _ in price_adjustments or [] for t in (a, b) if record.start_time < t < record.end_time)
         ordered = sorted(cuts)
         for a, b in zip(ordered, ordered[1:]):
             energy_cost += record.power_kw * hours(a, b) * price_at(prices, a, price_adjustments)
@@ -65,7 +68,7 @@ def compute_metrics(
 
     tariff = station.demand_tariff
     prior = tariff.prior_peak_kw
-    demand_cost = max(0.0, peak - prior) * tariff.eur_per_kw
+    demand_cost, billing_peaks = metered_demand_cost(sessions, allocations, tariff)
     total_cost = energy_cost + demand_cost
 
     vehicles = []
@@ -128,4 +131,5 @@ def compute_metrics(
         target_success_percent=round(100.0 * met / len(vehicles), 2) if vehicles else 0.0,
         vehicles=vehicles,
         power_series=series,
+        billing_peaks_kw=billing_peaks,
     )

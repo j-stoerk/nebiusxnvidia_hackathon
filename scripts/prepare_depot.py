@@ -16,13 +16,11 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from backend.app.models import Station
-from backend.app.services.csv_validator import InputError, csv_frame, parse_prices, parse_sessions
-from backend.app.services.scenario import Scenario
-from backend.app.services.schedule_service import Workspaces
-from backend.app.services.scheduler import baseline, optimize
+from backend.app.models import StationConfig as Station
+from backend.app.services.csv_validator import InputError, _frame as csv_frame, validate_prices_csv as parse_prices, validate_sessions_csv as parse_sessions
+from backend.app.services.baseline_scheduler import build_baseline
+from backend.app.services.optimizer import optimize_schedule
 from backend.app.services.schedule_validator import validate_schedule
-from backend.app.services.analytics import metrics
 from scripts.prepare_data import write_csv, write_json
 
 
@@ -62,28 +60,17 @@ def normalize_roster(content):
 
 def demo_inputs(folder):
     """Reuse the existing four-van story, with explicit synthetic SoC goals."""
-    scenario = Workspaces().create(capacity=True)
-    rows = []
-    for i, session in enumerate(scenario.sessions):
-        row = session.model_dump(mode="json")
-        row["target_soc"] = session.initial_soc + session.energy_required_kwh / session.battery_capacity_kwh
-        row.pop("energy_required_kwh")
-        row["charger_id"] = scenario.station.chargers[i % 2].charger_id
-        rows.append(row)
-    write_csv(folder / "roster.csv", rows)
-    station = scenario.station.model_copy(update={"station_power_limit_kw": 22, "charging_efficiency": .9,
-                                                 "chargers": scenario.station.chargers[:2]})
-    write_json(folder / "station.json", station.model_dump(mode="json"))
-    write_csv(folder / "prices.csv", [p.model_dump(mode="json") for p in scenario.prices
-              if scenario.start <= p.timestamp < scenario.end])
+    folder.mkdir(parents=True, exist_ok=True)
+    for name in ("roster.csv", "station.json", "prices.csv"):
+        (folder / name).write_bytes((ROOT / "data/demo/prepared/example-input" / name).read_bytes())
 
 
-def compare(scenario):
+def compare(sessions, station, prices):
     results = {}
     for name in ("FCFS", "EDF", "LLF", "optimized"):
-        schedule = optimize(scenario) if name == "optimized" else baseline(scenario, name)
-        validate_schedule(scenario, schedule)
-        values = metrics(scenario, schedule)
+        schedule = optimize_schedule(sessions, station, prices) if name == "optimized" else build_baseline(sessions, station, prices, policy=name)
+        validate_schedule(sessions, station, schedule)
+        values = schedule.metrics.model_dump()
         results[name] = {"independently_validated": True, "solver_status": schedule.solver_status,
                         **{k: values[k] for k in ("unserved_kwh", "peak_power_kw", "cost_eur", "target_success_percent")}}
     return results
@@ -103,9 +90,7 @@ def build_pack(source, output, demo=False):
     station = Station.model_validate(config)
     sessions = normalize_roster(inputs["roster.csv"])
     prices = parse_prices(inputs["prices.csv"])
-    scenario = Scenario("prepared", sessions, station, prices,
-                        label="Synthetic complete demo" if demo else "Operator-supplied inputs, unverified")
-    results = compare(scenario)  # Validate before emitting an apparently usable pack.
+    results = compare(sessions, station, prices)  # Validate before emitting a usable pack.
     output.mkdir(parents=True, exist_ok=True)
     write_csv(output / "sessions.csv", [s.model_dump(mode="json") for s in sessions])
     write_json(output / "station.json", station.model_dump(mode="json"))

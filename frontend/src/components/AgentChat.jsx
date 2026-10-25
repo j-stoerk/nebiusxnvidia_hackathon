@@ -56,8 +56,8 @@ export default function AgentChat({ onWorkspace, busy, setBusy }) {
             · {status.model}
           </Badge>
         ) : (
-          <Badge variant="warning">
-            {status?.reason || "Set HF_TOKEN (Hugging Face) or Nebius credentials for chat"}
+          <Badge variant="outline">
+            Local computed summary · no AI model call
           </Badge>
         )}
       </div>
@@ -104,13 +104,13 @@ export default function AgentChat({ onWorkspace, busy, setBusy }) {
         <Textarea
           rows={3}
           value={message}
-          disabled={busy || !status?.configured}
-          placeholder="Why is EV-001 scheduled between 12:00:00 and 12:15:00 UTC?"
+          disabled={busy || !status?.available}
+          placeholder={status?.configured ? "Ask about the checked charging plan" : "Summarize readiness, peak and cost from the current plan"}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <Button type="submit" disabled={busy || !status?.configured}>
+        <Button type="submit" disabled={busy || !status?.available}>
           <Send className="h-4 w-4" />
-          Ask agent
+          {status?.configured ? "Ask Nemotron" : "Show plan summary"}
         </Button>
       </form>
     </div>

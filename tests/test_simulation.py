@@ -7,8 +7,8 @@ def test_price_event_and_reoptimize():
     event = SimulationEvent(
         event_id="test-price-1",
         type="PRICE_CHANGED",
-        start_time="2019-01-07T12:00:00Z",
-        end_time="2019-01-07T14:00:00Z",
+        start_time="2026-10-24T09:00:00Z",
+        end_time="2026-10-24T10:00:00Z",
         add_eur_per_kwh=0.15,
         simulated=True,
     )

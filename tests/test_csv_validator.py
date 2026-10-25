@@ -5,7 +5,7 @@ import pytest
 from backend.app.services.csv_validator import InputError, validate_sessions_csv
 
 ROOT = Path(__file__).resolve().parents[1]
-SAMPLE = (ROOT / "data" / "sample_charging_sessions.csv").read_bytes()
+SAMPLE = (ROOT / "data/demo" / "sample_charging_sessions.csv").read_bytes()
 
 
 def test_valid_sample():

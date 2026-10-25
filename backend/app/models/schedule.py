@@ -7,13 +7,14 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class Allocation(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
     vehicle_id: str
     charger_id: str
     start_time: datetime
     end_time: datetime
     power_kw: float = Field(ge=0)
+    charging_efficiency: float = Field(default=1, gt=0, le=1)
 
 
 class VehicleMetric(BaseModel):
@@ -50,6 +51,7 @@ class ScheduleMetrics(BaseModel):
     target_success_percent: float
     vehicles: list[VehicleMetric]
     power_series: list[PowerPoint]
+    billing_peaks_kw: dict[str, float] = Field(default_factory=dict)
 
 
 class ScheduleResult(BaseModel):
@@ -58,3 +60,7 @@ class ScheduleResult(BaseModel):
     metrics: ScheduleMetrics
     solver_status: str
     runtime_seconds: float
+    validated: bool = False
+    shortfall_optimal: bool = False
+    peak_optimal: bool = False
+    cost_optimal: bool = False
