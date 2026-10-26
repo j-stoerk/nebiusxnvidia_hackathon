@@ -35,12 +35,12 @@ def agent_configuration() -> dict:
                 "base": settings.nemotron_base_url, "key": "", "reason": None}
 
     host = urlparse(settings.nebius_base_url)
-    if settings.nebius_api_key and host.scheme == "https" and (host.hostname or "").endswith(".nebius.com") and not host.username and _is_nemotron(settings.nebius_model):
+    if settings.cloud_inference_enabled and settings.nebius_api_key and host.scheme == "https" and (host.hostname or "").endswith(".nebius.com") and not host.username and _is_nemotron(settings.nebius_model):
         return {"configured": True, "provider": "nebius", "hf_provider": None,
                 "model": settings.nebius_model, "request_model": settings.nebius_model,
                 "base": settings.nebius_base_url, "key": settings.nebius_api_key, "reason": None}
 
-    if settings.hf_token and _is_nemotron(settings.hf_model):
+    if settings.cloud_inference_enabled and settings.hf_token and _is_nemotron(settings.hf_model):
         host = urlparse(settings.hf_base_url)
         valid_host = (
             host.scheme == "https"
@@ -67,13 +67,15 @@ def agent_configuration() -> dict:
         and host.username is None
     )
     model = settings.nebius_model
-    configured = bool(settings.nebius_api_key and valid_host and _is_nemotron(model))
+    configured = bool(settings.cloud_inference_enabled and settings.nebius_api_key and valid_host and _is_nemotron(model))
     reason = None
     if not configured:
         reason = (
             "Local computed summaries are enabled without credentials. "
             "NVIDIA model inference on Nebius is not configured."
         )
+        if (settings.nebius_api_key or settings.hf_token) and not settings.cloud_inference_enabled:
+            reason = "Cloud inference is disabled. A key alone never enables paid calls. Local computed summaries remain available."
     return {
         "configured": configured,
         "provider": "nebius" if configured else None,

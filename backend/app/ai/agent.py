@@ -110,30 +110,14 @@ def chat(message: str, allow_changes: bool = False) -> dict:
         }
     except httpx.HTTPStatusError as exc:
         provider = (config.get("provider") or "provider").title()
-        detail = ""
-        try:
-            detail = exc.response.text[:400]
-        except Exception:
-            pass
         code = exc.response.status_code
         if code == 402:
-            hint = (
-                "Your HF token works, but this account has no Inference Provider credits. "
-                "Add credits or PRO at https://huggingface.co/settings/billing — "
-                "or set NEBIUS_API_KEY in .env (Nebius gives ~$1 trial / Builder $25 free credits) "
-                "with NEBIUS_MODEL=nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B and leave HF_TOKEN empty "
-                "to use Nebius instead. "
-            )
-        elif code == 400 and "provider" in detail.lower():
-            hint = (
-                "Enable Featherless (or set HF_PROVIDER) under "
-                "https://huggingface.co/settings/inference-providers. "
-            )
+            hint = "Inference was declined for billing or credit reasons. Calls stopped; review the provider account before enabling inference again."
         else:
-            hint = "Check HF_TOKEN permissions (Inference) and HF_MODEL. "
+            hint = "Check the configured provider, model availability and access permissions."
         return {
             "mode": "error",
-            "message": f"{provider} HTTP {code}. {hint}{detail}".strip(),
+            "message": f"{provider} HTTP {code}. {hint} Scheduling remains available.",
             "model": config["model"],
             "tool_calls": trace,
         }

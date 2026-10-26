@@ -26,7 +26,7 @@ Expose only application port 8080 through the DevPod's supported ingress/port fo
 
 ## Token Factory alternative
 
-If the team later chooses server-side inference credentials, configure `NEBIUS_API_KEY`, `NEBIUS_MODEL` and `NEBIUS_BASE_URL` in the host's secret/environment settings. Keep the key out of Git, the browser and recordings. Nebius is preferred over HF when both are configured. The local self-hosted option takes precedence when explicitly configured. With no provider, the UI labels responses **Local computed summary — no AI model call**.
+If the team later chooses server-side inference credentials, configure `NEBIUS_API_KEY`, `NEBIUS_MODEL` and `NEBIUS_BASE_URL` in the host's secret/environment settings. Keep `CLOUD_INFERENCE_ENABLED=false` until account billing has been reviewed; a key alone does not enable paid inference. This opt-in is not a provider spending cap. Keep the key out of Git, the browser and recordings. Nebius is preferred over HF when both are configured. The local self-hosted option takes precedence when explicitly configured. With no provider, the UI labels responses **Local computed summary — no AI model call**.
 
 ## Before the final submission
 

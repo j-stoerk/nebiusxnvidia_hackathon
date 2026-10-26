@@ -44,7 +44,7 @@ CSV formats: [dataset-format.md](docs/dataset-format.md). Original five-column e
 
 To avoid inference API tokens, run Nemotron on the **same GPU host** and set `NEMOTRON_BASE_URL=http://127.0.0.1:8001/v1` and the exact NVIDIA `NEMOTRON_MODEL`. Only loopback self-hosted endpoints are accepted; no Authorization token is sent. See [Nebius GPU deployment](deployment/deployment-guide.md).
 
-Alternatively, use an ignored `.env` based on `.env.example` for Nebius Token Factory or Hugging Face. Nebius is preferred over HF; explicitly configured self-hosted inference takes precedence. Keys stay server-side. The agent can only mutate the simulation when **Allow simulation changes** is enabled; OR-Tools produces plans and the validator checks them.
+Alternatively, use an ignored `.env` based on `.env.example` for Nebius Token Factory or Hugging Face. **Cloud inference is off by default even when a key is present.** `CLOUD_INFERENCE_ENABLED=true` is a separate opt-in after account billing is reviewed; it is not a provider spending cap. Nebius is preferred over HF; explicitly configured self-hosted inference takes precedence. Keys stay server-side. The agent can only mutate the simulation when **Allow simulation changes** is enabled; OR-Tools produces plans and the validator checks them.
 
 The credential-free demo does **not** establish NVIDIA model execution on Nebius. A qualifying hackathon submission still needs a real NVIDIA model runtime on Nebius, a working public demo/test-build URL and a recording of the actual integration. Cloud GPU execution has not been verified or provisioned from this laptop. The [deployment guide](deployment/deployment-guide.md) includes a key-free cloud-host path.
 
