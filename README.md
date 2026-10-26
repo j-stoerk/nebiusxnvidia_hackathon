@@ -4,7 +4,7 @@
 
 React/Vite, Tailwind, Recharts, FastAPI, Pandas and OR-Tools SCIP. Optional NVIDIA Nemotron uses typed tools; an independent validator certifies every plan before it is shown. No physical charger is controlled.
 
-[Architecture film and downloads](https://j-stoerk.github.io/nebiusxnvidia_hackathon/) · [Prebuilt app](https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/tag/submission-review-2026-10-25). The film explains components, data flow and workflows with animated diagrams. The site walkthrough is recorded separately; the complete editable planner runs from the test build or source below.
+[Architecture film and downloads](https://j-stoerk.github.io/nebiusxnvidia_hackathon/) · [Prebuilt app](https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/tag/submission-review-2026-10-25). A continuous silent animation follows the team, data flow and planning workflow across one connected map. [Timestamped voiceover text](presentation/VOICEOVER.txt). The complete editable planner runs from the test build or source below.
 
 ## Run the demo
 
