@@ -2,21 +2,23 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, SelectField, utcInput, utcTime } from "@/components/fields";
 import StationSettings from "@/components/StationSettings";
+import ListPager, { usePage } from "@/components/ListPager";
 
 const copy = data => structuredClone({ sessions: data.sessions, prices: data.prices, station: data.station });
 
-function VehicleFields({ session: s, index, chargers, onChange, onRemove }) {
+function VehicleFields({ session: s, index, chargers, onChange, onRemove, canRemove }) {
   function set(key, value) {
     const next = { ...s, [key]: value };
-    if (key === "requested_soc" && typeof value === "number" && next.battery_capacity_kwh && next.initial_soc != null)
-      next.energy_required_kwh = Number((next.battery_capacity_kwh * (value - next.initial_soc)).toFixed(6));
-    else if (["energy_required_kwh", "battery_capacity_kwh", "initial_soc"].includes(key) && next.battery_capacity_kwh && typeof next.initial_soc === "number")
+    // SoC edits preserve the destination; an explicit kWh edit changes it.
+    if (["requested_soc", "initial_soc", "battery_capacity_kwh"].includes(key) && next.battery_capacity_kwh > 0 && typeof next.initial_soc === "number" && typeof next.requested_soc === "number")
+      next.energy_required_kwh = Number((next.battery_capacity_kwh * (next.requested_soc - next.initial_soc)).toFixed(6));
+    else if (key === "energy_required_kwh" && typeof value === "number" && next.battery_capacity_kwh > 0 && typeof next.initial_soc === "number")
       next.requested_soc = next.initial_soc + next.energy_required_kwh / next.battery_capacity_kwh;
     onChange(next);
   }
   const number = (key, label, min, max) => <Field label={label} type="number" min={min} max={max} required value={s[key] ?? ""} onChange={v => set(key, v)} />;
   return <article className="space-y-4 rounded-md border border-border p-4">
-    <div className="flex items-center justify-between"><h3 className="text-sm font-semibold">Vehicle {index + 1}</h3><Button type="button" variant="ghost" size="sm" onClick={onRemove}>Remove vehicle</Button></div>
+    <div className="flex items-center justify-between"><h3 className="text-sm font-semibold">Vehicle {index + 1}</h3><Button type="button" variant="ghost" size="sm" disabled={!canRemove} onClick={onRemove}>Remove vehicle</Button></div>
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <Field label="Vehicle ID" value={s.vehicle_id} maxLength={80} required onChange={v => set("vehicle_id", v)} />
       <Field label="Arrival (UTC)" type="datetime-local" step={1} value={utcInput(s.arrival_time)} required onChange={v => set("arrival_time", utcTime(v))} />
@@ -25,16 +27,21 @@ function VehicleFields({ session: s, index, chargers, onChange, onRemove }) {
       {number("max_charging_power_kw", "Vehicle charging limit (kW)", .01, 1000)}
       <SelectField label="Bound charger" value={s.charger_id || ""} onChange={v => set("charger_id", v || null)}><option value="">Automatic assignment</option>{chargers.map((c, i) => <option key={i} value={c.charger_id}>{c.charger_id}</option>)}</SelectField>
     </div>
-    <details><summary className="text-xs font-medium text-muted-foreground">Battery, taper and connector</summary>
+    <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={s.battery_capacity_kwh != null} onChange={e => {
+      const capacity = Math.max(60, s.energy_required_kwh / .8);
+      onChange({ ...s, battery_capacity_kwh: e.target.checked ? capacity : null,
+        initial_soc: e.target.checked ? .2 : null,
+        requested_soc: e.target.checked ? .2 + s.energy_required_kwh / capacity : null });
+    }} />Model battery SoC and taper</label>
+    {s.battery_capacity_kwh != null && <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {number("battery_capacity_kwh", "Battery capacity (kWh)", .01, 2000)}
+      {number("initial_soc", "Initial SoC (0–1)", 0, 1)}
+      <Field label="Target SoC (0–1)" type="number" min={0} max={1} value={s.requested_soc ?? ""} required onChange={v => set("requested_soc", v)} />
+    </div>}
+    <details><summary className="text-xs font-medium text-muted-foreground">Taper and connector</summary>
       <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Field label="Vehicle connector" value={s.connector_type} maxLength={40} required onChange={v => set("connector_type", v)} />
         {number("transition_soc", "Taper transition SoC (0–1)", .001, .999)}
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={s.battery_capacity_kwh != null} onChange={e => onChange({ ...s, battery_capacity_kwh: e.target.checked ? "" : null, initial_soc: e.target.checked ? "" : null, requested_soc: null })} />Model battery SoC and taper</label>
-        {s.battery_capacity_kwh != null && <>
-          {number("battery_capacity_kwh", "Battery capacity (kWh)", .01, 2000)}
-          {number("initial_soc", "Initial SoC (0–1)", 0, 1)}
-          <Field label="Target SoC (0–1)" type="number" min={0} max={1} value={s.requested_soc ?? ""} onChange={v => set("requested_soc", v === "" ? null : v)} />
-        </>}
       </div><p className="mt-2 text-xs text-muted-foreground">Energy and target SoC stay linked when battery details are supplied. Leave battery modelling off if telemetry is unknown.</p>
     </details>
   </article>;
@@ -68,9 +75,33 @@ function PriceFields({ prices, sessions, onChange }) {
 
 export default function ScenarioEditor({ data, busy, onSave }) {
   const [draft, setDraft] = useState(null), [dirty, setDirty] = useState(false), [section, setSection] = useState("Vehicles");
+  const [fleetSize, setFleetSize] = useState("");
+  const vehicles = usePage(draft?.sessions || []);
   useEffect(() => { if (data && !dirty) setDraft(copy(data)); }, [data, dirty]);
+  useEffect(() => { if (draft) setFleetSize(draft.sessions.length); }, [draft?.sessions.length]);
   if (!draft) return null;
   const set = (key, value) => { setDraft(previous => ({ ...previous, [key]: value })); setDirty(true); };
+  function resizeFleet(count) {
+    if (!Number.isSafeInteger(count) || count < 1) return;
+    const sessions = draft.sessions.slice(0, count), used = new Set(sessions.map(s => s.vehicle_id));
+    let next = sessions.length + 1;
+    while (sessions.length < count) {
+      while (used.has(`VAN-${next}`)) next++;
+      const vehicle_id = `VAN-${next++}`;
+      used.add(vehicle_id);
+      sessions.push({ ...draft.sessions.at(-1), vehicle_id, charger_id: null });
+    }
+    set("sessions", sessions);
+  }
+  function changeStation(station, renamed) {
+    const ids = new Set(station.chargers.map(c => c.charger_id));
+    // Renaming a port keeps its occupants; removing it frees their bindings.
+    const sessions = draft.sessions.map(s => {
+      const charger_id = renamed && s.charger_id === renamed.from ? renamed.to : s.charger_id;
+      return { ...s, charger_id: station.fixed_connections && ids.has(charger_id) ? charger_id : null };
+    });
+    setDraft(previous => ({ ...previous, station, sessions })); setDirty(true);
+  }
   function invalid(e) {
     const part = e.target.closest("[data-section]");
     if (part) setSection(part.dataset.section);
@@ -88,11 +119,15 @@ export default function ScenarioEditor({ data, busy, onSave }) {
     </div>
     <fieldset disabled={busy} className="min-w-0 space-y-4">
       <div className="flex flex-wrap gap-2">{["Vehicles", "Prices", "Station"].map(name => <Button key={name} type="button" variant={section === name ? "secondary" : "ghost"} aria-pressed={section === name} onClick={() => setSection(name)}>{name}</Button>)}</div>
-      <div data-section="Vehicles" hidden={section !== "Vehicles"} className="space-y-4">{draft.sessions.map((s, index) => <VehicleFields key={index} session={s} index={index} chargers={draft.station.chargers} onChange={value => set("sessions", draft.sessions.map((row, i) => i === index ? value : row))} onRemove={() => { if (draft.sessions.length > 1) set("sessions", draft.sessions.filter((_, i) => i !== index)); }} />)}
-        <Button type="button" variant="outline" disabled={draft.sessions.length >= 100} onClick={() => { const template = draft.sessions.at(-1); let n = draft.sessions.length + 1; while (draft.sessions.some(s => s.vehicle_id === `VAN-${n}`)) n++; set("sessions", [...draft.sessions, { vehicle_id: `VAN-${n}`, arrival_time: template.arrival_time, departure_time: template.departure_time, energy_required_kwh: 10, max_charging_power_kw: 11, charger_id: null, connector_type: "Type2", transition_soc: .8, battery_capacity_kwh: null, initial_soc: null, requested_soc: null }]); }}>Add vehicle</Button>
+      <div data-section="Vehicles" hidden={section !== "Vehicles"} className="space-y-4">
+        <div className="flex flex-wrap items-end gap-3"><Field label="Number of vehicles" type="number" min={1} step={1} required value={fleetSize} onChange={setFleetSize} onBlur={() => { if (fleetSize !== draft.sessions.length) resizeFleet(fleetSize); }} /><Button type="button" variant="outline" disabled={!Number.isSafeInteger(fleetSize) || fleetSize < 1} onClick={() => resizeFleet(fleetSize)}>Set fleet size</Button><Button type="button" variant="outline" onClick={() => { resizeFleet(draft.sessions.length + 1); vehicles.setPage(Math.floor(draft.sessions.length / 10)); }}>Add vehicle</Button></div>
+        <p className="text-xs text-muted-foreground">New vehicles copy the last vehicle’s settings with a unique ID and automatic plug assignment. SoC 0.2 means 20%. Initial and target SoC determine the requested energy.</p>
+        <ListPager list={vehicles} name="vehicles" />
+        {vehicles.rows.map((s, offset) => { const index = vehicles.offset + offset; return <VehicleFields key={index} session={s} index={index} chargers={draft.station.chargers} canRemove={draft.sessions.length > 1} onChange={value => set("sessions", draft.sessions.map((row, i) => i === index ? value : row))} onRemove={() => set("sessions", draft.sessions.filter((_, i) => i !== index))} />; })}
+        <ListPager list={vehicles} name="vehicles" />
       </div>
       <div data-section="Prices" hidden={section !== "Prices"}><PriceFields prices={draft.prices} sessions={draft.sessions} onChange={v => set("prices", v)} /></div>
-      <div data-section="Station" hidden={section !== "Station"}><StationSettings station={draft.station} busy={busy} onChange={v => set("station", v)} /></div>
+      <div data-section="Station" hidden={section !== "Station"}><StationSettings station={draft.station} busy={busy} onChange={changeStation} /></div>
     </fieldset>
   </form>;
 }

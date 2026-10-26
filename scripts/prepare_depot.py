@@ -35,8 +35,8 @@ def csv_bytes(rows):
 def normalize_roster(content):
     """Use declared targets; reject missing goals or conflicting kWh and SoC."""
     frame = csv_frame(content)
-    if not 1 <= len(frame) <= 100:
-        raise InputError("Roster must contain 1–100 sessions")
+    if frame.empty:
+        raise InputError("Roster must contain at least one session")
     rows = frame.to_dict("records")
     for number, row in enumerate(rows, 2):
         target = row.pop("target_soc", "")

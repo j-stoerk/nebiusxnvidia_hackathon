@@ -12,6 +12,9 @@ export default function EventSimulator({ station, sessions, now, onSubmit, busy 
   const [addPrice, setAddPrice] = useState(0.1);
   const chargers = station?.chargers || [];
   useEffect(() => {
+    if (!chargers.some(c => c.charger_id === chargerId)) setChargerId(chargers[0]?.charger_id || "");
+  }, [station, chargerId]);
+  useEffect(() => {
     if (!sessions?.length) return;
     const a = Date.parse(now || sessions[0].arrival_time), b = Math.max(...sessions.map(s => Date.parse(s.departure_time)));
     setStart(new Date(Math.min(a + 3600000, b - 900000)).toISOString());

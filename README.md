@@ -20,6 +20,8 @@ Open **http://127.0.0.1:8000** and click **Start guided demo**. The launcher bui
 
 **Edit inputs** opens the full scenario editor: add/remove vehicles, edit their UTC windows, energy, SoC, connector and bindings; edit every price interval; configure individual charger kW/availability, site power, efficiency, tariff calendar/prior peaks and cost/peak objective. **Apply & recalculate** validates the complete draft atomically, starts a new simulation, and clears its events/history. Invalid edits preserve the prior scenario and the draft. Calculated outputs remain derived from inputs.
 
+Set the fleet size directly or add/remove vehicles and chargers individually. Larger lists are paginated; there is no 100-vehicle/50-charger scenario cap. Initial/target SoC edits update the energy requirement; editing kWh updates target SoC. Charger renames preserve vehicle bindings, and removing a charger clears its bindings. **Start guided demo** runs the current configuration; only **Load sample** restores the four-van fixture. The 72-hour horizon and 40,000-power-variable interactive solver budget still apply.
+
 Optimization streams actual baseline/solver/check stages to the browser. Completed baselines appear first; a short browser presentation pause makes fast runs readable. No artificial delay is added to the solver, and reported solver runtime remains actual. The final plan is published after independent validation. The original synchronous `/api/optimize` remains available for tools and batch use.
 
 For development, run `uv run uvicorn backend.app.main:app --port 8000` and `npm run dev --prefix frontend` in separate terminals.

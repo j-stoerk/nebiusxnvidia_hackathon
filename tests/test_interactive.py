@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
 from backend.app.main import app
 
@@ -66,3 +67,37 @@ def test_edit_versions_and_streams_are_browser_scoped():
         events(a.post("/api/optimize/stream"))
         untouched = b.get("/api/state").json()
         assert untouched["optimized"] is None and untouched["station"]["demand_tariff"]["period"] == "month"
+
+
+def test_large_configurable_fleet_and_mixed_ports_reach_the_checked_solver():
+    """The demo's old 100-vehicle/50-port caps must not constrain real inputs."""
+    from backend.app.services.csv_validator import validate_sessions_csv
+
+    with TestClient(app) as client:
+        body = draft(client)
+        station = body["station"]
+        station["chargers"] = [
+            {"charger_id": f"PORT-{i}", "max_power_kw": 7.4 if i % 2 else 22}
+            for i in range(51)
+        ]
+        station["charger_count"] = 51
+        station["station_power_limit_kw"] = 100
+        start = datetime(2026, 10, 24, 6, tzinfo=timezone.utc)
+        body["sessions"] = [
+            {"vehicle_id": f"BUS-{i}", "arrival_time": (start + timedelta(minutes=15 * (i // 51))).isoformat(),
+             "departure_time": (start + timedelta(minutes=15 * (i // 51 + 1))).isoformat(),
+             "energy_required_kwh": .1, "max_charging_power_kw": 7.25,
+             "charger_id": f"PORT-{i % 51}", "battery_capacity_kwh": 50,
+             "initial_soc": .4, "requested_soc": .402}
+            for i in range(101)
+        ]
+        response = client.put("/api/scenario", json=body)
+        assert response.status_code == 200, response.text
+        result = client.post("/api/optimize").json()
+        assert len(result["sessions"]) == 101 and len(result["station"]["chargers"]) == 51
+        assert result["optimized"]["validated"]
+        assert result["optimized"]["metrics"]["unserved_kwh"] == 0
+        assert all(a["power_kw"] <= 7.25 for a in result["optimized"]["allocations"])
+        csv = "vehicle_id,arrival_time,departure_time,energy_required_kwh,max_charging_power_kw\n"
+        csv += "\n".join(f"{s['vehicle_id']},{s['arrival_time']},{s['departure_time']},.1,7.25" for s in body["sessions"])
+        assert len(validate_sessions_csv(csv.encode())) == 101

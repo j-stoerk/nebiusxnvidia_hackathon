@@ -42,7 +42,7 @@ class StationBody(BaseModel):
 
 class ScenarioBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    sessions: list[VehicleSession] = Field(min_length=1, max_length=100)
+    sessions: list[VehicleSession] = Field(min_length=1)
     prices: list[PricePoint] = Field(min_length=1, max_length=2000)
     station: StationConfig
 

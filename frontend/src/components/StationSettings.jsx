@@ -3,18 +3,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Field, SelectField } from "@/components/fields";
+import ListPager, { usePage } from "@/components/ListPager";
 
-function NumberField({ id, label, value, onChange, busy, min = 0, max, step = .1 }) {
+function NumberField({ id, label, value, onChange, busy, min = 0, max, step = "any" }) {
   return <div className="grid gap-2"><Label htmlFor={id}>{label}</Label>
     <Input id={id} type="number" required min={min} max={max} step={step} value={value} disabled={busy} onChange={e => onChange(e.target.value === "" ? "" : Number(e.target.value))} /></div>;
 }
 
 export default function StationSettings({ station: form, onChange: setForm, busy }) {
+  const inventory = usePage(form?.chargers || []);
   if (!form) return null;
   const set = (key, value) => setForm({ ...form, [key]: value });
   const tariff = (key, value) => set("demand_tariff", { ...form.demand_tariff, [key]: value });
   function count(value) {
-    if (value === "" || value < 1 || value > 50) { set("charger_count", value); return; }
+    if (!Number.isSafeInteger(value) || value < 1) { set("charger_count", value); return; }
     const chargers = form.chargers.slice(0, value);
     const used = new Set(form.chargers.map(c => c.charger_id));
     while (chargers.length < value) {
@@ -27,14 +29,15 @@ export default function StationSettings({ station: form, onChange: setForm, busy
     setForm({ ...form, chargers, charger_count: value });
   }
   function port(index, key, value) {
-    set("chargers", form.chargers.map((c, i) => i === index ? { ...c, [key]: value } : c));
+    setForm({ ...form, chargers: form.chargers.map((c, i) => i === index ? { ...c, [key]: value } : c) },
+      key === "charger_id" ? { from: form.chargers[index].charger_id, to: value } : null);
   }
   return <div className="grid gap-4 sm:grid-cols-2">
     <Field label="Station ID" value={form.station_id} required onChange={v => set("station_id", v)} />
     <NumberField id="new-port-power" label="Default power for new chargers (kW)" value={form.charger_max_power_kw} min={.1} max={1000} step="any" busy={busy} onChange={v => set("charger_max_power_kw", v)} />
     <NumberField id="site-power" label="Available EV charging power (kW)" value={form.station_power_limit_kw} min={.1} busy={busy} onChange={v => set("station_power_limit_kw", v)} />
-    <NumberField id="charger-count" label="Number of chargers" value={form.charger_count} min={1} max={50} step={1} busy={busy} onChange={v => count(v === "" ? "" : Math.floor(v))} />
-    <NumberField id="efficiency" label="Charging efficiency (0–1)" value={form.charging_efficiency} min={.01} max={1} step={.01} busy={busy} onChange={v => set("charging_efficiency", v)} />
+    <NumberField id="charger-count" label="Number of chargers" value={form.charger_count} min={1} step={1} busy={busy} onChange={count} />
+    <NumberField id="efficiency" label="Charging efficiency (0–1)" value={form.charging_efficiency} min={.000001} max={1} busy={busy} onChange={v => set("charging_efficiency", v)} />
     <NumberField id="demand-rate" label="Demand tariff (EUR/kW per billing period)" value={form.demand_tariff.eur_per_kw} busy={busy} onChange={v => tariff("eur_per_kw", v)} />
     <NumberField id="prior-peak" label="Prior billing peak (kW)" value={form.demand_tariff.prior_peak_kw} busy={busy} onChange={v => tariff("prior_peak_kw", v)} />
     <SelectField label="Demand billing period" value={form.demand_tariff.period} onChange={v => set("demand_tariff", { ...form.demand_tariff, period: v, prior_peaks_kw: {} })}><option value="month">Month</option><option value="year">Year</option></SelectField>
@@ -43,12 +46,17 @@ export default function StationSettings({ station: form, onChange: setForm, busy
       <option value="cost">Lowest energy + demand cost</option><option value="peak">Lowest peak, then cost</option>
     </select><p className="text-xs text-muted-foreground">Meeting energy targets takes priority in both modes.</p></div>
     <details open className="rounded-md border border-border p-3 sm:col-span-2"><summary className="cursor-pointer text-sm font-medium">Charger inventory</summary>
-      <div className="mt-3 grid gap-4">{form.chargers.map((c, i) => <div key={i} className="grid items-end gap-3 border-b border-border pb-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="my-3 flex flex-wrap gap-3"><Button type="button" variant="outline" onClick={() => { count(form.chargers.length + 1); inventory.setPage(Math.floor(form.chargers.length / 10)); }}>Add charger</Button>
+        <Button type="button" variant="ghost" onClick={() => set("chargers", form.chargers.map(c => ({ ...c, max_power_kw: form.charger_max_power_kw })))}>Apply default kW to all chargers</Button></div>
+      <ListPager list={inventory} name="chargers" />
+      <div className="mt-3 grid gap-4">{inventory.rows.map((c, offset) => { const i = inventory.offset + offset; return <div key={i} className="grid items-end gap-3 border-b border-border pb-3 sm:grid-cols-2 lg:grid-cols-4">
         <Field label={`Charger ${i + 1} ID`} value={c.charger_id} required onChange={v => port(i, "charger_id", v)} />
         <NumberField id={`port-${i}`} label={`${c.charger_id} power (kW)`} value={c.max_power_kw} min={.1} busy={busy} onChange={v => port(i, "max_power_kw", v)} />
         <Field label={`${c.charger_id} connector`} value={c.connector_type} required maxLength={40} onChange={v => port(i, "connector_type", v)} />
         <Label className="flex min-h-10 items-center gap-2"><input type="checkbox" checked={c.available} disabled={busy} onChange={e => port(i, "available", e.target.checked)} />Available for charging</Label>
-      </div>)}</div>
+        <Button type="button" variant="ghost" disabled={form.chargers.length === 1} onClick={() => { const chargers = form.chargers.filter((_, index) => index !== i); setForm({ ...form, chargers, charger_count: chargers.length }); }}>Remove charger {c.charger_id}</Button>
+      </div>; })}</div>
+      <ListPager list={inventory} name="chargers" />
     </details>
     <div className="flex items-center gap-3"><Switch id="fixed-plugs" checked={form.fixed_connections} disabled={busy} onCheckedChange={v => set("fixed_connections", v)} /><Label htmlFor="fixed-plugs">Keep vehicles on their plugs until departure</Label></div>
     <details className="rounded-md border border-border p-3 sm:col-span-2"><summary className="text-sm font-medium">Prior peaks by billing period</summary>
@@ -60,6 +68,6 @@ export default function StationSettings({ station: form, onChange: setForm, busy
       </div>)}
       <Button type="button" variant="outline" size="sm" disabled={Object.keys(form.demand_tariff.prior_peaks_kw).length >= 24} onClick={() => { let n = 2026; while ((form.demand_tariff.period === "month" ? `${n}-01` : String(n)) in form.demand_tariff.prior_peaks_kw) n++; tariff("prior_peaks_kw", { ...form.demand_tariff.prior_peaks_kw, [form.demand_tariff.period === "month" ? `${n}-01` : String(n)]: 0 }); }}>Add billing period</Button>
     </details>
-    <p className="text-xs text-muted-foreground sm:col-span-2">Scenario times are UTC; meter averages use fixed 15-minute windows. Clear vehicle plug bindings before allowing plug changes.</p>
+    <p className="text-xs text-muted-foreground sm:col-span-2">Scenario times are UTC; meter averages use fixed 15-minute windows. Removing a charger releases its vehicle bindings.</p>
   </div>;
 }

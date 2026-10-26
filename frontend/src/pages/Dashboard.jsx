@@ -41,17 +41,19 @@ export default function Dashboard({ state, theme }) {
     if (result) setEditorKey(value => value + 1);
   }
   async function demoNext() {
-    const start = new Date(Math.min(...sessions.map(s => new Date(s.arrival_time).getTime())));
-    const at = hours => new Date(start.getTime() + hours * 3600000).toISOString();
-    const priceEvent = { event_id: "guided-price", type: "PRICE_CHANGED", start_time: at(9), end_time: at(12), add_eur_per_kwh: .2 };
+    const start = new Date(data.now || Math.min(...sessions.map(s => Date.parse(s.arrival_time))));
+    const end = Math.max(...sessions.map(s => Date.parse(s.departure_time)));
+    const hours = (end - start.getTime()) / 3600000;
+    const at = offset => new Date(start.getTime() + offset * 3600000).toISOString();
+    const window = (a, b) => ({ start_time: at(hours >= b ? a : hours / 4), end_time: at(hours >= b ? b : hours * .75) });
+    const priceEvent = { event_id: "guided-price", type: "PRICE_CHANGED", ...window(9, 12), add_eur_per_kwh: .2 };
     let result;
+    if (demoStep > 0 && hours <= 0) { setNotice("The scenario has finished. Edit inputs or load a sample to start again."); return; }
     if (demoStep === 0) {
-      if (!await run(() => api.reset())) return;
-      setEditorKey(value => value + 1);
       result = await run(calculate, "All four policies calculated and independently checked.");
       setTab("overview");
     } else if (demoStep === 1) {
-      result = await run(() => simulate({ event_id: "guided-outage", type: "CHARGER_FAILED", charger_id: "CH-01", start_time: at(2), end_time: at(6) }), "Replanned around the outage; inspect the new peak and departure targets.");
+      result = await run(() => simulate({ event_id: "guided-outage", type: "CHARGER_FAILED", charger_id: data.station.chargers[0].charger_id, ...window(2, 6) }), "Replanned around the outage; inspect the new peak and departure targets.");
       setTab("schedule");
     } else {
       result = await run(() => simulate(priceEvent), demoStep === 2 ? "Price change applied; compare energy and demand cost separately." : "Same event replayed: no duplicate change to the plan.");
@@ -176,10 +178,10 @@ export default function Dashboard({ state, theme }) {
       </section>
 
       <section className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-5 py-3" aria-label="Guided demo">
-        <div><p className="text-sm font-medium">Sample walkthrough <span className="ml-2 text-xs font-normal text-muted-foreground">{Math.min(demoStep + 1, 4)} of 4</span></p><p className="mt-1 text-xs text-muted-foreground">{[
-          "Start with equal energy targets and an illustrative demand tariff.",
-          "Compare cost and peak, then make CH-01 unavailable from 08:00 to 12:00 UTC.",
-          "The plan preserves departures. Next, increase the afternoon electricity price.",
+        <div><p className="text-sm font-medium">Scenario walkthrough <span className="ml-2 text-xs font-normal text-muted-foreground">{Math.min(demoStep + 1, 4)} of 4</span></p><p className="mt-1 text-xs text-muted-foreground">{[
+          "Compare all four policies using your current vehicles, chargers and prices. Load sample restores the example.",
+          `Compare cost and peak, then simulate an outage on ${data?.station?.chargers[0]?.charger_id || "the first charger"}.`,
+          "Inspect any departure shortfalls. Next, increase prices within your scenario.",
           "Inspect the new costs, then replay the same event to verify idempotency.",
           "Walkthrough complete. Check capacity or ask for a local computed summary.",
         ][demoStep]}</p></div>

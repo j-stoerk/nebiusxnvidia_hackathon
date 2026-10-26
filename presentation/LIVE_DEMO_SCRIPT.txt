@@ -17,7 +17,7 @@ SAY: Here is our live planner. Vehicle requirements, individual charger
 ratings, the shared connection and electricity tariffs are all editable.
 
 [Demo 00:08–00:22 | Combined 02:12–02:26]
-ACTION: Click Start guided demo. It resets the sample and runs the optimizer.
+ACTION: Click Start guided demo. It runs the optimizer on the current inputs.
 Show the completed baseline stages and then
 the Overview metrics: targets met 100%, unserved energy zero, peak 8.89 kW.
 SAY: Running the optimizer compares first come first served, earliest
@@ -31,7 +31,7 @@ and eight-point-eight-nine kilowatts of shared power. We can inspect the
 physical allocation behind that result.
 
 [Demo 00:32–00:45 | Combined 02:36–02:49]
-ACTION: Click Simulate outage in the Sample walkthrough strip. This applies
+ACTION: Click Simulate outage in the Scenario walkthrough strip. This applies
 the CH-01 outage from 08:00 to 12:00 UTC. Wait for the result, then open Overview.
 SAY: Now we apply a charger outage. The scheduler replans, checks the
 allocations again, and still meets every departure at a ten-kilowatt peak.

@@ -59,13 +59,13 @@ class StationConfig(BaseModel):
     timezone: Literal["UTC"] = "UTC"
     slot_minutes: Literal[15] = 15
     station_power_limit_kw: float = Field(gt=0, le=10000)
-    charger_count: int = Field(default=10, ge=1, le=50)
+    charger_count: int = Field(default=10, ge=1)
     charger_max_power_kw: float = Field(default=11.0, gt=0, le=1000)
     charging_efficiency: float = Field(default=1.0, gt=0, le=1)
     fixed_connections: bool = True
     optimization_goal: Literal["cost", "peak"] = "cost"
     demand_tariff: DemandTariff = Field(default_factory=DemandTariff)
-    chargers: list[Charger] = Field(default_factory=list, max_length=50)
+    chargers: list[Charger] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def sync_chargers(self):

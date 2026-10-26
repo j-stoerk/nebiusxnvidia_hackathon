@@ -64,8 +64,8 @@ def validate_sessions_csv(content: bytes) -> list[VehicleSession]:
             f"Missing columns: {', '.join(sorted(missing)) or 'none'}; "
             f"unsupported columns: {', '.join(sorted(unknown)) or 'none'}"
         )
-    if not 1 <= len(frame) <= 100:
-        raise InputError("Upload must contain between 1 and 100 sessions")
+    if frame.empty:
+        raise InputError("Upload must contain at least one session")
 
     errors, sessions, seen = [], [], set()
     for number, row in enumerate(frame.to_dict("records"), start=2):

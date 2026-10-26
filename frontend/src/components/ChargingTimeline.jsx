@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import ListPager, { usePage } from "@/components/ListPager";
 import { formatClock, formatDuration, kw, slotRange, timeLabel } from "@/utils/formatters";
 
 const COLORS = [
@@ -92,6 +93,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
       max = Math.max(max, new Date(a.end_time).getTime());
     }
     for (const s of sessions) {
+      map[s.vehicle_id] ||= [];
       min = Math.min(min, new Date(s.arrival_time).getTime());
       max = Math.max(max, new Date(s.departure_time).getTime());
     }
@@ -105,6 +107,8 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
   const vehicles = Object.keys(byVehicle)
     .sort()
     .filter((id) => !filter || id.toLowerCase().includes(filter.toLowerCase()));
+  const vehiclePage = usePage(vehicles, 30);
+  const allocationPage = usePage(displayAllocations, 80);
 
   const ticks = useMemo(() => {
     const count = 6;
@@ -137,7 +141,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
           className="max-w-xs"
           placeholder="Filter vehicle ID…"
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          onChange={(e) => { setFilter(e.target.value); vehiclePage.setPage(0); }}
         />
       </div>
 
@@ -156,7 +160,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
           </div>
 
           <div className="space-y-2">
-            {vehicles.slice(0, 30).map((id, idx) => {
+            {vehiclePage.rows.map((id, idx) => {
               const slots = byVehicle[id];
               const color = COLORS[idx % COLORS.length];
               const session = sessions.find((s) => s.vehicle_id === id);
@@ -255,9 +259,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
 
       <SlotPopover tip={popover.tip} x={popover.x} y={popover.y} />
 
-      {vehicles.length > 30 ? (
-        <p className="text-xs text-muted-foreground">Showing 30 of {vehicles.length} vehicles. Use filter to find others.</p>
-      ) : null}
+      <ListPager list={vehiclePage} name="vehicles" />
 
       <div className="max-h-48 overflow-auto rounded-md border border-border">
         <table className="w-full text-left text-xs">
@@ -272,7 +274,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
             </tr>
           </thead>
           <tbody>
-            {displayAllocations.slice(0, 80).map((a, i) => (
+            {allocationPage.rows.map((a, i) => (
               <tr key={i} className="border-t border-border/70 hover:bg-muted/40 transition-colors">
                 <td className="px-3 py-2 font-medium">{a.vehicle_id}</td>
                 <td className="px-3 py-2">{a.charger_id}</td>
@@ -287,6 +289,7 @@ export default function ChargingTimeline({ allocations = [], sessions = [] }) {
           </tbody>
         </table>
       </div>
+      <ListPager list={allocationPage} name="allocations" />
     </div>
   );
 }
