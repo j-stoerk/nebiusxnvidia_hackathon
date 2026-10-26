@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ChargeWise — an animated explanation</title>
+  <title>ChargeWise — architecture and workflows</title>
   <style>
     *{box-sizing:border-box}body{margin:0;background:#0c1420;color:#edf3fa;font:14px system-ui,sans-serif}
     main{max-width:1600px;margin:auto}canvas{display:block;width:100%;aspect-ratio:16/9;background:#0c1420}
@@ -16,7 +16,7 @@
 </head>
 <body>
 <main>
-  <canvas id="film" width="1600" height="900" aria-label="Animated explanation of charging power, energy, capacity and a recorded real application demo"></canvas>
+  <canvas id="film" width="1600" height="900" aria-label="Animated architecture and workflows: validation, scheduling, independent checks, Nemotron tools and replanning"></canvas>
   <div class="controls">
     <button id="play" disabled>Loading…</button>
     <input id="seek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Presentation position">
@@ -24,10 +24,9 @@
     <button id="fullscreen" aria-label="Full screen" title="Full screen">⛶</button>
     <button id="render" class="render">Record film</button>
   </div>
-  <p id="status">Original animation · generic synthetic narration · team speaking script supplied separately. <a href="index.html" target="_parent">Project and downloads</a></p>
+  <p id="status">Architecture explainer · synthetic narration · live site walkthrough recorded separately. <a href="index.html" target="_parent">Project and downloads</a></p>
 </main>
 <audio id="voice" preload="none" src="media/narration.mp3"></audio>
-<video id="live" preload="none" muted playsinline src="media/live-nebius.mp4" hidden></video>
 <script type="module" src="film.js"></script>
 </body>
 </html>
