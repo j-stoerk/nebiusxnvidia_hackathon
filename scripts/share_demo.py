@@ -71,14 +71,15 @@ def main():
                     break
                 except OSError:time.sleep(.25)
             else:raise RuntimeError('Planner did not become healthy')
-            command=[ssh,'-T','-p','443','-i',str(key),'-o','IdentitiesOnly=yes','-o','PreferredAuthentications=publickey',
+            command=[ssh,'-4','-T','-p','443','-i',str(key),'-o','IdentitiesOnly=yes','-o','PreferredAuthentications=publickey',
                      '-o','BatchMode=yes','-o','StrictHostKeyChecking=accept-new','-o',f'UserKnownHostsFile={CACHE/"pinggy-hosts"}',
                      '-o','ConnectTimeout=15','-o','ServerAliveInterval=30','-o','ServerAliveCountMax=3',
-                     '-o','ExitOnForwardFailure=yes','-R',f'0:127.0.0.1:{args.port}','free@a.pinggy.io']
+                     '-o','ExitOnForwardFailure=yes','-R',f'0:127.0.0.1:{args.port}','free@free.pinggy.io']
             started=datetime.now(timezone.utc)
             tunnel=subprocess.Popen(command,cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,bufsize=1)
-            saved=False
+            saved=False;recent=[]
             for line in tunnel.stdout:
+                recent=(recent+[line.strip()])[-6:]
                 found=re.search(r'https://[a-z0-9-]+\.free\.pinggy\.net',line)
                 if found and not saved:
                     saved=True
@@ -87,7 +88,7 @@ def main():
                     (CACHE/'shared-demo.json').write_text(json.dumps(info,indent=2))
                     print(f'Live planner: {info["url"]}\nKeep this process and laptop running while recording. Free sessions last one hour.\nPress Ctrl+C to stop. Model API calls are disabled.',flush=True)
                     if args.publish:publish_session(info)
-            if not saved:raise RuntimeError('No tunnel URL received; check the SSH connection')
+            if not saved:raise RuntimeError('No tunnel URL received: '+'; '.join(recent))
             print('Recording session ended. Run the same command for a fresh URL.',flush=True)
         except KeyboardInterrupt:pass
         finally:
