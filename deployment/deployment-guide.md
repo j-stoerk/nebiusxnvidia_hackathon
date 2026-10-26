@@ -16,6 +16,12 @@ Keep one application worker/replica: simulations live in memory, isolated by bro
 
 `presentation/` contains the continuous Canvas animation, shared SVG logo, fixed timeline and `VOICEOVER.txt`. Serve that directory with a local HTTP server to preview it; it has no media dependencies. The MP4 is silent, with voiceover text supplied separately. GitHub Pages publishes the checked files from `gh-pages`; publishing source edits to `main` does not update the site automatically. The downloadable editing pack includes a frame-by-frame MP4 exporter. Source history on `main` contains no video/model binaries.
 
+## Live recording URL
+
+Run `uv run --locked python scripts/share_demo.py --publish`. The launcher starts a dedicated FastAPI instance with cloud credentials blank and inference disabled, then shares it over a free Pinggy HTTPS tunnel using OpenSSH. The actual optimizer, streamed stages, editor and events run through the public URL. The optional `--publish` flag uses the existing GitHub login to update the [public entry](https://j-stoerk.github.io/nebiusxnvidia_hackathon/live.html); the direct URL is also printed. No hosting account or payment is configured.
+
+The tunnel lasts one hour and needs this laptop and sharing process running. Restart the command for a fresh session. Open the link and complete the hosting welcome screen before recording. The [demo script](../presentation/LIVE_DEMO_SCRIPT.txt) pairs clicks and narration for a 50-second walkthrough after the 02:04 architecture film. Permanent unattended app hosting requires a separate hosting account; the downloadable test build remains available for judging.
+
 ## NVIDIA Nemotron without an API token
 
 Run the public NVIDIA model and ChargeWise on the **same Nebius GPU DevPod**. The application talks to a loopback vLLM server without an Authorization header; no HF/Nebius inference API token is required. Cloud console sign-in, GPU capacity and credits/billing are still needed. Model weights are downloaded **on the cloud host**, not the laptop.

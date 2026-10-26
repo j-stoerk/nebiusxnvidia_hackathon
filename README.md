@@ -6,6 +6,8 @@ React/Vite, Tailwind, Recharts, FastAPI, Pandas and OR-Tools SCIP. Optional NVID
 
 [Architecture film and downloads](https://j-stoerk.github.io/nebiusxnvidia_hackathon/) · [Prebuilt app](https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/tag/submission-review-2026-10-25). A continuous silent animation follows the team, data flow and planning workflow across one connected map. [Timestamped voiceover text](presentation/VOICEOVER.txt). The complete editable planner runs from the test build or source below.
 
+[Live recording session](https://j-stoerk.github.io/nebiusxnvidia_hackathon/live.html) · [50-second demo script](presentation/LIVE_DEMO_SCRIPT.txt). To share the working app, run `uv run --locked python scripts/share_demo.py --publish`. It starts a key-free planner and a free one-hour HTTPS tunnel. Keep the laptop/process running; restarting creates a new URL. `--publish` refreshes the public entry using your existing `gh` login. Without that flag, share the printed URL directly.
+
 ## Run the demo
 
 Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and Node.js 22.12+ or 24+. No API key, model download or payment is needed for the planning demo or local computed summaries.

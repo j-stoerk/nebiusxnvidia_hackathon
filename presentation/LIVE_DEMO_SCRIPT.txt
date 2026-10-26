@@ -1,0 +1,60 @@
+CHARGEWISE — LIVE SITE WALKTHROUGH
+Duration: 00:50. Append after the silent 02:04 architecture film.
+Combined running time: approximately 02:54.
+Live entry: https://j-stoerk.github.io/nebiusxnvidia_hackathon/live.html
+
+BEFORE RECORDING
+Open the live URL and complete the hosting welcome screen if it appears.
+Click Load sample. Keep the four vans, two 11 kW plugs, 22 kW site limit,
+90% efficiency and the sample tariff unchanged for this sequence.
+Rehearse the clicks once, then click Load sample again before recording.
+The narration below uses the example's computed results.
+
+[Demo 00:00–00:08 | Combined 02:04–02:12]
+ACTION: Open Inputs. Show vehicle energy/departure fields and Station's
+individual charger power fields. Return to Overview without applying edits.
+SAY: Here is our live planner. Vehicle requirements, individual charger
+ratings, the shared connection and electricity tariffs are all editable.
+
+[Demo 00:08–00:22 | Combined 02:12–02:26]
+ACTION: Click Start guided demo. It resets the sample and runs the optimizer.
+Show the completed baseline stages and then
+the Overview metrics: targets met 100%, unserved energy zero, peak 8.89 kW.
+SAY: Running the optimizer compares first come first served, earliest
+deadline first and least laxity first. All four vans receive their energy,
+while peak power falls from twenty-two to eight-point-eight-nine kilowatts.
+
+[Demo 00:22–00:32 | Combined 02:26–02:36]
+ACTION: Open Capacity, click Run capacity study, then Show capacity proof.
+SAY: The capacity study finds that this roster needs two installed plugs
+and eight-point-eight-nine kilowatts of shared power. We can inspect the
+physical allocation behind that result.
+
+[Demo 00:32–00:45 | Combined 02:36–02:49]
+ACTION: Click Simulate outage in the Sample walkthrough strip. This applies
+the CH-01 outage from 08:00 to 12:00 UTC. Wait for the result, then open Overview.
+SAY: Now we apply a charger outage. The scheduler replans, checks the
+allocations again, and still meets every departure at a ten-kilowatt peak.
+
+[Demo 00:45–00:50 | Combined 02:49–02:54]
+ACTION: Hold on Overview: targets met 100%, unserved energy zero, peak 10 kW.
+SAY: ChargeWise helps depot managers get every vehicle ready with less
+shared power.
+
+OPTIONAL MANUAL EVENT CONTROLS
+For a longer walkthrough, open Operations and show Charger unavailable,
+CH-01, Start (UTC) 2026-10-24 08:00:00 and End (UTC) 2026-10-24 12:00:00.
+Apply event & re-optimize produces the same example. Reset the sample first
+when repeating this route; the guided preset is quicker for the 50-second clip.
+
+RESTART THE LIVE SITE
+Run from the project folder:
+uv run --locked python scripts/share_demo.py --publish
+
+Keep that process and this laptop running while recording. Free tunnel
+sessions last one hour; restarting creates a fresh URL and updates the
+public entry page when --publish is supplied.
+
+This public recording mode uses the real optimizer and local summaries.
+It makes no paid model calls. The separate private Nemotron launcher and
+runtime verification materials remain available for a model demonstration.

@@ -41,7 +41,7 @@
     <span class="eyebrow">For fleet and depot managers</span>
     <h1>Every departure.<br>Less shared power.</h1>
     <p class="lead">Work out who needs energy, by when, and the smallest connection that can serve them. Compare charging policies, inspect the physical limits, and replan when a charger fails.</p>
-    <div class="actions"><a class="button" href="#watch">Watch the architecture film</a><a class="button secondary" href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Test_Build.zip">Download working app</a></div>
+    <div class="actions"><a class="button" href="live.html">Open live planner</a><a class="button secondary" href="#watch">Watch the architecture film</a></div>
   </div>
   <div id="watch" class="film"><iframe src="film.html" title="ChargeWise animated architecture and workflows" allow="autoplay; fullscreen" allowfullscreen loading="eager"></iframe></div>
   <div class="film-note"><span>One continuous journey · silent film · <a href="VOICEOVER.txt" download>Timestamped voiceover text</a></span><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Architecture_Explainer.mp4">Download MP4</a></div>
@@ -63,7 +63,8 @@
     <div><h2>Forecasting for future price windows.</h2><p>In the separate forecasting study, TimesFM and Chronos used 37 held-out days of historical German prices. Chronos Small reduced price MAE by 29.2% versus ridge; the extra charging-cost benefit was small in the four-van replay.</p><p class="limits">The study uses 2019 price data. Published day-ahead prices feed known windows directly. <a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/blob/main/docs/forecast-models.md">Explore the study and results.</a></p></div>
   </section>
   <section id="run">
-    <h2>Run the editable application.</h2>
+    <h2>Use the editable application.</h2>
+    <p><a href="live.html">Open the live recording session</a> · <a href="LIVE_DEMO_SCRIPT.txt" download>Download the demo narration and actions</a></p>
     <p>This hosted page explains the architecture and workflows. The complete planner runs locally from the downloadable build, with the React dashboard, FastAPI, Pandas and OR-Tools.</p>
     <ol><li><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Test_Build.zip">Download and extract the test build.</a></li><li>Install Python 3.11+ and <a href="https://docs.astral.sh/uv/getting-started/installation/">uv</a>, then run this command inside the extracted folder:</li></ol>
     <pre>uv run --locked python scripts/run_demo.py</pre>
