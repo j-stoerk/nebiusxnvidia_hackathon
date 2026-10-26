@@ -1,15 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { utcInput, utcTime } from "@/components/fields";
 
-export default function EventSimulator({ station, onSubmit, busy }) {
+export default function EventSimulator({ station, sessions, now, onSubmit, busy }) {
   const [type, setType] = useState("CHARGER_FAILED");
   const [chargerId, setChargerId] = useState(station?.chargers?.[0]?.charger_id || "CH-01");
-  const [start, setStart] = useState("2019-01-07T12:00:00Z");
-  const [end, setEnd] = useState("2019-01-07T16:00:00Z");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
   const [addPrice, setAddPrice] = useState(0.1);
   const chargers = station?.chargers || [];
+  useEffect(() => {
+    if (!sessions?.length) return;
+    const a = Date.parse(now || sessions[0].arrival_time), b = Math.max(...sessions.map(s => Date.parse(s.departure_time)));
+    setStart(new Date(Math.min(a + 3600000, b - 900000)).toISOString());
+    setEnd(new Date(Math.min(a + 7200000, b)).toISOString());
+  }, [now, sessions]);
 
   return (
     <form
@@ -47,8 +54,9 @@ export default function EventSimulator({ station, onSubmit, busy }) {
       }}
     >
       <div className="grid gap-2">
-        <Label>Simulated event</Label>
+        <Label htmlFor="event-type">Simulated event</Label>
         <select
+          id="event-type"
           className="h-10 rounded-md border border-border bg-card px-3 text-sm"
           value={type}
           disabled={busy}
@@ -61,8 +69,9 @@ export default function EventSimulator({ station, onSubmit, busy }) {
       </div>
       {type !== "PRICE_CHANGED" ? (
         <div className="grid gap-2">
-          <Label>Charger</Label>
+          <Label htmlFor="event-charger">Charger</Label>
           <select
+            id="event-charger"
             className="h-10 rounded-md border border-border bg-card px-3 text-sm"
             value={chargerId}
             disabled={busy}
@@ -77,19 +86,20 @@ export default function EventSimulator({ station, onSubmit, busy }) {
         </div>
       ) : null}
       <div className="grid gap-2">
-        <Label>{type === "CHARGER_RECOVERED" ? "Recovery time (UTC ISO)" : "Start (UTC ISO)"}</Label>
-        <Input value={start} disabled={busy} onChange={(e) => setStart(e.target.value)} />
+        <Label htmlFor="event-start">{type === "CHARGER_RECOVERED" ? "Recovery time (UTC)" : "Start (UTC)"}</Label>
+        <Input id="event-start" type="datetime-local" step={1} value={utcInput(start)} required disabled={busy} onChange={e => setStart(utcTime(e.target.value))} />
       </div>
       {type !== "CHARGER_RECOVERED" ? (
         <div className="grid gap-2">
-          <Label>End (UTC ISO)</Label>
-          <Input value={end} disabled={busy} onChange={(e) => setEnd(e.target.value)} />
+          <Label htmlFor="event-end">End (UTC)</Label>
+          <Input id="event-end" type="datetime-local" step={1} value={utcInput(end)} required disabled={busy} onChange={e => setEnd(utcTime(e.target.value))} />
         </div>
       ) : null}
       {type === "PRICE_CHANGED" ? (
         <div className="grid gap-2">
-          <Label>Add EUR/kWh</Label>
+          <Label htmlFor="event-price">Add EUR/kWh</Label>
           <Input
+            id="event-price"
             type="number"
             step="0.01"
             value={addPrice}

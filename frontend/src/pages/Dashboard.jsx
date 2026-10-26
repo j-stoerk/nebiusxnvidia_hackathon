@@ -1,4 +1,4 @@
-import { ChevronDown, LoaderCircle, PlugZap, RefreshCw } from "lucide-react";
+import { LoaderCircle, PlugZap, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import AgentChat from "@/components/AgentChat";
 import CapacityPanel from "@/components/CapacityPanel";
@@ -9,7 +9,8 @@ import EventSimulator from "@/components/EventSimulator";
 import FileUpload from "@/components/FileUpload";
 import MetricCard from "@/components/MetricCard";
 import RiskList from "@/components/RiskList";
-import StationSettings from "@/components/StationSettings";
+import ScenarioEditor from "@/components/ScenarioEditor";
+import OptimizationProgress from "@/components/OptimizationProgress";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ import brand from "@/assets/brand.svg";
 import { eur, formatDuration, kwh, kw, pct, timeLabel } from "@/utils/formatters";
 
 export default function Dashboard({ state, theme }) {
-  const { data, busy, error, notice, setNotice, setError, run, setData, setBusy } = state;
+  const { data, busy, error, notice, setNotice, setError, run, setData, setBusy, calculate, simulate, progress } = state;
   const analytics = data?.analytics;
   const optimized = data?.optimized;
   const baseline = data?.baseline;
@@ -30,6 +31,15 @@ export default function Dashboard({ state, theme }) {
   const sessions = data?.sessions || [];
   const [tab, setTab] = useState("overview");
   const [demoStep, setDemoStep] = useState(0);
+  const [editorKey, setEditorKey] = useState(0);
+  async function loadSample() {
+    const result = await run(() => api.reset(), "Demo sample reloaded");
+    if (result) { setDemoStep(0); setEditorKey(value => value + 1); }
+  }
+  async function importInputs(sessionsFile, prices) {
+    const result = await run(() => api.upload(sessionsFile, prices), "CSV validated and loaded");
+    if (result) setEditorKey(value => value + 1);
+  }
   async function demoNext() {
     const start = new Date(Math.min(...sessions.map(s => new Date(s.arrival_time).getTime())));
     const at = hours => new Date(start.getTime() + hours * 3600000).toISOString();
@@ -37,13 +47,14 @@ export default function Dashboard({ state, theme }) {
     let result;
     if (demoStep === 0) {
       if (!await run(() => api.reset())) return;
-      result = await run(() => api.optimize(), "All four policies calculated and independently checked.");
+      setEditorKey(value => value + 1);
+      result = await run(calculate, "All four policies calculated and independently checked.");
       setTab("overview");
     } else if (demoStep === 1) {
-      result = await run(() => api.simulateEvent({ event_id: "guided-outage", type: "CHARGER_FAILED", charger_id: "CH-01", start_time: at(2), end_time: at(6) }), "Replanned around the outage; inspect the new peak and departure targets.");
+      result = await run(() => simulate({ event_id: "guided-outage", type: "CHARGER_FAILED", charger_id: "CH-01", start_time: at(2), end_time: at(6) }), "Replanned around the outage; inspect the new peak and departure targets.");
       setTab("schedule");
     } else {
-      result = await run(() => api.simulateEvent(priceEvent), demoStep === 2 ? "Price change applied; compare energy and demand cost separately." : "Same event replayed: no duplicate change to the plan.");
+      result = await run(() => simulate(priceEvent), demoStep === 2 ? "Price change applied; compare energy and demand cost separately." : "Same event replayed: no duplicate change to the plan.");
       setTab(demoStep === 2 ? "overview" : "operations");
     }
     if (result) setDemoStep(previous => previous + 1);
@@ -94,15 +105,16 @@ export default function Dashboard({ state, theme }) {
           ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" disabled={busy} onClick={() => setTab("inputs")}>Edit inputs</Button>
           <Button
             variant="outline"
             disabled={busy}
-            onClick={() => { setDemoStep(0); run(() => api.reset(), "Demo sample reloaded"); }}
+            onClick={loadSample}
           >
             <RefreshCw className="h-4 w-4" />
             Load sample
           </Button>
-          <Button disabled={busy} onClick={() => run(() => api.optimize(), "Optimized schedule ready")}>
+          <Button disabled={busy} onClick={() => run(calculate, "Optimized schedule ready")}>
             Run optimizer
           </Button>
         </div>
@@ -117,10 +129,11 @@ export default function Dashboard({ state, theme }) {
               : "border-emerald-500/30 bg-emerald-500/10 text-success"
           }`}
         >
-          <span>{error || notice}</span>
+          <span className="min-w-0 break-words">{error || notice}</span>
           <Button
             size="sm"
             variant="ghost"
+            className="shrink-0"
             onClick={() => {
               setError(null);
               setNotice(null);
@@ -130,6 +143,8 @@ export default function Dashboard({ state, theme }) {
           </Button>
         </div>
       )}
+
+      <OptimizationProgress progress={progress} />
 
       <section className="metrics-strip mb-5" aria-label="Plan summary">
         {[
@@ -173,6 +188,7 @@ export default function Dashboard({ state, theme }) {
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList aria-label="Planner sections" className="flex h-auto w-full justify-start gap-x-2 overflow-x-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="inputs">Inputs</TabsTrigger>
           <TabsTrigger value="schedule">Schedule</TabsTrigger>
           <TabsTrigger value="capacity">Capacity</TabsTrigger>
           <TabsTrigger value="operations">Operations</TabsTrigger>
@@ -202,22 +218,16 @@ export default function Dashboard({ state, theme }) {
               <EnergyChart series={series} baselineSeries={baseline?.metrics?.power_series} powerLimit={data?.station?.station_power_limit_kw} />
             </CardContent>
           </Card>
-          <details className="group rounded-lg border border-border bg-card lg:col-span-2">
-            <summary className="flex list-none items-center justify-between gap-3 p-5 focus-visible:outline-2 focus-visible:outline-primary">
-              <span><span className="block text-sm font-semibold">Scenario inputs</span><span className="mt-1 block text-xs text-muted-foreground">Import sessions and prices, or configure your station.</span></span>
-              <ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
-            </summary>
-            <div className="grid gap-5 border-t border-border p-5 lg:grid-cols-2">
-              <div>
-                <h2 className="mb-4 text-sm font-semibold">Upload sessions</h2>
-                <FileUpload busy={busy} onUpload={(sessionsFile, prices) => run(() => api.upload(sessionsFile, prices), "CSV validated and loaded")} />
-              </div>
-              <div>
-                <h2 className="mb-4 text-sm font-semibold">Station settings</h2>
-                <StationSettings station={data?.station} busy={busy} onSave={station => run(() => api.updateStation(station), "Station updated — re-optimize when ready")} />
-              </div>
-            </div>
-          </details>
+          <div className="rounded-lg border border-border bg-card p-5 lg:col-span-2"><Button variant="outline" onClick={() => setTab("inputs")}>Edit scenario inputs</Button><p className="mt-2 text-xs text-muted-foreground">Change vehicles, prices, hardware or tariffs, then recalculate.</p></div>
+        </TabsContent>
+
+        <TabsContent forceMount value="inputs" className="space-y-4 data-[state=inactive]:hidden">
+          <Card><CardContent className="p-5"><ScenarioEditor key={editorKey} data={data} busy={busy} onSave={async draft => {
+            const result = await run(async () => { await api.updateScenario(draft); return calculate(); }, "Your scenario has been calculated and independently checked.");
+            if (result) { setDemoStep(0); setTab("overview"); }
+            return result;
+          }} /></CardContent></Card>
+          <Card><CardHeader><CardTitle>Import from CSV instead</CardTitle><CardDescription>Replace vehicle sessions and optional matching prices.</CardDescription></CardHeader><CardContent><FileUpload busy={busy} onUpload={importInputs} /></CardContent></Card>
         </TabsContent>
 
         <TabsContent value="schedule" className="grid gap-4">
@@ -328,9 +338,11 @@ export default function Dashboard({ state, theme }) {
             <CardContent>
               <EventSimulator
                 station={data?.station}
+                sessions={sessions}
+                now={data?.now}
                 busy={busy}
                 onSubmit={(event) =>
-                  run(() => api.simulateEvent(event, true), "Simulated event applied and re-optimized")
+                  run(() => simulate(event), "Simulated event applied and re-optimized")
                 }
               />
             </CardContent>

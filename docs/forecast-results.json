@@ -1,0 +1,71 @@
+{
+  "data_source": "Bundesnetzagentur | SMARD.de, DE, native hourly 2019 observations",
+  "input_sha256": "9f03410fff69020e31391b072f71f14c1e71f2d3683357114b5bc21717ad7d3f",
+  "protocol_sha256": "6d1033fec5602e7430145985db4a6a6c977006ac33f3b3f50ec0c78e822dcc08",
+  "train_end_exclusive": "2019-07-19T00:00:00+00:00",
+  "test_start": "2019-08-25T00:00:00+00:00",
+  "test_end_inclusive": "2019-09-30T23:00:00+00:00",
+  "test_days": 37,
+  "issue_time": "00:00 UTC, using only earlier delivered-hour prices",
+  "selected_ridge_alpha": 100,
+  "price_mae_eur_per_kwh": {
+    "yesterday": 0.00760742,
+    "last_week": 0.00783349,
+    "ridge": 0.00704179
+  },
+  "charging": {
+    "energy_only": {
+      "yesterday": {
+        "mean_realized_cost_eur": 3.364038,
+        "mean_oracle_regret_eur": 0.049916
+      },
+      "last_week": {
+        "mean_realized_cost_eur": 3.391757,
+        "mean_oracle_regret_eur": 0.077635
+      },
+      "ridge": {
+        "mean_realized_cost_eur": 3.335335,
+        "mean_oracle_regret_eur": 0.021214
+      },
+      "oracle": {
+        "mean_realized_cost_eur": 3.314122,
+        "mean_oracle_regret_eur": 0.0
+      },
+      "ridge_minus_yesterday": {
+        "mean_eur": -0.028703,
+        "block_bootstrap_95_ci_eur": [
+          -0.053443,
+          -0.004395
+        ]
+      }
+    },
+    "with_demand": {
+      "yesterday": {
+        "mean_realized_cost_eur": 138.920449,
+        "mean_oracle_regret_eur": 0.014589
+      },
+      "last_week": {
+        "mean_realized_cost_eur": 138.916232,
+        "mean_oracle_regret_eur": 0.010373
+      },
+      "ridge": {
+        "mean_realized_cost_eur": 138.911649,
+        "mean_oracle_regret_eur": 0.005789
+      },
+      "oracle": {
+        "mean_realized_cost_eur": 138.905859,
+        "mean_oracle_regret_eur": 0.0
+      },
+      "ridge_minus_yesterday": {
+        "mean_eur": -0.0088,
+        "block_bootstrap_95_ci_eur": [
+          -0.014983,
+          -0.002797
+        ]
+      }
+    }
+  },
+  "incomplete_runs": [],
+  "scope": "Exploratory unpublished-price-gap stress test with a synthetic four-van roster; known day-ahead prices should not be forecast instead.",
+  "foundation_models_run": false
+}

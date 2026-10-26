@@ -105,7 +105,8 @@ def _objectives(solver, sessions, station, prices, adjustments, slots, powers, h
     return peak, energy + demand
 
 
-def _solve(solver, shortfall, peak, cost, powers, goal):
+def _solve(solver, shortfall, peak, cost, powers, goal, report):
+    report("energy", "running")
     solver.Minimize(shortfall)
     first = solver.Solve()
     if first not in (solver.OPTIMAL, solver.FEASIBLE):
@@ -115,6 +116,7 @@ def _solve(solver, shortfall, peak, cost, powers, goal):
     peak_optimal = cost_optimal = False
     stages = [(peak, "peak"), (cost, "cost")] if goal == "peak" else [(cost, "cost")]
     for objective, name in stages:
+        report(name, "running")
         solver.Minimize(objective)
         status = solver.Solve()
         if status not in (solver.OPTIMAL, solver.FEASIBLE):
@@ -129,9 +131,10 @@ def _solve(solver, shortfall, peak, cost, powers, goal):
 
 
 def optimize_schedule(sessions, station, prices, outages=None, price_adjustments=None,
-                      time_limit_seconds=8, charger_ids=None, power_limit_kw=None, history=None, now=None, goal=None, max_horizon_hours=72):
+                      time_limit_seconds=8, charger_ids=None, power_limit_kw=None, history=None, now=None, goal=None, max_horizon_hours=72, report=None):
     from .schedule_validator import validate_schedule
     began = time.perf_counter()
+    report = report or (lambda *_: None)
     check_scenario(sessions, station, prices, max_horizon_hours)
     outages, adjustments, history = outages or [], price_adjustments or [], history or []
     ports = [c for c in station.chargers if charger_ids is None or c.charger_id in charger_ids]
@@ -149,13 +152,14 @@ def optimize_schedule(sessions, station, prices, outages=None, price_adjustments
     powers, attach = _variables(solver, sessions, station, ports, slots, outages, history)
     shortfall = _constraints(solver, sessions, station, ports, slots, powers, attach, history, limit)
     peak, cost = _objectives(solver, sessions, station, prices, adjustments, slots, powers, history)
-    values, energy_ok, peak_ok, cost_ok = _solve(solver, shortfall, peak, cost, powers, goal)
+    values, energy_ok, peak_ok, cost_ok = _solve(solver, shortfall, peak, cost, powers, goal, report)
     records = [*history, *[Allocation(vehicle_id=sessions[v].vehicle_id, charger_id=c,
         start_time=slots[t][0], end_time=slots[t][1], power_kw=p, charging_efficiency=station.charging_efficiency)
         for (v, c, t), p in values.items() if p > 1e-6]]
     result = ScheduleResult(kind="optimized", allocations=records, metrics=compute_metrics(sessions, records, station, prices, adjustments),
         solver_status="OR-Tools/OPTIMAL" if cost_ok else "OR-Tools/FEASIBLE_TIME_LIMIT", runtime_seconds=time.perf_counter() - began,
         shortfall_optimal=energy_ok, peak_optimal=peak_ok, cost_optimal=cost_ok)
+    report("validation", "running")
     validate_schedule(sessions, station, result, outages, history, now, charger_ids, limit)
     result.validated = True
     return result

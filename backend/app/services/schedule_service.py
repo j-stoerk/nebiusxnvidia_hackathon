@@ -144,17 +144,40 @@ def update_station(payload):
 
 
 @mutation
-def run_optimization():
+def run_optimization(report=None):
+    report = report or (lambda *_: None)
     outages, adjustments = active_outages(STATE.events), price_adjustments(STATE.events)
     args = (STATE.sessions, STATE.station, STATE.prices, outages, adjustments)
     try:
-        plans = {name: build_baseline(*args, policy=name, history=STATE.history, now=STATE.now) for name in ("FCFS", "EDF", "LLF")}
-        optimized = optimize_schedule(*args, history=STATE.history, now=STATE.now)
+        check_scenario(STATE.sessions, STATE.station, STATE.prices)
+        report("inputs", "complete")
+        plans = {}
+        for name in ("FCFS", "EDF", "LLF"):
+            report(name, "running")
+            plans[name] = build_baseline(*args, policy=name, history=STATE.history, now=STATE.now)
+            report(name, "complete", plans[name].metrics.model_dump(mode="json"))
+        optimized = optimize_schedule(*args, history=STATE.history, now=STATE.now, report=report)
     except Exception as exc:
         STATE.stale, STATE.last_error = True, str(exc)
         raise
     STATE.baseline, STATE.optimized = plans.pop("FCFS"), optimized
     STATE.references, STATE.stale, STATE.last_error = plans, False, None
+    STATE.version += 1
+    return STATE.snapshot()
+
+
+@mutation
+def replace_scenario(sessions, prices, station):
+    """Validate the complete editor draft before replacing any live inputs."""
+    if len(prices) != len({p.timestamp for p in prices}):
+        raise ValueError("Price timestamps must be unique")
+    prices = sorted(prices, key=lambda p: p.timestamp)
+    check_scenario(sessions, station, prices)
+    STATE.sessions, STATE.prices, STATE.station = sessions, prices, station
+    STATE.events, STATE.history, STATE.references = [], [], {}
+    STATE.baseline = STATE.optimized = STATE.capacity_study = None
+    STATE.stale, STATE.last_error = False, None
+    STATE.now = min(s.arrival_time for s in sessions)
     STATE.version += 1
     return STATE.snapshot()
 

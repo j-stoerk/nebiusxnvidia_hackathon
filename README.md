@@ -14,6 +14,10 @@ uv run --locked python scripts/run_demo.py
 
 Open **http://127.0.0.1:8000** and click **Start guided demo**. The launcher builds the frontend when needed. Stop with Ctrl+C; restart with the same command. Use `--no-browser` or `--port 8001` as needed. API documentation: `/docs`.
 
+**Edit inputs** opens the full scenario editor: add/remove vehicles, edit their UTC windows, energy, SoC, connector and bindings; edit every price interval; configure individual charger kW/availability, site power, efficiency, tariff calendar/prior peaks and cost/peak objective. **Apply & recalculate** validates the complete draft atomically, starts a new simulation, and clears its events/history. Invalid edits preserve the prior scenario and the draft. Calculated outputs remain derived from inputs.
+
+Optimization streams actual baseline/solver/check stages to the browser. Completed baselines appear first; a short browser presentation pause makes fast runs readable. No artificial delay is added to the solver, and reported solver runtime remains actual. The final plan is published after independent validation. The original synchronous `/api/optimize` remains available for tools and batch use.
+
 For development, run `uv run uvicorn backend.app.main:app --port 8000` and `npm run dev --prefix frontend` in separate terminals.
 
 ## What to demonstrate
@@ -54,6 +58,8 @@ uv run python scripts/validate_data.py --external
 
 The root `Dockerfile` packages the full app on port 8080. `docker build -t chargewise .` then `docker run --rm -p 8080:8080 chargewise`. Docker/cloud execution remains to be smoke-tested where an engine/account is available; native app tests and frontend builds are checked locally.
 
-The [historical evaluation](docs/evaluation.md) is exploratory and revision-specific; it does not establish current fleet savings or a 95% readiness guarantee. Calibrated chance-constrained MPC, forecasting, OCPP actuation, PV/storage and V2G are not implemented.
+The [historical evaluation](docs/evaluation.md) is exploratory and revision-specific; it does not establish current fleet savings or a 95% readiness guarantee. Calibrated chance-constrained MPC, live forecasting, OCPP actuation, PV/storage and V2G are not implemented.
+
+The separate [forecasting experiment](docs/forecasting.md) and [results](docs/forecast-results.json) compare yesterday/week seasonal forecasts with ridge autoregression on 37 held-out days of 2019 German prices. Ridge improves price MAE by 7.4%; in the synthetic four-van replay it improves mean realized energy-only cost by EUR0.0287/day versus yesterday-repeat, or EUR0.0088 with the illustrative demand component. This does not establish current-market performance. Use already published day-ahead prices directly; forecasting is relevant to unpublished horizons. Live forecasting and TimesFM/TSPP execution are not enabled in the app, and no weights were downloaded. Reproduce with `uv run python scripts/forecast_benchmark.py`.
 
 Application code/generated fixtures: [MIT](LICENSE). External datasets keep their own notices and terms. Python/frontend dependencies are locked; model weights, credentials and private uploads are excluded from Git.
