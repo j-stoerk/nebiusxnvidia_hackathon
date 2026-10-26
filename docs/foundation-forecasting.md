@@ -1,0 +1,13 @@
+# Pretrained forecasting follow-up
+
+Exploratory follow-up specified on 26 October 2026 after reading the lightweight baseline results. This is not a fresh confirmatory holdout. Use the same 37 UTC test days and input hash as `forecast-results.json`; the original yesterday/week/ridge results remain unchanged. Compare zero-shot **Chronos-Bolt Tiny**, **Chronos-Bolt Small** and **TimesFM 2.5 200M**, with model revisions pinned in the runner. Public Apache-2.0 weights; no API inference or Nebius key required.
+
+Before inference: fix context to the preceding 512 hourly observations, horizon to 24 hours, point forecast to the model's median/default point and native 10th/90th quantiles for interval diagnostics. CPU float32, six Torch threads, no Torch compilation, no fine-tuning, ensembles or per-test hyperparameter selection. Preserve negative predictions. TimesFM input normalization and continuous quantile head enabled; positivity enforcement and flip augmentation disabled. Do not tune after seeing the test scores.
+
+Record actual checkpoint revision/size, library versions, local load/inference timing, hourly MAE, native 80% interval coverage/width and mean pinball loss at 0.1/0.5/0.9. Native intervals are uncalibrated and do not establish departure readiness. Check forecast arrays and data hashes before replaying the same physical four-van scenario under actual prices. Report realized cost, unserved energy, and oracle regret under both tariff settings; retain failed/incomplete runs. Compare with the original seasonal baselines and ridge even if the foundation models lose.
+
+These checkpoints were trained after the 2019 observations. Their pretraining-corpus overlap with this specific dataset has not been established. Chronological separation within this local experiment does not prove a contamination-free zero-shot benchmark. Any positive finding needs a later, independent operator/price dataset. The unpublished-price-gap and synthetic-roster limitations of the original protocol still apply. Forecasting does not replace already published day-ahead prices.
+
+Model weights/cache belong on D:, outside Git. The small optional Python environment is isolated from the demo's runtime dependencies and can live on the SSD for faster package imports. This local experiment does **not** satisfy NVIDIA-on-Nebius hackathon requirements.
+
+Primary references: [Chronos models/library](https://github.com/amazon-science/chronos-forecasting), [Chronos-Bolt Tiny card](https://huggingface.co/amazon/chronos-bolt-tiny), [TimesFM checkpoint and example](https://huggingface.co/google/timesfm-2.5-200m-pytorch).

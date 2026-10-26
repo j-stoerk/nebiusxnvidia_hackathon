@@ -4,6 +4,7 @@ from datetime import timedelta
 import hashlib
 import json
 import sys
+import argparse
 import numpy as np
 import pandas as pd
 
@@ -69,12 +70,16 @@ def replay(times, predictions, start):
     for mode, models in costs.items():
         summary[mode] = {name: {"mean_realized_cost_eur": round(float(np.mean(values)), 6),
             "mean_oracle_regret_eur": round(float(np.mean(np.asarray(values)-models["oracle"])), 6)} for name, values in models.items()}
-        delta = np.asarray(models["ridge"]) - models["yesterday"]
-        summary[mode]["ridge_minus_yesterday"] = {"mean_eur": round(float(delta.mean()), 6), "block_bootstrap_95_ci_eur": interval(delta)}
+        for name in models.keys() - {"yesterday", "oracle"}:
+            delta = np.asarray(models[name]) - models["yesterday"]
+            summary[mode][f"{name}_minus_yesterday"] = {"mean_eur": round(float(delta.mean()), 6), "block_bootstrap_95_ci_eur": interval(delta)}
     return summary, outcomes
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--predictions", type=Path, help="Optional predictions from foundation_forecast.py")
+    args = parser.parse_args()
     path = ROOT / "data/external/required/2019-04-01_2019-10-01/germany_day_ahead_eur_mwh_hourly.csv"
     frame = pd.read_csv(path)
     times = pd.to_datetime(frame.timestamp, utc=True)
@@ -89,14 +94,34 @@ def main():
     alpha = min(scores, key=scores.get)
     ridge = np.r_[np.full(168, np.nan), fit_predict(x, target, test-168, alpha)]
     models = {"yesterday": np.r_[np.full(24, np.nan), y[:-24]], "last_week": np.r_[np.full(168, np.nan), y[:-168]], "ridge": ridge, "oracle": y}
+    foundation, diagnostics = None, {}
+    if args.predictions:
+        foundation = json.loads(args.predictions.read_text(encoding="utf-8"))
+        assert foundation["input_sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+        assert foundation["protocol_sha256"] == hashlib.sha256((ROOT/"docs/foundation-forecasting.md").read_bytes()).hexdigest()
+        assert foundation["context_hours"] == 512 and foundation["horizon_hours"] == 24
+        assert pd.Timestamp(foundation["test_start"]) == times[test]
+        for name, values in foundation["models"].items():
+            point, low, high = [np.asarray(values[k], dtype=float) for k in ("point", "q10", "q90")]
+            assert all(len(a) == len(y)-test and np.isfinite(a).all() for a in (point, low, high))
+            assert np.all(low <= high)
+            models[name] = np.r_[np.full(test, np.nan), point]
+            losses = [np.maximum(q*(y[test:]-forecast), (q-1)*(y[test:]-forecast)).mean() for q, forecast in ((.1, low), (.5, point), (.9, high))]
+            diagnostics[name] = {"native_80_interval_coverage": round(float(((low <= y[test:]) & (y[test:] <= high)).mean()), 6),
+                "mean_interval_width_eur_per_kwh": round(float((high-low).mean()), 8), "mean_pinball_loss_eur_per_kwh": round(float(np.mean(losses)), 8)}
     errors = {name: round(float(np.abs(pred[test:]-y[test:]).mean()), 8) for name, pred in models.items() if name != "oracle"}
     costs, incomplete = replay(times, models, test)
     result = {"data_source": "Bundesnetzagentur | SMARD.de, DE, native hourly 2019 observations", "input_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "protocol_sha256": hashlib.sha256((ROOT/"docs/forecasting.md").read_bytes()).hexdigest(), "train_end_exclusive": times[train].isoformat(), "test_start": times[test].isoformat(), "test_end_inclusive": times.iloc[-1].isoformat(),
         "test_days": (len(y)-test)//24, "issue_time": "00:00 UTC, using only earlier delivered-hour prices", "selected_ridge_alpha": alpha,
         "price_mae_eur_per_kwh": errors, "charging": costs, "incomplete_runs": incomplete,
-        "scope": "Exploratory unpublished-price-gap stress test with a synthetic four-van roster; known day-ahead prices should not be forecast instead.", "foundation_models_run": False}
-    (ROOT/"docs/forecast-results.json").write_text(json.dumps(result, indent=2)+"\n", encoding="utf-8")
+        "scope": "Exploratory unpublished-price-gap stress test with a synthetic four-van roster; known day-ahead prices should not be forecast instead.", "foundation_models_run": bool(foundation and foundation["models"])}
+    if foundation:
+        result["foundation_metadata"] = {k: v for k, v in foundation.items() if k != "models"}
+        result["foundation_models"] = {name: {k: v for k, v in model.items() if k not in {"point", "q10", "q90"}} for name, model in foundation["models"].items()}
+        result["interval_diagnostics"] = diagnostics
+    output = ROOT/("docs/foundation-forecast-results.json" if foundation else "docs/forecast-results.json")
+    output.write_text(json.dumps(result, indent=2)+"\n", encoding="utf-8")
     print(json.dumps(result, indent=2))
 
 

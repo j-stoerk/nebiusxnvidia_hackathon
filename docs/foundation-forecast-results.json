@@ -1,0 +1,210 @@
+{
+  "data_source": "Bundesnetzagentur | SMARD.de, DE, native hourly 2019 observations",
+  "input_sha256": "9f03410fff69020e31391b072f71f14c1e71f2d3683357114b5bc21717ad7d3f",
+  "protocol_sha256": "6d1033fec5602e7430145985db4a6a6c977006ac33f3b3f50ec0c78e822dcc08",
+  "train_end_exclusive": "2019-07-19T00:00:00+00:00",
+  "test_start": "2019-08-25T00:00:00+00:00",
+  "test_end_inclusive": "2019-09-30T23:00:00+00:00",
+  "test_days": 37,
+  "issue_time": "00:00 UTC, using only earlier delivered-hour prices",
+  "selected_ridge_alpha": 100,
+  "price_mae_eur_per_kwh": {
+    "yesterday": 0.00760742,
+    "last_week": 0.00783349,
+    "ridge": 0.00704179,
+    "timesfm_2_5": 0.00571989,
+    "chronos_tiny": 0.00531453,
+    "chronos_small": 0.00498822
+  },
+  "charging": {
+    "energy_only": {
+      "yesterday": {
+        "mean_realized_cost_eur": 3.364038,
+        "mean_oracle_regret_eur": 0.049916
+      },
+      "last_week": {
+        "mean_realized_cost_eur": 3.391757,
+        "mean_oracle_regret_eur": 0.077635
+      },
+      "ridge": {
+        "mean_realized_cost_eur": 3.335335,
+        "mean_oracle_regret_eur": 0.021214
+      },
+      "oracle": {
+        "mean_realized_cost_eur": 3.314122,
+        "mean_oracle_regret_eur": 0.0
+      },
+      "timesfm_2_5": {
+        "mean_realized_cost_eur": 3.337705,
+        "mean_oracle_regret_eur": 0.023584
+      },
+      "chronos_tiny": {
+        "mean_realized_cost_eur": 3.339316,
+        "mean_oracle_regret_eur": 0.025195
+      },
+      "chronos_small": {
+        "mean_realized_cost_eur": 3.339459,
+        "mean_oracle_regret_eur": 0.025338
+      },
+      "ridge_minus_yesterday": {
+        "mean_eur": -0.028703,
+        "block_bootstrap_95_ci_eur": [
+          -0.053443,
+          -0.004395
+        ]
+      },
+      "chronos_small_minus_yesterday": {
+        "mean_eur": -0.024578,
+        "block_bootstrap_95_ci_eur": [
+          -0.052607,
+          0.006814
+        ]
+      },
+      "timesfm_2_5_minus_yesterday": {
+        "mean_eur": -0.026332,
+        "block_bootstrap_95_ci_eur": [
+          -0.053233,
+          0.000146
+        ]
+      },
+      "last_week_minus_yesterday": {
+        "mean_eur": 0.027719,
+        "block_bootstrap_95_ci_eur": [
+          -0.018939,
+          0.07768
+        ]
+      },
+      "chronos_tiny_minus_yesterday": {
+        "mean_eur": -0.024722,
+        "block_bootstrap_95_ci_eur": [
+          -0.054498,
+          0.006405
+        ]
+      }
+    },
+    "with_demand": {
+      "yesterday": {
+        "mean_realized_cost_eur": 138.920449,
+        "mean_oracle_regret_eur": 0.014589
+      },
+      "last_week": {
+        "mean_realized_cost_eur": 138.916232,
+        "mean_oracle_regret_eur": 0.010373
+      },
+      "ridge": {
+        "mean_realized_cost_eur": 138.911649,
+        "mean_oracle_regret_eur": 0.005789
+      },
+      "oracle": {
+        "mean_realized_cost_eur": 138.905859,
+        "mean_oracle_regret_eur": 0.0
+      },
+      "timesfm_2_5": {
+        "mean_realized_cost_eur": 138.909151,
+        "mean_oracle_regret_eur": 0.003292
+      },
+      "chronos_tiny": {
+        "mean_realized_cost_eur": 138.909565,
+        "mean_oracle_regret_eur": 0.003705
+      },
+      "chronos_small": {
+        "mean_realized_cost_eur": 138.909473,
+        "mean_oracle_regret_eur": 0.003614
+      },
+      "ridge_minus_yesterday": {
+        "mean_eur": -0.0088,
+        "block_bootstrap_95_ci_eur": [
+          -0.014983,
+          -0.002797
+        ]
+      },
+      "chronos_small_minus_yesterday": {
+        "mean_eur": -0.010976,
+        "block_bootstrap_95_ci_eur": [
+          -0.018947,
+          -0.002945
+        ]
+      },
+      "timesfm_2_5_minus_yesterday": {
+        "mean_eur": -0.011297,
+        "block_bootstrap_95_ci_eur": [
+          -0.018141,
+          -0.004406
+        ]
+      },
+      "last_week_minus_yesterday": {
+        "mean_eur": -0.004216,
+        "block_bootstrap_95_ci_eur": [
+          -0.016366,
+          0.008398
+        ]
+      },
+      "chronos_tiny_minus_yesterday": {
+        "mean_eur": -0.010884,
+        "block_bootstrap_95_ci_eur": [
+          -0.019371,
+          -0.002416
+        ]
+      }
+    }
+  },
+  "incomplete_runs": [],
+  "scope": "Exploratory unpublished-price-gap stress test with a synthetic four-van roster; known day-ahead prices should not be forecast instead.",
+  "foundation_models_run": true,
+  "foundation_metadata": {
+    "input_sha256": "9f03410fff69020e31391b072f71f14c1e71f2d3683357114b5bc21717ad7d3f",
+    "test_start": "2019-08-25T00:00:00+00:00",
+    "protocol_sha256": "cb2095accc9677b768bfb5d17ecbff2edcef34920f5a92a224810165f97e0e9a",
+    "context_hours": 512,
+    "horizon_hours": 24,
+    "device": "CPU",
+    "failures": {},
+    "versions": {
+      "torch": "2.12.1",
+      "chronos-forecasting": "2.3.2",
+      "timesfm": "2.0.2",
+      "transformers": "4.57.6"
+    },
+    "resolved_setup_issues": {
+      "chronos_tiny": "ChronosBoltPipeline.predict() got an unexpected keyword argument 'context'",
+      "chronos_small": "ChronosBoltPipeline.predict() got an unexpected keyword argument 'context'"
+    }
+  },
+  "foundation_models": {
+    "timesfm_2_5": {
+      "load_seconds": 60.742,
+      "inference_seconds": 3.45,
+      "checkpoint": "google/timesfm-2.5-200m-pytorch",
+      "revision": "1d952420fba87f3c6dee4f240de0f1a0fbc790e3"
+    },
+    "chronos_tiny": {
+      "load_seconds": 9.498,
+      "inference_seconds": 1.046,
+      "checkpoint": "amazon/chronos-bolt-tiny",
+      "revision": "a0e552de83495b5c28c14c71c374f3e33280b340"
+    },
+    "chronos_small": {
+      "load_seconds": 1.112,
+      "inference_seconds": 6.956,
+      "checkpoint": "amazon/chronos-bolt-small",
+      "revision": "772f3d25d38aec6d914c8949dab4462e2d46f5d8"
+    }
+  },
+  "interval_diagnostics": {
+    "timesfm_2_5": {
+      "native_80_interval_coverage": 0.765766,
+      "mean_interval_width_eur_per_kwh": 0.01593294,
+      "mean_pinball_loss_eur_per_kwh": 0.00188562
+    },
+    "chronos_tiny": {
+      "native_80_interval_coverage": 0.774775,
+      "mean_interval_width_eur_per_kwh": 0.01443316,
+      "mean_pinball_loss_eur_per_kwh": 0.00174443
+    },
+    "chronos_small": {
+      "native_80_interval_coverage": 0.773649,
+      "mean_interval_width_eur_per_kwh": 0.01362371,
+      "mean_pinball_loss_eur_per_kwh": 0.00163353
+    }
+  }
+}
