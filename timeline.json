@@ -1,86 +1,20 @@
 {
-  "duration": 132.460274,
+  "duration": 124,
+  "audio": false,
   "scenes": [
-    {
-      "id": "system",
-      "title": "One plan. Clear responsibilities.",
-      "speaker": "Julius",
-      "text": "ChargeWise turns a fleet roster into a checked charging plan. A React dashboard talks to FastAPI. Scheduling runs on the CPU. NVIDIA Nemotron is a separate inference service on Nebius Token Factory.",
-      "start": 0,
-      "end": 13.581905,
-      "voice_duration": 13.181904761904763
-    },
-    {
-      "id": "inputs",
-      "title": "Validate before changing state.",
-      "speaker": "Julius",
-      "text": "Sessions, prices and charger settings enter through one validation boundary. Pandas and typed models check fields, times and physical limits. Only a complete valid scenario replaces the browser's versioned, in memory workspace.",
-      "start": 13.581905,
-      "end": 27.968572,
-      "voice_duration": 13.986666666666666
-    },
-    {
-      "id": "physics",
-      "title": "Power is assigned to physical plugs.",
-      "speaker": "Talha",
-      "text": "The scheduler allocates power to vehicles and plugs across time. It respects site capacity, individual charger ratings, fixed occupancy, battery limits, efficiency and conservative taper. Delivered energy is power integrated over time.",
-      "start": 27.968572,
-      "end": 42.769978,
-      "voice_duration": 14.40140589569161
-    },
-    {
-      "id": "solve",
-      "title": "Compare fairly. Optimize in order.",
-      "speaker": "Talha",
-      "text": "First come first served, earliest deadline first and least laxity first use the same constraints. OR Tools minimizes unserved energy first, then energy plus demand cost. An alternative objective minimizes peak before cost.",
-      "start": 42.769978,
-      "end": 57.411339,
-      "voice_duration": 14.241360544217686
-    },
-    {
-      "id": "certify",
-      "title": "A candidate must pass an independent check.",
-      "speaker": "Talha",
-      "text": "Solver output passes through an independent validator. It checks allocations against the inputs and completed delivery. Checked plans feed metrics and the dashboard. A feasible schedule and a proven optimum remain distinct claims.",
-      "start": 57.411339,
-      "end": 71.41338,
-      "voice_duration": 13.60204081632653
-    },
-    {
-      "id": "agent",
-      "title": "The model proposes. Tools enforce.",
-      "speaker": "Umar Khan",
-      "text": "Natural language follows a separate tool loop. The server reserves an inference allowance, then calls Nemotron on Nebius. Returned arguments pass typed validation and a permission gate. Approved actions use the same planner and validator. The model explains computed facts.",
-      "start": 71.41338,
-      "end": 88.794786,
-      "voice_duration": 16.98140589569161
-    },
-    {
-      "id": "replan",
-      "title": "Replan the future. Preserve the past.",
-      "speaker": "Umar Khan",
-      "text": "An outage or price change updates the constraints. Completed delivery stays frozen. The planner recalculates future allocations and streams actual progress. Event identifiers prevent duplicate changes; version checks reject stale edits.",
-      "start": 88.794786,
-      "end": 104.261226,
-      "voice_duration": 15.066439909297053
-    },
-    {
-      "id": "capacity",
-      "title": "Capacity is a separate, inspectable study.",
-      "speaker": "Umar Khan",
-      "text": "The capacity study asks which installed plugs and shared power can serve the roster. A physical lower bound and a feasible checked schedule can prove a minimum. An unfinished search remains unresolved.",
-      "start": 104.261226,
-      "end": 115.923494,
-      "voice_duration": 11.262267573696144
-    },
-    {
-      "id": "scope",
-      "title": "Runtime and experiments stay explicit.",
-      "speaker": "Julius",
-      "text": "The interface and CPU backend form one application. Model inference runs on Nebius. Times F M and Chronos remain offline forecasting experiments. No physical charger is controlled. Next, the live walkthrough shows the operator workflow.",
-      "start": 115.923494,
-      "end": 132.460274,
-      "voice_duration": 16.136780045351475
-    }
+    {"id":"team","start":0,"end":8,"text":"We’re Julius Störk, Umar Khan, and Muhammad Talha Toqeer. This is ChargeWise."},
+    {"id":"inputs","start":8,"end":22,"text":"Vehicle windows, energy needs, charger ratings, and electricity prices enter through the React interface. FastAPI uses Pandas and typed models to validate the scenario and create a versioned workspace."},
+    {"id":"physics","start":22,"end":38,"text":"Each row follows one vehicle on its assigned plug. Across time, the colored cells become charging power. The planner combines charger limits, site capacity, efficiency, and battery taper to deliver the requested energy before departure."},
+    {"id":"solve","start":38,"end":52,"text":"The same roster runs through first come first served, earliest deadline first, and least laxity first. OR-Tools then prioritizes departure energy, followed by electricity and demand charges. The operator can also prioritize the lowest peak."},
+    {"id":"validate","start":52,"end":64,"text":"The allocation flows into an independent validator. It checks departure windows, plug occupancy, power limits, and delivered energy. Those results return to the dashboard as readiness, peak power, and cost."},
+    {"id":"agent","start":64,"end":82,"text":"A question takes a branch through NVIDIA Nemotron on Nebius Token Factory. The model can inspect schedules or request a change. Typed tools and the user’s approval connect those requests to the same optimizer and validator."},
+    {"id":"replan","start":82,"end":98,"text":"Now a charger becomes unavailable. Energy already delivered stays in place while future allocations move around the outage. Updated constraints pass through the optimizer and validator again, and the dashboard receives the revised plan."},
+    {"id":"capacity","start":98,"end":112,"text":"The same engine answers the sizing question for a normal day: how much shared power and how many installed plugs are needed? Here, six hours and forty-eight battery kilowatt-hours lead to an eight-point-eight-nine-kilowatt connection."},
+    {"id":"outro","start":112,"end":124,"text":"The result is one connected workflow, from roster to ready vehicles. ChargeWise helps depot managers use their electrical connection more effectively. Now, let’s use the application."}
+  ],
+  "team": [
+    {"name":"Julius Störk","links":["https://j-stoerk.github.io/","https://www.linkedin.com/in/juliusst/"]},
+    {"name":"Umar Khan","links":["https://www.linkedin.com/in/umar-khan-340627241/"]},
+    {"name":"Muhammad Talha Toqeer","links":["https://www.linkedin.com/in/muhammad-talha-toqeer-600394212/"]}
   ]
 }

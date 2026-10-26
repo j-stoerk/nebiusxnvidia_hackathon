@@ -1,0 +1,41 @@
+CHARGEWISE — VOICEOVER
+Silent animation: 02:04. Record the following text against these time windows.
+
+[00:00 – 00:08]
+We’re Julius Störk, Umar Khan, and Muhammad Talha Toqeer. This is ChargeWise.
+
+[00:08 – 00:22]
+Vehicle windows, energy needs, charger ratings, and electricity prices enter through the React interface. FastAPI uses Pandas and typed models to validate the scenario and create a versioned workspace.
+
+[00:22 – 00:38]
+Each row follows one vehicle on its assigned plug. Across time, the colored cells become charging power. The planner combines charger limits, site capacity, efficiency, and battery taper to deliver the requested energy before departure.
+
+[00:38 – 00:52]
+The same roster runs through first come first served, earliest deadline first, and least laxity first. OR-Tools then prioritizes departure energy, followed by electricity and demand charges. The operator can also prioritize the lowest peak.
+
+[00:52 – 01:04]
+The allocation flows into an independent validator. It checks departure windows, plug occupancy, power limits, and delivered energy. Those results return to the dashboard as readiness, peak power, and cost.
+
+[01:04 – 01:22]
+A question takes a branch through NVIDIA Nemotron on Nebius Token Factory. The model can inspect schedules or request a change. Typed tools and the user’s approval connect those requests to the same optimizer and validator.
+
+[01:22 – 01:38]
+Now a charger becomes unavailable. Energy already delivered stays in place while future allocations move around the outage. Updated constraints pass through the optimizer and validator again, and the dashboard receives the revised plan.
+
+[01:38 – 01:52]
+The same engine answers the sizing question for a normal day: how much shared power and how many installed plugs are needed? Here, six hours and forty-eight battery kilowatt-hours lead to an eight-point-eight-nine-kilowatt connection.
+
+[01:52 – 02:04]
+The result is one connected workflow, from roster to ready vehicles. ChargeWise helps depot managers use their electrical connection more effectively. Now, let’s use the application.
+
+TEAM PROFILE LINKS — reference, not spoken
+
+Julius Störk
+https://j-stoerk.github.io/
+https://www.linkedin.com/in/juliusst/
+
+Umar Khan
+https://www.linkedin.com/in/umar-khan-340627241/
+
+Muhammad Talha Toqeer
+https://www.linkedin.com/in/muhammad-talha-toqeer-600394212/

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ChargeWise — live planner</title><link rel="icon" href="brand.svg">
+  <style>
+    body{margin:0;background:#f7f9fa;color:#183b4e;font:17px/1.6 system-ui,sans-serif}main{max-width:700px;margin:12vh auto;padding:32px}
+    .brand{display:flex;align-items:center;gap:14px;font-size:24px;font-weight:650}img{width:48px;height:48px}h1{font-size:36px;line-height:1.15;margin-top:40px}
+    a{color:#008b8b;text-underline-offset:4px}pre{padding:18px;background:white;border:1px solid #dce4e8;overflow:auto;font-size:14px}p{color:#506573}.button{display:inline-block;background:#008b8b;color:white;padding:10px 18px;text-decoration:none;border-radius:4px}
+  </style>
+</head>
+<body><main>
+  <div class="brand"><img src="brand.svg" alt="">ChargeWise</div>
+  <h1 id="title">Opening the live planner…</h1><p id="message">Connecting to the current recording session.</p>
+  <a id="open" class="button" hidden>Open planner</a>
+  <div id="restart" hidden><p>Start a new live recording session from the project folder:</p><pre>uv run --locked python scripts/share_demo.py --publish</pre><p>Keep the sharing process and laptop running while you record. The command creates a fresh free HTTPS session and updates this link.</p></div>
+  <p><a href="LIVE_DEMO_SCRIPT.txt" download>Demo narration and actions</a> · <a href="index.html">Architecture film and downloads</a></p>
+</main>
+<script>
+  fetch('live.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(info=>{
+    const url=info.url?new URL(info.url):null;
+    if(url&&url.protocol==='https:'&&url.hostname.endsWith('.free.pinggy.net')&&Date.parse(info.expires_at)>Date.now()){
+      const target=url.href+'?demo=1';document.querySelector('#open').href=target;document.querySelector('#open').hidden=false;
+      document.querySelector('#message').textContent='The working planner is ready for recording.';location.replace(target);
+    }else throw new Error('Start a session');
+  }).catch(()=>{document.querySelector('#title').textContent='Start your live recording session';document.querySelector('#message').textContent='Run the sharing command to bring the planner online.';document.querySelector('#restart').hidden=false;});
+</script></body></html>
