@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>ChargeWise AI — every departure, less shared power</title>
-  <meta name="description" content="A verified EV depot charging planner. Explore the animation, a recorded NVIDIA Nemotron workflow, and the editable working app.">
+  <meta name="description" content="A verified EV depot charging planner. Explore its architecture, data flow, scheduling and Nemotron tool workflows, then download the editable app.">
   <link rel="icon" href="brand.svg" type="image/svg+xml">
   <style>
     :root{color-scheme:light;--ink:#202938;--muted:#5c6878;--line:#dce1e7;--blue:#215ac0}
@@ -41,10 +41,10 @@
     <span class="eyebrow">For fleet and depot managers</span>
     <h1>Every departure.<br>Less shared power.</h1>
     <p class="lead">Work out who needs energy, by when, and the smallest connection that can serve them. Compare charging policies, inspect the physical limits, and replan when a charger fails.</p>
-    <div class="actions"><a class="button" href="#watch">Watch the animated demo</a><a class="button secondary" href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Test_Build.zip">Download working app</a></div>
+    <div class="actions"><a class="button" href="#watch">Watch the architecture film</a><a class="button secondary" href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Test_Build.zip">Download working app</a></div>
   </div>
-  <div id="watch" class="film"><iframe src="film.html" title="ChargeWise animated explanation and recorded live NVIDIA demonstration" allow="autoplay; fullscreen" allowfullscreen loading="eager"></iframe></div>
-  <div class="film-note"><span>Original animation with a real app recording · under 3 minutes · synthetic narration</span><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Animated_Demo.mp4">Download MP4</a></div>
+  <div id="watch" class="film"><iframe src="film.html" title="ChargeWise animated architecture and workflows" allow="autoplay; fullscreen" allowfullscreen loading="eager"></iframe></div>
+  <div class="film-note"><span>Architecture &amp; workflows · original diagrams · synthetic narration · site walkthrough recorded separately</span><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Architecture_Explainer.mp4">Download MP4</a></div>
   <section id="approach" class="split">
     <div><h2>The physical limits come first.</h2><p>Each charger has its own rating and connector. Vans keep their assigned plug until departure. The planner respects battery limits, charging efficiency, taper, outages and the shared site connection.</p><p class="muted">FCFS, earliest-deadline-first and least-laxity-first use the same constraints. OR-Tools builds the optimized plan; an independent validator checks the allocations.</p></div>
     <div><div class="stat">22 <small>→</small> 8.89 <small>kW</small></div><h3>Same energy targets. A lower peak.</h3><p class="muted">All four vans receive their requested 84 battery kWh in the synthetic fixture. The three greedy policies peak at 22 kW; the checked optimized schedule peaks at 8.89 kW.</p><p class="limits">Illustrative scenario, not measured fleet savings or evidence of avoided capital expenditure.</p></div>
@@ -59,12 +59,12 @@
     </div>
   </section>
   <section class="split">
-    <div><h2>Natural language, checked actions.</h2><p>The recorded workflow uses a real NVIDIA Nemotron model through Nebius Token Factory. It reads computed schedule facts, then applies an explicitly authorized simulated outage through a typed tool.</p><p class="muted">The solver replans and the validator checks again: every departure met at a 10 kW peak. Model explanations are not themselves mathematical certificates.</p></div>
+    <div><h2>Natural language, checked actions.</h2><p>A verified runtime check used a real NVIDIA Nemotron model through Nebius Token Factory. It read computed schedule facts, then applied an explicitly authorized simulated outage through a typed tool.</p><p class="muted">The solver replanned and the validator checked again: every departure met at a 10 kW peak. The architecture film explains this tool loop; model explanations are not themselves mathematical certificates.</p></div>
     <div><h2>Forecasting earns its place.</h2><p>TimesFM and Chronos were tested on 37 held-out days of historical German prices. Chronos Small reduced price MAE by 29.2% versus ridge, but the extra scheduling-cost benefit was small in this fixture.</p><p class="limits">Exploratory 2019 data; model pretraining overlap is unknown. Use published day-ahead prices directly. <a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/blob/main/docs/forecast-models.md">Read the measured results.</a></p></div>
   </section>
   <section id="run">
     <h2>Run the editable application.</h2>
-    <p>This hosted page contains the explanation and recorded demonstration. The complete planner runs locally from the downloadable build, with the React dashboard, FastAPI, Pandas and OR-Tools.</p>
+    <p>This hosted page explains the architecture and workflows. The complete planner runs locally from the downloadable build, with the React dashboard, FastAPI, Pandas and OR-Tools.</p>
     <ol><li><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Test_Build.zip">Download and extract the test build.</a></li><li>Install Python 3.11+ and <a href="https://docs.astral.sh/uv/getting-started/installation/">uv</a>, then run this command inside the extracted folder:</li></ol>
     <pre>uv run --locked python scripts/run_demo.py</pre>
     <p>Open <strong>http://127.0.0.1:8000</strong>. Start the guided demo, edit the inputs, optimize, check capacity and simulate an outage. Node.js is unnecessary for this prebuilt package.</p>

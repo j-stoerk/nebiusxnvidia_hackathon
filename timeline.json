@@ -1,86 +1,86 @@
 {
-  "duration": 160.295125,
+  "duration": 132.460274,
   "scenes": [
     {
-      "id": "problem",
-      "title": "One connection. Four departures.",
+      "id": "system",
+      "title": "One plan. Clear responsibilities.",
       "speaker": "Julius",
-      "text": "ChargeWise is for depot managers. Can every van leave with the energy it needs, using the connection already available? Our team is Julius, Talha and Umar Khan. This is a planning simulation, with no physical charger controlled.",
+      "text": "ChargeWise turns a fleet roster into a checked charging plan. A React dashboard talks to FastAPI. Scheduling runs on the CPU. NVIDIA Nemotron is a separate inference service on Nebius Token Factory.",
       "start": 0,
-      "end": 15.206644,
-      "voice_duration": 14.656643990929705
+      "end": 13.581905,
+      "voice_duration": 13.181904761904763
     },
     {
-      "id": "roster",
-      "title": "Begin with the physical limits.",
+      "id": "inputs",
+      "title": "Validate before changing state.",
       "speaker": "Julius",
-      "text": "Four vans. Two fixed eleven kilowatt plugs. Morning vans each need eighteen kilowatt hours; afternoon vans each need twenty four. They keep their plugs until departure. Charger ratings, battery limits, efficiency and availability constrain the plan.",
-      "start": 15.206644,
-      "end": 32.103175,
-      "voice_duration": 16.346530612244898
+      "text": "Sessions, prices and charger settings enter through one validation boundary. Pandas and typed models check fields, times and physical limits. Only a complete valid scenario replaces the browser's versioned, in memory workspace.",
+      "start": 13.581905,
+      "end": 27.968572,
+      "voice_duration": 13.986666666666666
     },
     {
-      "id": "area",
-      "title": "Energy is the area under the curve.",
+      "id": "physics",
+      "title": "Power is assigned to physical plugs.",
       "speaker": "Talha",
-      "text": "Power is height. Time is width. Their area is energy. Reshaping charging can lower the peak while preserving that area. The afternoon vans need forty eight battery kilowatt hours. At ninety percent efficiency, the site supplies fifty three point three three.",
-      "start": 32.103175,
-      "end": 49.53957,
-      "voice_duration": 16.88639455782313
+      "text": "The scheduler allocates power to vehicles and plugs across time. It respects site capacity, individual charger ratings, fixed occupancy, battery limits, efficiency and conservative taper. Delivered energy is power integrated over time.",
+      "start": 27.968572,
+      "end": 42.769978,
+      "voice_duration": 14.40140589569161
     },
     {
-      "id": "bound",
-      "title": "A lower bound you can inspect.",
+      "id": "solve",
+      "title": "Compare fairly. Optimize in order.",
       "speaker": "Talha",
-      "text": "There are six hours before departure. Divide grid energy by six hours: eight point eight nine kilowatts. A smaller connection cannot deliver enough. The solver finds a feasible schedule at this bound. Independent checks certify its actual physical allocations.",
-      "start": 49.53957,
-      "end": 66.20576,
-      "voice_duration": 16.116190476190475
+      "text": "First come first served, earliest deadline first and least laxity first use the same constraints. OR Tools minimizes unserved energy first, then energy plus demand cost. An alternative objective minimizes peak before cost.",
+      "start": 42.769978,
+      "end": 57.411339,
+      "voice_duration": 14.241360544217686
     },
     {
-      "id": "comparison",
-      "title": "Same targets. Less peak power.",
+      "id": "certify",
+      "title": "A candidate must pass an independent check.",
       "speaker": "Talha",
-      "text": "First come first served, earliest deadline first and least laxity first each reach twenty two kilowatts here. Optimization meets the same targets at eight point eight nine. That is fifty nine point six percent lower peak in this synthetic fixture.",
-      "start": 66.20576,
-      "end": 80.817438,
-      "voice_duration": 14.061678004535148
+      "text": "Solver output passes through an independent validator. It checks allocations against the inputs and completed delivery. Checked plans feed metrics and the dashboard. A feasible schedule and a proven optimum remain distinct claims.",
+      "start": 57.411339,
+      "end": 71.41338,
+      "voice_duration": 13.60204081632653
     },
     {
-      "id": "cost",
-      "title": "Separate energy from demand charges.",
+      "id": "agent",
+      "title": "The model proposes. Tools enforce.",
       "speaker": "Umar Khan",
-      "text": "Optimized energy cost rises slightly. But the demand component falls much more. Total scenario cost moves from three hundred fifty five euros eighty seven, to one hundred fifty nine euros twenty. This uses an illustrative tariff and zero prior peak. It is a partial period calculation, not an annual bill.",
-      "start": 80.817438,
-      "end": 100.77288,
-      "voice_duration": 19.40544217687075
+      "text": "Natural language follows a separate tool loop. The server reserves an inference allowance, then calls Nemotron on Nebius. Returned arguments pass typed validation and a permission gate. Approved actions use the same planner and validator. The model explains computed facts.",
+      "start": 71.41338,
+      "end": 88.794786,
+      "voice_duration": 16.98140589569161
     },
     {
-      "id": "live",
-      "title": "Now use the working application.",
+      "id": "replan",
+      "title": "Replan the future. Preserve the past.",
       "speaker": "Umar Khan",
-      "text": "Edit vehicles, prices and each individual charger's power rating. Inspect the capacity proof. Here, a real NVIDIA Nemotron model runs through Nebius Token Factory and reads the schedule tool. Computed facts stay visible beside its explanation. We explicitly allow a simulated outage. The model proposes the event; OR Tools replans; independent checks run again. Every departure is still met, at a ten kilowatt peak. The key stays on the server. A persistent allowance caps inference.",
-      "start": 100.77288,
-      "end": 132.676259,
-      "voice_duration": 31.353378684807257
+      "text": "An outage or price change updates the constraints. Completed delivery stays frozen. The planner recalculates future allocations and streams actual progress. Event identifiers prevent duplicate changes; version checks reject stale edits.",
+      "start": 88.794786,
+      "end": 104.261226,
+      "voice_duration": 15.066439909297053
     },
     {
-      "id": "forecast",
-      "title": "Test forecasting. Measure the useful gain.",
-      "speaker": "Julius",
-      "text": "We tested Times F M and Chronos on historical German prices. Chronos Small cut price error by twenty nine percent against regression. Extra charging cost improvement was small here. Better prediction matters when it changes the decision.",
-      "start": 132.676259,
-      "end": 147.422767,
-      "voice_duration": 14.196507936507937
+      "id": "capacity",
+      "title": "Capacity is a separate, inspectable study.",
+      "speaker": "Umar Khan",
+      "text": "The capacity study asks which installed plugs and shared power can serve the roster. A physical lower bound and a feasible checked schedule can prove a minimum. An unfinished search remains unresolved.",
+      "start": 104.261226,
+      "end": 115.923494,
+      "voice_duration": 11.262267573696144
     },
     {
-      "id": "close",
-      "title": "A charging decision you can verify.",
+      "id": "scope",
+      "title": "Runtime and experiments stay explicit.",
       "speaker": "Julius",
-      "text": "Who needs energy, by when, and how much shared power is enough? ChargeWise makes that decision inspectable. Explore the editable public build, with source code, declared assumptions and evidence.",
-      "start": 147.422767,
-      "end": 160.295125,
-      "voice_duration": 12.32235827664399
+      "text": "The interface and CPU backend form one application. Model inference runs on Nebius. Times F M and Chronos remain offline forecasting experiments. No physical charger is controlled. Next, the live walkthrough shows the operator workflow.",
+      "start": 115.923494,
+      "end": 132.460274,
+      "voice_duration": 16.136780045351475
     }
   ]
 }
