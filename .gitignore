@@ -25,6 +25,7 @@ data/raw/
 data/training/
 checkpoints/
 .cache/
+presentation/media/
 # Dependencies, build output, model weights
 .venv/
 venv/

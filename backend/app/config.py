@@ -3,7 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import os
 
@@ -26,6 +26,9 @@ class Settings(BaseModel):
     nemotron_base_url: str = ""
     nemotron_model: str = ""
     cloud_inference_enabled: bool = False
+    cloud_budget_usd: float = Field(default=.05, gt=0, le=30)
+    cloud_max_requests: int = Field(default=12, ge=1, le=100)
+    cloud_max_tokens: int = Field(default=1024, ge=64, le=2048)
     default_charger_count: int = 10
     default_station_power_kw: float = 80.0
     default_slot_minutes: int = 15
@@ -46,4 +49,7 @@ def get_settings() -> Settings:
         nemotron_base_url=os.getenv("NEMOTRON_BASE_URL", "").rstrip("/"),
         nemotron_model=os.getenv("NEMOTRON_MODEL", ""),
         cloud_inference_enabled=os.getenv("CLOUD_INFERENCE_ENABLED", "false").lower() == "true",
+        cloud_budget_usd=os.getenv("CLOUD_INFERENCE_BUDGET_USD", ".05"),
+        cloud_max_requests=os.getenv("CLOUD_INFERENCE_MAX_REQUESTS", "12"),
+        cloud_max_tokens=os.getenv("CLOUD_INFERENCE_MAX_TOKENS", "1024"),
     )

@@ -1,0 +1,100 @@
+{
+  "provider": "nebius",
+  "model": "nvidia/Nemotron-3_5-Lightning",
+  "mocked_requests": false,
+  "javascript_errors": [],
+  "replies": [
+    {
+      "mode": "assistant",
+      "message": "- **Charger IDs:** CH-01  \n- **Battery kWh delivered:** 18.0 kWh  \n- **Active charging hours:** 2.25 h  \n- **Station optimized peak:** 8.8889 kW",
+      "model": "nvidia/Nemotron-3_5-Lightning",
+      "tool_calls": [
+        {
+          "tool": "get_schedule",
+          "arguments": {
+            "vehicle_id": "VAN-01"
+          },
+          "result_keys": [
+            "kind",
+            "solver_status",
+            "metrics",
+            "allocations",
+            "allocations_truncated",
+            "selected_facts"
+          ],
+          "verified_facts": {
+            "charger_ids": [
+              "CH-01"
+            ],
+            "fixed_connections": true,
+            "allocation_count": 9,
+            "active_charging_hours": 2.25,
+            "battery_energy_delivered_kwh": 18.0,
+            "earliest_charge": "2026-10-24T08:00:00Z",
+            "latest_charge": "2026-10-24T10:30:00Z",
+            "note": "First/last endpoints may contain idle gaps. Active duration is summed from actual allocations. Do not infer uninterrupted charging."
+          },
+          "error": null,
+          "argument_errors": null
+        }
+      ]
+    },
+    {
+      "mode": "assistant",
+      "message": "**Simulation result (charger CH‑01 failed 08:00‑12:00):**\n\n- **Peak kW:** 10.0 kW  \n- **Unserved kWh:** 0.0 kWh  \n- **At‑risk vehicles:** 0",
+      "model": "nvidia/Nemotron-3_5-Lightning",
+      "tool_calls": [
+        {
+          "tool": "simulate_event",
+          "arguments": {
+            "event": "{\"event_id\": \"recorded-outage\", \"type\": \"CHARGER_FAILED\", \"charger_id\": \"CH-01\", \"start_time\": \"2026-10-24T08:00:00Z\", \"end_time\": \"2026-10-24T12:00:00Z\"}"
+          },
+          "result_keys": [
+            "event_result",
+            "comparison",
+            "at_risk_count",
+            "stale",
+            "validated"
+          ],
+          "verified_facts": null,
+          "error": null,
+          "argument_errors": null
+        }
+      ]
+    }
+  ],
+  "post_outage_comparison": {
+    "baseline_cost_eur": 355.8667,
+    "baseline_energy_cost_eur": 21.4667,
+    "baseline_demand_cost_eur": 334.4,
+    "baseline_unserved_kwh": 0.0,
+    "optimized_cost_eur": 175.8667,
+    "optimized_energy_cost_eur": 23.8667,
+    "optimized_demand_cost_eur": 152.0,
+    "optimized_unserved_kwh": 0.0,
+    "baseline_peak_kw": 22.0,
+    "optimized_peak_kw": 10.0,
+    "cost_savings_eur": 179.99999999999997,
+    "energy_cost_savings_eur": -2.400000000000002,
+    "demand_cost_savings_eur": 182.39999999999998,
+    "peak_reduction_kw": 12.0,
+    "equal_energy_comparison": true,
+    "prior_peak_kw": 0.0,
+    "demand_tariff_eur_per_kw": 15.2,
+    "charging_efficiency": 0.9,
+    "fixed_connections": true,
+    "optimization_goal": "cost"
+  },
+  "post_outage_validated": true,
+  "checked_on": "2026-10-26",
+  "scenario": "Synthetic four-van fixture; not a production fleet",
+  "scope": "Actual local application invoking NVIDIA Nemotron remotely on Nebius Token Factory; no Nebius AI Cloud VM was provisioned",
+  "billing": {
+    "provider_usage_estimate_usd": 0.00332568,
+    "persistent_reservations_usd": 0.04884072,
+    "local_allowance_usd": 0.05,
+    "requests": 20,
+    "provider_account_cap": false,
+    "verification_server_stopped": true
+  }
+}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ChargeWise AI — every departure, less shared power</title>
+  <meta name="description" content="A verified EV depot charging planner. Explore the animation, a recorded NVIDIA Nemotron workflow, and the editable working app.">
+  <link rel="icon" href="brand.svg" type="image/svg+xml">
+  <style>
+    :root{color-scheme:light;--ink:#202938;--muted:#5c6878;--line:#dce1e7;--blue:#215ac0}
+    *{box-sizing:border-box}body{margin:0;color:var(--ink);background:#fff;font:17px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+    a{color:var(--blue);text-underline-offset:4px}button,input{font:inherit}button,a{touch-action:manipulation}
+    header,main,footer{max-width:1200px;margin:auto;padding:0 30px}header{display:flex;align-items:center;justify-content:space-between;gap:24px;height:94px;border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);font-weight:650;font-size:22px}.brand img{width:34px;height:34px}
+    nav{display:flex;gap:25px;font-size:14px}nav a{color:var(--muted);text-decoration:none}nav a:hover{text-decoration:underline}
+    .intro{padding:72px 0 48px;max-width:950px}.eyebrow{color:var(--blue);font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:650}
+    h1{font-size:clamp(38px,5vw,66px);line-height:1.08;font-weight:650;letter-spacing:-.045em;margin:20px 0 26px;max-width:890px}
+    .lead{font-size:21px;color:var(--muted);max-width:780px;margin:0 0 28px}.actions{display:flex;gap:14px;flex-wrap:wrap}
+    .button{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;background:var(--blue);border:1px solid var(--blue);color:white;text-decoration:none;font-size:15px;font-weight:600;border-radius:4px}
+    .button.secondary{background:white;color:var(--ink);border-color:var(--line)}.button:hover{filter:brightness(.95)}
+    .film{border:1px solid #243246;background:#0c1420}.film iframe{display:block;width:100%;height:auto;aspect-ratio:1600/1020;border:0}
+    .film-note{display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:13px;margin:12px 0 0}
+    section{padding:56px 0;border-bottom:1px solid var(--line);scroll-margin-top:24px}h2{font-size:32px;letter-spacing:-.025em;line-height:1.2;font-weight:600;margin:0 0 20px}
+    h3{font-size:18px;margin:26px 0 8px}p{margin:0 0 16px}.muted{color:var(--muted)}.split{display:grid;grid-template-columns:1fr 1fr;gap:70px}
+    .stat{font-size:52px;letter-spacing:-.04em;line-height:1.1;font-weight:600;color:var(--blue)}.stat small{font-size:24px;letter-spacing:0;color:var(--muted);font-weight:400}
+    .limits{font-size:14px;color:var(--muted);max-width:900px}.calculation{background:#f6f8fa;padding:26px 30px;border-left:3px solid var(--blue);margin-top:24px}
+    label{display:block;font-size:14px;font-weight:600}input[type=range]{width:100%;accent-color:var(--blue);margin:18px 0}output{font-variant-numeric:tabular-nums}
+    .meter{height:20px;background:#e1e7ef;position:relative;margin:18px 0 10px;overflow:hidden}.meter span{display:block;height:100%;background:var(--blue);transition:width .15s}
+    pre{background:#f4f6f8;padding:18px 22px;overflow:auto;font-size:14px;border:1px solid var(--line)}ol{padding-left:23px}li{margin:9px 0}details{margin:24px 0}summary{cursor:pointer;font-weight:600}
+    footer{padding-top:26px;padding-bottom:36px;display:flex;justify-content:space-between;gap:24px;font-size:13px;color:var(--muted)}
+    a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #6ea0ef;outline-offset:4px}
+    @media(max-width:700px){header,main,footer{padding-left:20px;padding-right:20px}header{height:78px}nav{gap:14px}.intro{padding:44px 0 32px}.lead{font-size:18px}.split{grid-template-columns:1fr;gap:30px}section{padding:36px 0}.film-note,footer{flex-direction:column;gap:8px}.stat{font-size:42px}.calculation{padding:20px}nav a:first-child{display:none}}
+  </style>
+</head>
+<body>
+<header>
+  <a class="brand" href="./"><img src="brand.svg" alt="">ChargeWise AI</a>
+  <nav aria-label="Main"><a href="#approach">How it works</a><a href="#run">Run the app</a><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon">Source ↗</a></nav>
+</header>
+<main>
+  <div class="intro">
+    <span class="eyebrow">For fleet and depot managers</span>
+    <h1>Every departure.<br>Less shared power.</h1>
+    <p class="lead">Work out who needs energy, by when, and the smallest connection that can serve them. Compare charging policies, inspect the physical limits, and replan when a charger fails.</p>
+    <div class="actions"><a class="button" href="#watch">Watch the animated demo</a><a class="button secondary" href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Test_Build.zip">Download working app</a></div>
+  </div>
+  <div id="watch" class="film"><iframe src="film.html" title="ChargeWise animated explanation and recorded live NVIDIA demonstration" allow="autoplay; fullscreen" allowfullscreen loading="eager"></iframe></div>
+  <div class="film-note"><span>Original animation with a real app recording · under 3 minutes · synthetic narration</span><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Animated_Demo.mp4">Download MP4</a></div>
+  <section id="approach" class="split">
+    <div><h2>The physical limits come first.</h2><p>Each charger has its own rating and connector. Vans keep their assigned plug until departure. The planner respects battery limits, charging efficiency, taper, outages and the shared site connection.</p><p class="muted">FCFS, earliest-deadline-first and least-laxity-first use the same constraints. OR-Tools builds the optimized plan; an independent validator checks the allocations.</p></div>
+    <div><div class="stat">22 <small>→</small> 8.89 <small>kW</small></div><h3>Same energy targets. A lower peak.</h3><p class="muted">All four vans receive their requested 84 battery kWh in the synthetic fixture. The three greedy policies peak at 22 kW; the checked optimized schedule peaks at 8.89 kW.</p><p class="limits">Illustrative scenario, not measured fleet savings or evidence of avoided capital expenditure.</p></div>
+  </section>
+  <section class="split">
+    <div><span class="eyebrow">Explore the energy bound</span><h2>How much shared power is enough?</h2><p>The afternoon pair needs 48 battery kWh in six hours. With 90% efficiency, that needs 53.33 grid kWh. Below 8.89 kW, there simply isn't enough energy.</p><p class="limits">This small interactive explanation checks the energy bound only. Download the app for full scheduling, charger occupancy, taper and independent validation.</p></div>
+    <div class="calculation">
+      <label for="connection">Shared connection: <output id="power">8.89</output> kW</label>
+      <input id="connection" type="range" min="4" max="22" step="0.01" value="8.89">
+      <div class="meter" aria-hidden="true"><span id="fill"></span></div>
+      <p id="capacity" aria-live="polite"></p><p class="limits">Battery energy available = connection × 6 h × 0.90</p>
+    </div>
+  </section>
+  <section class="split">
+    <div><h2>Natural language, checked actions.</h2><p>The recorded workflow uses a real NVIDIA Nemotron model through Nebius Token Factory. It reads computed schedule facts, then applies an explicitly authorized simulated outage through a typed tool.</p><p class="muted">The solver replans and the validator checks again: every departure met at a 10 kW peak. Model explanations are not themselves mathematical certificates.</p></div>
+    <div><h2>Forecasting earns its place.</h2><p>TimesFM and Chronos were tested on 37 held-out days of historical German prices. Chronos Small reduced price MAE by 29.2% versus ridge, but the extra scheduling-cost benefit was small in this fixture.</p><p class="limits">Exploratory 2019 data; model pretraining overlap is unknown. Use published day-ahead prices directly. <a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/blob/main/docs/forecast-models.md">Read the measured results.</a></p></div>
+  </section>
+  <section id="run">
+    <h2>Run the editable application.</h2>
+    <p>This hosted page contains the explanation and recorded demonstration. The complete planner runs locally from the downloadable build, with the React dashboard, FastAPI, Pandas and OR-Tools.</p>
+    <ol><li><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/download/submission-review-2026-10-25/ChargeWise_Test_Build.zip">Download and extract the test build.</a></li><li>Install Python 3.11+ and <a href="https://docs.astral.sh/uv/getting-started/installation/">uv</a>, then run this command inside the extracted folder:</li></ol>
+    <pre>uv run --locked python scripts/run_demo.py</pre>
+    <p>Open <strong>http://127.0.0.1:8000</strong>. Start the guided demo, edit the inputs, optimize, check capacity and simulate an outage. Node.js is unnecessary for this prebuilt package.</p>
+    <p class="limits">No API key or payment is required for planning. With no provider configured, the assistant clearly labels its output as a local computed summary. Live NVIDIA inference is optional, server-side and separately enabled with a persistent local allowance; the downloadable build never contains the team's key.</p>
+    <details><summary>Evidence, source and editable presentation</summary><p><a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/tag/submission-review-2026-10-25">Release assets, animation source and validation evidence</a> · <a href="https://github.com/j-stoerk/nebiusxnvidia_hackathon">MIT source repository</a></p><p class="limits">Synthetic tariff: €15.20/kW/month, zero prior peak. The €355.87 → €159.20 cost comparison is a partial-period scenario calculation. No physical charger is controlled; no production savings or readiness probability is claimed.</p></details>
+  </section>
+</main>
+<footer><span>Julius Störk · Talha · Umar Khan</span><span>Nebius × NVIDIA Global AI Hackathon · ChargeWise AI</span></footer>
+<script>
+  const input=document.querySelector('#connection');
+  function update(){const p=Number(input.value),e=p*6*.9;document.querySelector('#power').textContent=p.toFixed(2);document.querySelector('#fill').style.width=Math.min(100,e/48*100)+'%';document.querySelector('#capacity').textContent=e<48?`${e.toFixed(2)} kWh available — ${(48-e).toFixed(2)} kWh below target.`:`${e.toFixed(2)} kWh available — the energy bound is met.`;}
+  input.addEventListener('input',update);update();
+</script>
+</body>
+</html>

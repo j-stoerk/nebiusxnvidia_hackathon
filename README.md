@@ -4,6 +4,8 @@
 
 React/Vite, Tailwind, Recharts, FastAPI, Pandas and OR-Tools SCIP. Optional NVIDIA Nemotron uses typed tools; an independent validator certifies every plan before it is shown. No physical charger is controlled.
 
+[Animated presentation and downloads](https://j-stoerk.github.io/nebiusxnvidia_hackathon/) · [Prebuilt app](https://github.com/j-stoerk/nebiusxnvidia_hackathon/releases/tag/submission-review-2026-10-25). The hosted page contains the explanation and recording; the complete editable planner runs from the test build or source below.
+
 ## Run the demo
 
 Requires Python 3.11+, [uv](https://docs.astral.sh/uv/), and Node.js 22.12+ or 24+. No API key, model download or payment is needed for the planning demo or local computed summaries.
@@ -44,9 +46,15 @@ CSV formats: [dataset-format.md](docs/dataset-format.md). Original five-column e
 
 To avoid inference API tokens, run Nemotron on the **same GPU host** and set `NEMOTRON_BASE_URL=http://127.0.0.1:8001/v1` and the exact NVIDIA `NEMOTRON_MODEL`. Only loopback self-hosted endpoints are accepted; no Authorization token is sent. See [Nebius GPU deployment](deployment/deployment-guide.md).
 
-Alternatively, use an ignored `.env` based on `.env.example` for Nebius Token Factory or Hugging Face. **Cloud inference is off by default even when a key is present.** `CLOUD_INFERENCE_ENABLED=true` is a separate opt-in after account billing is reviewed; it is not a provider spending cap. Nebius is preferred over HF; explicitly configured self-hosted inference takes precedence. Keys stay server-side. The agent can only mutate the simulation when **Allow simulation changes** is enabled; OR-Tools produces plans and the validator checks them.
+For live Token Factory inference, the launcher asks for a hidden key and keeps it in process memory:
 
-The credential-free demo does **not** establish NVIDIA model execution on Nebius. A qualifying hackathon submission still needs a real NVIDIA model runtime on Nebius, a working public demo/test-build URL and a recording of the actual integration. Cloud GPU execution has not been verified or provisioned from this laptop. The [deployment guide](deployment/deployment-guide.md) includes a key-free cloud-host path.
+```powershell
+uv run --locked python scripts/run_live_demo.py --budget 0.05 --requests 12
+```
+
+Open `http://127.0.0.1:8017`. Stop with Ctrl+C to discard the key. **Cloud inference is off by default even when a key is present.** The cumulative allowance is reserved before each request and persists in `.cache/cloud-inference-budget.json`; do not delete/reset it. This is a conservative local guard, not an account-wide provider cap. Only `nvidia/Nemotron-3_5-Lightning` has verified prices; other cloud models/providers fail closed. An ignored `.env` is an alternative for a private server; see `.env.example`. Never bundle a key in a public build. The agent mutates the simulation only when **Allow simulation changes** is enabled.
+
+[Actual runtime evidence](docs/runtime-evidence.json) records a real NVIDIA Nemotron schedule read and authorized outage replan through Nebius Token Factory on 26 October 2026, with no network mocks. The replan passed independent validation, met every target and peaked at 10 kW. Full-app hosting on Nebius is optional when using Token Factory, as the [organizers confirm](https://nebiusglobalaihackathon.devpost.com/details/faqs). The credential-free local summary is always labelled separately. No Nebius GPU VM was provisioned.
 
 ## Verify and deploy
 
@@ -56,7 +64,7 @@ npm run build --prefix frontend
 uv run python scripts/validate_data.py --external
 ```
 
-The root `Dockerfile` packages the full app on port 8080. `docker build -t chargewise .` then `docker run --rm -p 8080:8080 chargewise`. Docker/cloud execution remains to be smoke-tested where an engine/account is available; native app tests and frontend builds are checked locally.
+The root `Dockerfile` packages the full app on port 8080. `docker build -t chargewise .` then `docker run --rm -p 8080:8080 chargewise`. Native tests and the extracted application build are verified; a Docker engine was unavailable for a container smoke test. Use one worker/replica; keep any inference ledger on persistent storage. [Hosting details](deployment/deployment-guide.md).
 
 The [historical evaluation](docs/evaluation.md) is exploratory and revision-specific; it does not establish current fleet savings or a 95% readiness guarantee. Calibrated chance-constrained MPC, live forecasting, OCPP actuation, PV/storage and V2G are not implemented.
 

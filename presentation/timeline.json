@@ -1,0 +1,86 @@
+{
+  "duration": 160.295125,
+  "scenes": [
+    {
+      "id": "problem",
+      "title": "One connection. Four departures.",
+      "speaker": "Julius",
+      "text": "ChargeWise is for depot managers. Can every van leave with the energy it needs, using the connection already available? Our team is Julius, Talha and Umar Khan. This is a planning simulation, with no physical charger controlled.",
+      "start": 0,
+      "end": 15.206644,
+      "voice_duration": 14.656643990929705
+    },
+    {
+      "id": "roster",
+      "title": "Begin with the physical limits.",
+      "speaker": "Julius",
+      "text": "Four vans. Two fixed eleven kilowatt plugs. Morning vans each need eighteen kilowatt hours; afternoon vans each need twenty four. They keep their plugs until departure. Charger ratings, battery limits, efficiency and availability constrain the plan.",
+      "start": 15.206644,
+      "end": 32.103175,
+      "voice_duration": 16.346530612244898
+    },
+    {
+      "id": "area",
+      "title": "Energy is the area under the curve.",
+      "speaker": "Talha",
+      "text": "Power is height. Time is width. Their area is energy. Reshaping charging can lower the peak while preserving that area. The afternoon vans need forty eight battery kilowatt hours. At ninety percent efficiency, the site supplies fifty three point three three.",
+      "start": 32.103175,
+      "end": 49.53957,
+      "voice_duration": 16.88639455782313
+    },
+    {
+      "id": "bound",
+      "title": "A lower bound you can inspect.",
+      "speaker": "Talha",
+      "text": "There are six hours before departure. Divide grid energy by six hours: eight point eight nine kilowatts. A smaller connection cannot deliver enough. The solver finds a feasible schedule at this bound. Independent checks certify its actual physical allocations.",
+      "start": 49.53957,
+      "end": 66.20576,
+      "voice_duration": 16.116190476190475
+    },
+    {
+      "id": "comparison",
+      "title": "Same targets. Less peak power.",
+      "speaker": "Talha",
+      "text": "First come first served, earliest deadline first and least laxity first each reach twenty two kilowatts here. Optimization meets the same targets at eight point eight nine. That is fifty nine point six percent lower peak in this synthetic fixture.",
+      "start": 66.20576,
+      "end": 80.817438,
+      "voice_duration": 14.061678004535148
+    },
+    {
+      "id": "cost",
+      "title": "Separate energy from demand charges.",
+      "speaker": "Umar Khan",
+      "text": "Optimized energy cost rises slightly. But the demand component falls much more. Total scenario cost moves from three hundred fifty five euros eighty seven, to one hundred fifty nine euros twenty. This uses an illustrative tariff and zero prior peak. It is a partial period calculation, not an annual bill.",
+      "start": 80.817438,
+      "end": 100.77288,
+      "voice_duration": 19.40544217687075
+    },
+    {
+      "id": "live",
+      "title": "Now use the working application.",
+      "speaker": "Umar Khan",
+      "text": "Edit vehicles, prices and each individual charger's power rating. Inspect the capacity proof. Here, a real NVIDIA Nemotron model runs through Nebius Token Factory and reads the schedule tool. Computed facts stay visible beside its explanation. We explicitly allow a simulated outage. The model proposes the event; OR Tools replans; independent checks run again. Every departure is still met, at a ten kilowatt peak. The key stays on the server. A persistent allowance caps inference.",
+      "start": 100.77288,
+      "end": 132.676259,
+      "voice_duration": 31.353378684807257
+    },
+    {
+      "id": "forecast",
+      "title": "Test forecasting. Measure the useful gain.",
+      "speaker": "Julius",
+      "text": "We tested Times F M and Chronos on historical German prices. Chronos Small cut price error by twenty nine percent against regression. Extra charging cost improvement was small here. Better prediction matters when it changes the decision.",
+      "start": 132.676259,
+      "end": 147.422767,
+      "voice_duration": 14.196507936507937
+    },
+    {
+      "id": "close",
+      "title": "A charging decision you can verify.",
+      "speaker": "Julius",
+      "text": "Who needs energy, by when, and how much shared power is enough? ChargeWise makes that decision inspectable. Explore the editable public build, with source code, declared assumptions and evidence.",
+      "start": 147.422767,
+      "end": 160.295125,
+      "voice_duration": 12.32235827664399
+    }
+  ]
+}

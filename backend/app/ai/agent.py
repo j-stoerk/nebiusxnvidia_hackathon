@@ -92,7 +92,9 @@ def chat(message: str, allow_changes: bool = False) -> dict:
                 except json.JSONDecodeError:
                     args = {}
                 result = execute_tool(name, args, allow_changes)
-                trace.append({"tool": name, "arguments": args, "result_keys": list(result.keys())})
+                trace.append({"tool": name, "arguments": args, "result_keys": list(result.keys()),
+                              "verified_facts": result.get("selected_facts"), "error": result.get("error"),
+                              "argument_errors": result.get("fields")})
                 messages.append(
                     {
                         "role": "tool",

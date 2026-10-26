@@ -13,7 +13,7 @@ COPY backend/app ./backend/app
 COPY data/demo/prepared ./data/demo/prepared
 COPY --from=frontend /build/dist ./frontend/dist
 ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1
-RUN useradd --uid 10001 --create-home chargewise
+RUN useradd --uid 10001 --create-home chargewise && mkdir -p /app/.cache && chown chargewise /app/.cache
 USER 10001
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/health', timeout=4)"

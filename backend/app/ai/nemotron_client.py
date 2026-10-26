@@ -109,7 +109,7 @@ def chat_completion(messages: list, tools: list, client: httpx.Client | None = N
     body = {
         "model": config["request_model"] or config["model"],
         "messages": messages,
-        "max_tokens": 2048,
+        "max_tokens": get_settings().cloud_max_tokens,
         "temperature": 0.2,
     }
     # Some providers reject tools; only send when the caller supplies them.
@@ -118,6 +118,9 @@ def chat_completion(messages: list, tools: list, client: httpx.Client | None = N
         body["tool_choice"] = "auto"
     if config["provider"] == "self-hosted":
         body["chat_template_kwargs"] = {"enable_thinking": False}
+    else:
+        from .cloud_budget import reserve
+        reserve(config, body)
 
     own = client is None
     client = client or httpx.Client(timeout=120.0)
@@ -128,7 +131,11 @@ def chat_completion(messages: list, tools: list, client: httpx.Client | None = N
             json=body,
         )
         response.raise_for_status()
-        return response.json()
+        payload = response.json()
+        if config["provider"] != "self-hosted":
+            from .cloud_budget import record_usage
+            record_usage(config, payload.get("usage"))
+        return payload
     finally:
         if own:
             client.close()

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { api } from "@/api/client";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,11 @@ export default function AgentChat({ onWorkspace, busy, setBusy }) {
   const [allowChanges, setAllowChanges] = useState(false);
   const [status, setStatus] = useState(null);
   const [log, setLog] = useState([]);
+  const transcript = useRef(null);
+
+  useEffect(() => {
+    if (transcript.current) transcript.current.scrollTop = transcript.current.scrollHeight;
+  }, [log]);
 
   useEffect(() => {
     api.agentStatus().then(setStatus).catch(() => {});
@@ -62,7 +67,7 @@ export default function AgentChat({ onWorkspace, busy, setBusy }) {
         )}
       </div>
 
-      <div className="max-h-72 space-y-3 overflow-auto rounded-md border border-border bg-muted/30 p-3">
+      <div ref={transcript} aria-live="polite" className="max-h-72 space-y-3 overflow-auto rounded-md border border-border bg-muted/30 p-3">
         {log.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             Ask about departure readiness, site power or cost. {status?.configured
@@ -79,12 +84,19 @@ export default function AgentChat({ onWorkspace, busy, setBusy }) {
                 : "mr-8 bg-card border border-border"
             }`}
           >
-            <p className="whitespace-pre-wrap">{entry.text}</p>
+            <p className="whitespace-pre-wrap">{entry.text.split(/(\*\*[^*]+\*\*)/g).map((part, j) =>
+              part.startsWith("**") ? <strong key={j}>{part.slice(2, -2)}</strong> : part
+            )}</p>
             {entry.tools?.length ? (
               <p className="mt-1 text-[11px] opacity-80">
                 Tools: {entry.tools.map((t) => t.tool).join(", ")}
               </p>
             ) : null}
+            {entry.tools?.filter(t => t.verified_facts).map((tool, j) => <div key={j} className="mt-3 border-t border-border pt-2 text-xs text-muted-foreground">
+              <p className="font-medium text-foreground">Computed tool facts</p>
+              <p className="mt-1">Chargers: {tool.verified_facts.charger_ids.join(", ") || "none"} · battery energy {tool.verified_facts.battery_energy_delivered_kwh} kWh · active charging {tool.verified_facts.active_charging_hours} h</p>
+              <p>{tool.verified_facts.allocation_count} intervals · {tool.verified_facts.fixed_connections ? "Fixed plug assignment" : "Movable plug assignment"}</p>
+            </div>)}
           </div>
         ))}
       </div>
